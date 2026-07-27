@@ -113,9 +113,9 @@ const CategoryNav = () => {
   const [hoveredIndex, setHoveredIndex] = useState(null);
 
   return (
-    <div className="w-full bg-white shadow-sm mt-2 relative z-40">
-      <div className="max-w-[1248px] mx-auto px-4 py-3">
-        <div className="flex items-center justify-between overflow-x-auto hide-scrollbar gap-4">
+    <div className="w-full bg-white shadow-sm mt-2 relative z-30">
+      <div className="max-w-[1248px] mx-auto px-2 py-3 sm:px-4">
+        <div className="flex items-center justify-between sm:justify-center md:justify-between overflow-x-auto hide-scrollbar gap-6 sm:gap-4 snap-x">
           {categories.map((cat, i) => (
             <div 
               key={i} 

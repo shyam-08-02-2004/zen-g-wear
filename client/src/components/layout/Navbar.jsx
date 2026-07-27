@@ -162,14 +162,7 @@ const Navbar = ({ onMenuClick }) => {
             {/* Right: Actions */}
             <div className="flex items-center gap-2 sm:gap-3 shrink-0">
 
-              {/* Mobile Search Toggle */}
-              <button
-                className="md:hidden text-white p-1.5 hover:bg-white/10 rounded-sm transition-colors"
-                onClick={() => setMobileSearchOpen(!mobileSearchOpen)}
-                aria-label="Search"
-              >
-                {mobileSearchOpen ? <X size={20} /> : <Search size={20} />}
-              </button>
+              {/* Mobile Search Toggle (Removed for Flipkart UI) */}
 
               {/* Desktop: Auth */}
               {isAuthenticated ? (
@@ -243,9 +236,8 @@ const Navbar = ({ onMenuClick }) => {
           </div>
         </div>
 
-        {/* Mobile Search Bar (slide down) */}
-        {mobileSearchOpen && (
-          <div className="md:hidden bg-[#1a5dc8] px-3 pb-3">
+        {/* Mobile Search Bar (Always visible like Flipkart) */}
+        <div className="md:hidden bg-[#2874f0] px-3 pb-3">
             <form onSubmit={handleSearch} className="w-full relative">
               <input
                 ref={mobileSearchRef}
@@ -285,7 +277,6 @@ const Navbar = ({ onMenuClick }) => {
               </div>
             )}
           </div>
-        )}
       </header>
 
       {/* Mobile Menu Drawer */}
@@ -322,7 +313,7 @@ const Navbar = ({ onMenuClick }) => {
             </div>
 
             {/* Menu Items */}
-            <div className="flex-1 overflow-y-auto py-2">
+            <div className="flex-1 overflow-y-auto py-2 flex flex-col">
               {isAuthenticated && !isAdmin && (
                 <>
                   <Link to="/dashboard" onClick={() => setMobileMenuOpen(false)} className="flex items-center gap-3 px-5 py-3.5 text-sm text-gray-800 hover:bg-gray-50 border-b border-gray-100">
@@ -402,11 +393,9 @@ const Navbar = ({ onMenuClick }) => {
               </div>
 
               <Link to="/shop?offers=true" onClick={() => setMobileMenuOpen(false)} className="flex items-center gap-3 px-5 py-3.5 text-sm text-red-600 font-bold hover:bg-red-50 border-b border-gray-100">🔥 Top Offers</Link>
-            </div>
-
             {/* Logout */}
             {isAuthenticated && (
-              <div className="p-4 border-t border-gray-200">
+              <div className="p-4 border-t border-gray-200 mt-auto">
                 <button
                   onClick={handleLogout}
                   className="w-full flex items-center justify-center gap-2 py-3 text-sm font-bold text-red-600 border border-red-200 bg-red-50 hover:bg-red-100 rounded-sm transition-colors"
@@ -415,6 +404,7 @@ const Navbar = ({ onMenuClick }) => {
                 </button>
               </div>
             )}
+            </div>
           </div>
         </div>
       )}

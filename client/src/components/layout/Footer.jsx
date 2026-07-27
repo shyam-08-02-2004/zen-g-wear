@@ -24,24 +24,25 @@ const Footer = () => (
     </div>
 
     {/* Main Footer */}
-    <div className="max-w-[1248px] mx-auto px-4 sm:px-6 py-10 grid grid-cols-2 sm:grid-cols-2 md:grid-cols-4 gap-8">
-
-      {/* Column 1: Brand */}
-      <div className="col-span-2 sm:col-span-2 md:col-span-1">
+    <div className="max-w-[1248px] mx-auto px-4 sm:px-6 py-10 flex flex-col md:flex-row items-center justify-between gap-8 text-center md:text-left">
+      {/* Brand Info */}
+      <div className="flex flex-col items-center md:items-start">
         <h2 className="text-xl font-black italic text-white mb-2 tracking-tight">ZEN-G WEAR</h2>
-        <p className="text-xs text-gray-400 leading-relaxed mb-4">
+        <p className="text-xs text-gray-400 leading-relaxed mb-4 max-w-sm">
           Premium apparel for the modern lifestyle. Crafted with quality, delivered with care across India.
         </p>
-        <div className="flex items-center gap-2 text-xs text-gray-400 mb-2">
-          <Mail size={14} className="text-[#2874f0]" />
-          <a href="mailto:support@zengwear.com" className="hover:text-white transition-colors">support@zengwear.com</a>
-        </div>
-        <div className="flex items-center gap-2 text-xs text-gray-400">
-          <MapPin size={14} className="text-[#2874f0]" />
-          <span>New Delhi, India - 110001</span>
+        <div className="flex flex-col sm:flex-row items-center gap-4 text-xs text-gray-400 mb-4">
+          <div className="flex items-center gap-2">
+            <Mail size={14} className="text-[#2874f0]" />
+            <a href="mailto:support@zengwear.com" className="hover:text-white transition-colors">support@zengwear.com</a>
+          </div>
+          <div className="flex items-center gap-2">
+            <MapPin size={14} className="text-[#2874f0]" />
+            <span>New Delhi, India - 110001</span>
+          </div>
         </div>
         {/* Social Icons */}
-        <div className="flex gap-3 mt-4">
+        <div className="flex items-center gap-3">
           {[
             { icon: <Instagram size={18} />, href: 'https://instagram.com' },
             { icon: <Facebook size={18} />, href: 'https://facebook.com' },
@@ -53,68 +54,6 @@ const Footer = () => (
             </a>
           ))}
         </div>
-      </div>
-
-      {/* Column 2: Shop */}
-      <div>
-        <h3 className="text-xs font-bold uppercase tracking-widest text-[#ffe500] mb-4">Shop</h3>
-        <ul className="space-y-2.5">
-          {[
-            { label: "Men's Fashion", to: '/shop?category=men' },
-            { label: "Women's Fashion", to: '/shop?category=women' },
-            { label: "Kids Collection", to: '/shop?category=kids' },
-            { label: 'Shoes', to: '/shop?subcategory=shoes' },
-            { label: 'Watches', to: '/shop?subcategory=watches' },
-            { label: '🔥 Top Offers', to: '/shop?offers=true' },
-          ].map((link) => (
-            <li key={link.to}>
-              <Link to={link.to} className="text-sm text-gray-400 hover:text-white transition-colors">
-                {link.label}
-              </Link>
-            </li>
-          ))}
-        </ul>
-      </div>
-
-      {/* Column 3: Account */}
-      <div>
-        <h3 className="text-xs font-bold uppercase tracking-widest text-[#ffe500] mb-4">My Account</h3>
-        <ul className="space-y-2.5">
-          {[
-            { label: 'My Profile', to: '/dashboard' },
-            { label: 'My Orders', to: '/dashboard/orders' },
-            { label: 'My Wishlist', to: '/dashboard/wishlist' },
-            { label: 'My Cart', to: '/cart' },
-            { label: 'Login / Register', to: '/login' },
-          ].map((link) => (
-            <li key={link.to}>
-              <Link to={link.to} className="text-sm text-gray-400 hover:text-white transition-colors">
-                {link.label}
-              </Link>
-            </li>
-          ))}
-        </ul>
-      </div>
-
-      {/* Column 4: Help & Policy */}
-      <div>
-        <h3 className="text-xs font-bold uppercase tracking-widest text-[#ffe500] mb-4">Help & Policy</h3>
-        <ul className="space-y-2.5">
-          {[
-            { label: 'FAQs', to: '#' },
-            { label: 'Return & Exchange Policy', to: '#' },
-            { label: 'Shipping Policy', to: '#' },
-            { label: 'Privacy Policy', to: '#' },
-            { label: 'Terms of Service', to: '#' },
-            { label: 'Contact Us', to: '#' },
-          ].map((link, i) => (
-            <li key={i}>
-              <Link to={link.to} className="text-sm text-gray-400 hover:text-white transition-colors">
-                {link.label}
-              </Link>
-            </li>
-          ))}
-        </ul>
       </div>
     </div>
 

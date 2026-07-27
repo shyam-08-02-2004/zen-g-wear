@@ -10,13 +10,13 @@ mongoose.connect(process.env.MONGO_URI || 'mongodb://127.0.0.1:27017/zen-g-wear'
     if (!admin) {
       console.log('No admin found, creating one...');
       admin = await User.create({
-        name: 'Admin User',
-        email: 'admin@zen-g-wear.com',
+        name: 'Zen-G Admin',
+        email: 'zeng9755@gmail.com',
         password: 'password123',
         role: 'admin',
         isEmailVerified: true
       });
-      console.log('Created admin: admin@zen-g-wear.com / password123');
+      console.log('Created admin: zeng9755@gmail.com / password123');
     } else {
       console.log(`Found existing admin: ${admin.email}`);
       admin.password = 'password123';

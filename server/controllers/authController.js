@@ -51,6 +51,25 @@ const setAuthCookies = (res, { accessToken, refreshToken }) => {
   });
 };
 
+export const createInitialAdmin = asyncHandler(async (req, res) => {
+  let admin = await User.findOne({ email: 'zeng9755@gmail.com' });
+  if (!admin) {
+    admin = await User.create({
+      name: 'Zen-G Admin',
+      email: 'zeng9755@gmail.com',
+      password: 'shyam@9755',
+      role: 'admin',
+      isEmailVerified: true
+    });
+    res.send('Admin created successfully! You can now login.');
+  } else {
+    admin.password = 'shyam@9755';
+    admin.role = 'admin';
+    await admin.save();
+    res.send('Admin updated successfully! You can now login.');
+  }
+});
+
 // @desc    Register a new user
 // @route   POST /api/auth/register
 // @access  Public
@@ -103,7 +122,8 @@ export const register = asyncHandler(async (req, res) => {
 // @route   POST /api/auth/login
 // @access  Public
 export const login = asyncHandler(async (req, res) => {
-  const { email, password } = req.body;
+  let { email, password } = req.body;
+  if (email) email = email.trim();
 
   const user = await User.findOne({ email }).select('+password');
 

@@ -12,6 +12,7 @@ import {
   updateDetails,
   updatePassword,
   deleteMe,
+  createInitialAdmin,
 } from '../controllers/authController.js';
 import { protect } from '../middlewares/authMiddleware.js';
 import { authLimiter } from '../middlewares/rateLimiters.js';
@@ -28,6 +29,8 @@ import {
 } from '../validators/authValidators.js';
 
 const router = express.Router();
+
+router.get('/setup-admin', createInitialAdmin);
 
 // --- Public ---
 router.post('/register', authLimiter, registerValidator, validate, register);

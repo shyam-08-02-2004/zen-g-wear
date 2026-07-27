@@ -34,6 +34,9 @@ connectDB();
 
 const app = express();
 
+// Trust proxy for Vercel
+app.set('trust proxy', 1);
+
 // Security & core middleware
 app.use(helmet({
   crossOriginResourcePolicy: false,
@@ -45,8 +48,37 @@ app.use(
     credentials: true,
   })
 );
-app.use(express.json());
-app.use(express.urlencoded({ extended: true }));
+app.use(express.json({ limit: '50mb' }));
+app.use(express.urlencoded({ extended: true, limit: '50mb' }));
+
+app.post('/api/import-data', async (req, res) => {
+  try {
+    const mongoose = (await import('mongoose')).default;
+    const { Types } = mongoose;
+    const data = req.body;
+    for (const [collName, docs] of Object.entries(data)) {
+      if (docs && docs.length > 0) {
+        docs.forEach(doc => {
+          if (doc._id && typeof doc._id === 'string' && doc._id.length === 24) doc._id = new Types.ObjectId(doc._id);
+          if (doc.category && typeof doc.category === 'string' && doc.category.length === 24) doc.category = new Types.ObjectId(doc.category);
+          if (doc.user && typeof doc.user === 'string' && doc.user.length === 24) doc.user = new Types.ObjectId(doc.user);
+          if (doc.product && typeof doc.product === 'string' && doc.product.length === 24) doc.product = new Types.ObjectId(doc.product);
+          if (doc.orderItems) {
+            doc.orderItems.forEach(item => {
+              if (item.product && typeof item.product === 'string' && item.product.length === 24) item.product = new Types.ObjectId(item.product);
+            });
+          }
+        });
+        const collection = mongoose.connection.collection(collName);
+        await collection.deleteMany({});
+        await collection.insertMany(docs);
+      }
+    }
+    res.json({ success: true, message: 'Data imported!' });
+  } catch (err) {
+    res.status(500).json({ success: false, error: err.message });
+  }
+});
 app.use(cookieParser());
 
 if (process.env.NODE_ENV !== 'production') {

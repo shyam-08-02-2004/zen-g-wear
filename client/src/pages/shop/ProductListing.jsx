@@ -350,7 +350,7 @@ const ProductListing = () => {
         </div>
 
         {/* Desktop Toolbar */}
-        <div className="flex items-center justify-between border-b border-gray-200 pb-4 mb-6 px-4 sm:px-0">
+        <div className="hidden lg:flex items-center justify-between border-b border-gray-200 pb-4 mb-6 px-4 sm:px-0">
           <div className="flex items-center gap-4">
             <button
               onClick={() => setFilterOpen(!filterOpen)}
