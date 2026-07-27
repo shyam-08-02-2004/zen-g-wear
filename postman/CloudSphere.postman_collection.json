@@ -1,0 +1,482 @@
+{
+  "info": {
+    "name": "CloudSphere - Authentication",
+    "description": "Complete authentication flow for the CloudSphere API: register, login, logout, refresh token, forgot/reset password, email verification, and profile management.",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "auth": {
+    "type": "bearer",
+    "bearer": [{ "key": "token", "value": "{{accessToken}}", "type": "string" }]
+  },
+  "item": [
+    {
+      "name": "Register",
+      "request": {
+        "method": "POST",
+        "header": [{ "key": "Content-Type", "value": "application/json" }],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"name\": \"Jane Doe\",\n  \"email\": \"{{userEmail}}\",\n  \"password\": \"{{userPassword}}\"\n}"
+        },
+        "url": { "raw": "{{baseUrl}}/auth/register", "host": ["{{baseUrl}}"], "path": ["auth", "register"] },
+        "description": "Creates a new account, sends a verification email, and returns an access/refresh token pair immediately."
+      },
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "if (pm.response.code === 201) {",
+              "  const data = pm.response.json().data;",
+              "  pm.environment.set('accessToken', data.accessToken);",
+              "  pm.environment.set('refreshToken', data.refreshToken);",
+              "  if (data.devVerificationToken) pm.environment.set('verificationToken', data.devVerificationToken);",
+              "}",
+              "pm.test('Status is 201', () => pm.response.to.have.status(201));"
+            ]
+          }
+        }
+      ],
+      "response": [
+        {
+          "name": "201 Created",
+          "originalRequest": { "method": "POST", "url": "{{baseUrl}}/auth/register" },
+          "status": "Created",
+          "code": 201,
+          "_postman_previewlanguage": "json",
+          "header": [{ "key": "Content-Type", "value": "application/json" }],
+          "body": "{\n  \"success\": true,\n  \"message\": \"Registration successful. Please check your email to verify your account.\",\n  \"data\": {\n    \"user\": {\n      \"_id\": \"66a1f0c2e4b0a1a2b3c4d5e6\",\n      \"name\": \"Jane Doe\",\n      \"email\": \"jane.doe@example.com\",\n      \"role\": \"user\",\n      \"isEmailVerified\": false,\n      \"isActive\": true,\n      \"storage\": { \"used\": 0, \"limit\": 5368709120 },\n      \"createdAt\": \"2026-07-19T10:00:00.000Z\",\n      \"updatedAt\": \"2026-07-19T10:00:00.000Z\"\n    },\n    \"accessToken\": \"eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...\",\n    \"refreshToken\": \"eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...\",\n    \"devVerificationToken\": \"9f8c1e2d3b4a5f6e7d8c9b0a1f2e3d4c\"\n  }\n}"
+        },
+        {
+          "name": "400 Email already exists",
+          "originalRequest": { "method": "POST", "url": "{{baseUrl}}/auth/register" },
+          "status": "Bad Request",
+          "code": 400,
+          "_postman_previewlanguage": "json",
+          "header": [{ "key": "Content-Type", "value": "application/json" }],
+          "body": "{\n  \"success\": false,\n  \"message\": \"An account with this email already exists\"\n}"
+        },
+        {
+          "name": "422 Validation failed",
+          "originalRequest": { "method": "POST", "url": "{{baseUrl}}/auth/register" },
+          "status": "Unprocessable Entity",
+          "code": 422,
+          "_postman_previewlanguage": "json",
+          "header": [{ "key": "Content-Type", "value": "application/json" }],
+          "body": "{\n  \"success\": false,\n  \"message\": \"Validation failed\",\n  \"errors\": [\n    { \"field\": \"password\", \"message\": \"Password must be at least 8 characters\" }\n  ]\n}"
+        }
+      ]
+    },
+    {
+      "name": "Login",
+      "request": {
+        "method": "POST",
+        "header": [{ "key": "Content-Type", "value": "application/json" }],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"email\": \"{{userEmail}}\",\n  \"password\": \"{{userPassword}}\"\n}"
+        },
+        "url": { "raw": "{{baseUrl}}/auth/login", "host": ["{{baseUrl}}"], "path": ["auth", "login"] },
+        "description": "Authenticates a user and issues a new access/refresh token pair."
+      },
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "if (pm.response.code === 200) {",
+              "  const data = pm.response.json().data;",
+              "  pm.environment.set('accessToken', data.accessToken);",
+              "  pm.environment.set('refreshToken', data.refreshToken);",
+              "}",
+              "pm.test('Status is 200', () => pm.response.to.have.status(200));"
+            ]
+          }
+        }
+      ],
+      "response": [
+        {
+          "name": "200 OK",
+          "originalRequest": { "method": "POST", "url": "{{baseUrl}}/auth/login" },
+          "status": "OK",
+          "code": 200,
+          "_postman_previewlanguage": "json",
+          "header": [{ "key": "Content-Type", "value": "application/json" }],
+          "body": "{\n  \"success\": true,\n  \"message\": \"Logged in successfully\",\n  \"data\": {\n    \"user\": {\n      \"_id\": \"66a1f0c2e4b0a1a2b3c4d5e6\",\n      \"name\": \"Jane Doe\",\n      \"email\": \"jane.doe@example.com\",\n      \"role\": \"user\",\n      \"isEmailVerified\": false\n    },\n    \"accessToken\": \"eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...\",\n    \"refreshToken\": \"eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...\"\n  }\n}"
+        },
+        {
+          "name": "401 Invalid credentials",
+          "originalRequest": { "method": "POST", "url": "{{baseUrl}}/auth/login" },
+          "status": "Unauthorized",
+          "code": 401,
+          "_postman_previewlanguage": "json",
+          "header": [{ "key": "Content-Type", "value": "application/json" }],
+          "body": "{\n  \"success\": false,\n  \"message\": \"Invalid email or password\"\n}"
+        }
+      ]
+    },
+    {
+      "name": "Refresh Token",
+      "request": {
+        "method": "POST",
+        "header": [{ "key": "Content-Type", "value": "application/json" }],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"refreshToken\": \"{{refreshToken}}\"\n}"
+        },
+        "url": { "raw": "{{baseUrl}}/auth/refresh-token", "host": ["{{baseUrl}}"], "path": ["auth", "refresh-token"] },
+        "description": "Exchanges a valid (unexpired, non-revoked) refresh token for a brand new access/refresh token pair. Body is only needed if not using cookies."
+      },
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "if (pm.response.code === 200) {",
+              "  const data = pm.response.json().data;",
+              "  pm.environment.set('accessToken', data.accessToken);",
+              "  pm.environment.set('refreshToken', data.refreshToken);",
+              "}",
+              "pm.test('Status is 200', () => pm.response.to.have.status(200));"
+            ]
+          }
+        }
+      ],
+      "response": [
+        {
+          "name": "200 OK",
+          "originalRequest": { "method": "POST", "url": "{{baseUrl}}/auth/refresh-token" },
+          "status": "OK",
+          "code": 200,
+          "_postman_previewlanguage": "json",
+          "header": [{ "key": "Content-Type", "value": "application/json" }],
+          "body": "{\n  \"success\": true,\n  \"message\": \"Access token refreshed\",\n  \"data\": {\n    \"accessToken\": \"eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...\",\n    \"refreshToken\": \"eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...\"\n  }\n}"
+        },
+        {
+          "name": "401 Invalid or expired",
+          "originalRequest": { "method": "POST", "url": "{{baseUrl}}/auth/refresh-token" },
+          "status": "Unauthorized",
+          "code": 401,
+          "_postman_previewlanguage": "json",
+          "header": [{ "key": "Content-Type", "value": "application/json" }],
+          "body": "{\n  \"success\": false,\n  \"message\": \"Invalid or expired refresh token\"\n}"
+        }
+      ]
+    },
+    {
+      "name": "Get Me",
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": { "raw": "{{baseUrl}}/auth/me", "host": ["{{baseUrl}}"], "path": ["auth", "me"] },
+        "description": "Returns the currently authenticated user's profile."
+      },
+      "response": [
+        {
+          "name": "200 OK",
+          "originalRequest": { "method": "GET", "url": "{{baseUrl}}/auth/me" },
+          "status": "OK",
+          "code": 200,
+          "_postman_previewlanguage": "json",
+          "header": [{ "key": "Content-Type", "value": "application/json" }],
+          "body": "{\n  \"success\": true,\n  \"message\": \"Profile fetched\",\n  \"data\": {\n    \"user\": {\n      \"_id\": \"66a1f0c2e4b0a1a2b3c4d5e6\",\n      \"name\": \"Jane Doe\",\n      \"email\": \"jane.doe@example.com\",\n      \"role\": \"user\",\n      \"isEmailVerified\": false,\n      \"storagePercentUsed\": 0\n    }\n  }\n}"
+        },
+        {
+          "name": "401 Not authorized",
+          "originalRequest": { "method": "GET", "url": "{{baseUrl}}/auth/me" },
+          "status": "Unauthorized",
+          "code": 401,
+          "_postman_previewlanguage": "json",
+          "header": [{ "key": "Content-Type", "value": "application/json" }],
+          "body": "{\n  \"success\": false,\n  \"message\": \"Not authorized, no token provided\"\n}"
+        }
+      ]
+    },
+    {
+      "name": "Update Details",
+      "request": {
+        "method": "PATCH",
+        "header": [{ "key": "Content-Type", "value": "application/json" }],
+        "body": { "mode": "raw", "raw": "{\n  \"name\": \"Jane A. Doe\"\n}" },
+        "url": { "raw": "{{baseUrl}}/auth/update-details", "host": ["{{baseUrl}}"], "path": ["auth", "update-details"] },
+        "description": "Updates the current user's name and/or email. Changing email resets isEmailVerified to false."
+      },
+      "response": [
+        {
+          "name": "200 OK",
+          "originalRequest": { "method": "PATCH", "url": "{{baseUrl}}/auth/update-details" },
+          "status": "OK",
+          "code": 200,
+          "_postman_previewlanguage": "json",
+          "header": [{ "key": "Content-Type", "value": "application/json" }],
+          "body": "{\n  \"success\": true,\n  \"message\": \"Profile updated\",\n  \"data\": {\n    \"user\": {\n      \"_id\": \"66a1f0c2e4b0a1a2b3c4d5e6\",\n      \"name\": \"Jane A. Doe\",\n      \"email\": \"jane.doe@example.com\"\n    }\n  }\n}"
+        }
+      ]
+    },
+    {
+      "name": "Update Password",
+      "request": {
+        "method": "PATCH",
+        "header": [{ "key": "Content-Type", "value": "application/json" }],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"currentPassword\": \"{{userPassword}}\",\n  \"newPassword\": \"EvenMoreSecure456\"\n}"
+        },
+        "url": { "raw": "{{baseUrl}}/auth/update-password", "host": ["{{baseUrl}}"], "path": ["auth", "update-password"] },
+        "description": "Changes the current user's password and rotates their access/refresh tokens."
+      },
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "if (pm.response.code === 200) {",
+              "  const data = pm.response.json().data;",
+              "  pm.environment.set('accessToken', data.accessToken);",
+              "  pm.environment.set('refreshToken', data.refreshToken);",
+              "}"
+            ]
+          }
+        }
+      ],
+      "response": [
+        {
+          "name": "200 OK",
+          "originalRequest": { "method": "PATCH", "url": "{{baseUrl}}/auth/update-password" },
+          "status": "OK",
+          "code": 200,
+          "_postman_previewlanguage": "json",
+          "header": [{ "key": "Content-Type", "value": "application/json" }],
+          "body": "{\n  \"success\": true,\n  \"message\": \"Password updated successfully\",\n  \"data\": {\n    \"user\": { \"_id\": \"66a1f0c2e4b0a1a2b3c4d5e6\", \"email\": \"jane.doe@example.com\" },\n    \"accessToken\": \"eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...\",\n    \"refreshToken\": \"eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...\"\n  }\n}"
+        },
+        {
+          "name": "401 Wrong current password",
+          "originalRequest": { "method": "PATCH", "url": "{{baseUrl}}/auth/update-password" },
+          "status": "Unauthorized",
+          "code": 401,
+          "_postman_previewlanguage": "json",
+          "header": [{ "key": "Content-Type", "value": "application/json" }],
+          "body": "{\n  \"success\": false,\n  \"message\": \"Current password is incorrect\"\n}"
+        }
+      ]
+    },
+    {
+      "name": "Resend Verification Email",
+      "request": {
+        "method": "POST",
+        "header": [],
+        "url": { "raw": "{{baseUrl}}/auth/resend-verification", "host": ["{{baseUrl}}"], "path": ["auth", "resend-verification"] },
+        "description": "Resends the email verification link to the current user."
+      },
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "if (pm.response.code === 200) {",
+              "  const data = pm.response.json().data;",
+              "  if (data && data.devVerificationToken) pm.environment.set('verificationToken', data.devVerificationToken);",
+              "}"
+            ]
+          }
+        }
+      ],
+      "response": [
+        {
+          "name": "200 OK",
+          "originalRequest": { "method": "POST", "url": "{{baseUrl}}/auth/resend-verification" },
+          "status": "OK",
+          "code": 200,
+          "_postman_previewlanguage": "json",
+          "header": [{ "key": "Content-Type", "value": "application/json" }],
+          "body": "{\n  \"success\": true,\n  \"message\": \"Verification email sent\",\n  \"data\": { \"devVerificationToken\": \"9f8c1e2d3b4a5f6e7d8c9b0a1f2e3d4c\" }\n}"
+        },
+        {
+          "name": "400 Already verified",
+          "originalRequest": { "method": "POST", "url": "{{baseUrl}}/auth/resend-verification" },
+          "status": "Bad Request",
+          "code": 400,
+          "_postman_previewlanguage": "json",
+          "header": [{ "key": "Content-Type", "value": "application/json" }],
+          "body": "{\n  \"success\": false,\n  \"message\": \"This email address is already verified\"\n}"
+        }
+      ]
+    },
+    {
+      "name": "Verify Email",
+      "request": {
+        "method": "POST",
+        "header": [],
+        "url": {
+          "raw": "{{baseUrl}}/auth/verify-email/{{verificationToken}}",
+          "host": ["{{baseUrl}}"],
+          "path": ["auth", "verify-email", "{{verificationToken}}"]
+        },
+        "description": "Verifies the user's email using the raw token from the verification link. In development, the token is also returned directly in the Register/Resend Verification responses as devVerificationToken."
+      },
+      "response": [
+        {
+          "name": "200 OK",
+          "originalRequest": { "method": "POST", "url": "{{baseUrl}}/auth/verify-email/:token" },
+          "status": "OK",
+          "code": 200,
+          "_postman_previewlanguage": "json",
+          "header": [{ "key": "Content-Type", "value": "application/json" }],
+          "body": "{\n  \"success\": true,\n  \"message\": \"Email verified successfully\"\n}"
+        },
+        {
+          "name": "400 Invalid or expired",
+          "originalRequest": { "method": "POST", "url": "{{baseUrl}}/auth/verify-email/:token" },
+          "status": "Bad Request",
+          "code": 400,
+          "_postman_previewlanguage": "json",
+          "header": [{ "key": "Content-Type", "value": "application/json" }],
+          "body": "{\n  \"success\": false,\n  \"message\": \"Verification link is invalid or has expired\"\n}"
+        }
+      ]
+    },
+    {
+      "name": "Forgot Password",
+      "request": {
+        "method": "POST",
+        "header": [{ "key": "Content-Type", "value": "application/json" }],
+        "body": { "mode": "raw", "raw": "{\n  \"email\": \"{{userEmail}}\"\n}" },
+        "url": { "raw": "{{baseUrl}}/auth/forgot-password", "host": ["{{baseUrl}}"], "path": ["auth", "forgot-password"] },
+        "description": "Requests a password reset link. Always returns the same generic message whether or not the email is registered, to avoid user enumeration."
+      },
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "if (pm.response.code === 200) {",
+              "  const data = pm.response.json().data;",
+              "  if (data && data.devResetToken) pm.environment.set('resetToken', data.devResetToken);",
+              "}"
+            ]
+          }
+        }
+      ],
+      "response": [
+        {
+          "name": "200 OK",
+          "originalRequest": { "method": "POST", "url": "{{baseUrl}}/auth/forgot-password" },
+          "status": "OK",
+          "code": 200,
+          "_postman_previewlanguage": "json",
+          "header": [{ "key": "Content-Type", "value": "application/json" }],
+          "body": "{\n  \"success\": true,\n  \"message\": \"If an account with that email exists, a reset link has been sent.\",\n  \"data\": { \"devResetToken\": \"3d2c1b0a9f8e7d6c5b4a3f2e1d0c9b8a\" }\n}"
+        }
+      ]
+    },
+    {
+      "name": "Reset Password",
+      "request": {
+        "method": "PATCH",
+        "header": [{ "key": "Content-Type", "value": "application/json" }],
+        "body": { "mode": "raw", "raw": "{\n  \"password\": \"BrandNewPass789\"\n}" },
+        "url": {
+          "raw": "{{baseUrl}}/auth/reset-password/{{resetToken}}",
+          "host": ["{{baseUrl}}"],
+          "path": ["auth", "reset-password", "{{resetToken}}"]
+        },
+        "description": "Resets the password using the raw token from the forgot-password email, then logs the user in with a new token pair."
+      },
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "if (pm.response.code === 200) {",
+              "  const data = pm.response.json().data;",
+              "  pm.environment.set('accessToken', data.accessToken);",
+              "  pm.environment.set('refreshToken', data.refreshToken);",
+              "}"
+            ]
+          }
+        }
+      ],
+      "response": [
+        {
+          "name": "200 OK",
+          "originalRequest": { "method": "PATCH", "url": "{{baseUrl}}/auth/reset-password/:token" },
+          "status": "OK",
+          "code": 200,
+          "_postman_previewlanguage": "json",
+          "header": [{ "key": "Content-Type", "value": "application/json" }],
+          "body": "{\n  \"success\": true,\n  \"message\": \"Password reset successfully\",\n  \"data\": {\n    \"user\": { \"_id\": \"66a1f0c2e4b0a1a2b3c4d5e6\", \"email\": \"jane.doe@example.com\" },\n    \"accessToken\": \"eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...\",\n    \"refreshToken\": \"eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...\"\n  }\n}"
+        },
+        {
+          "name": "400 Invalid or expired",
+          "originalRequest": { "method": "PATCH", "url": "{{baseUrl}}/auth/reset-password/:token" },
+          "status": "Bad Request",
+          "code": 400,
+          "_postman_previewlanguage": "json",
+          "header": [{ "key": "Content-Type", "value": "application/json" }],
+          "body": "{\n  \"success\": false,\n  \"message\": \"Reset link is invalid or has expired\"\n}"
+        }
+      ]
+    },
+    {
+      "name": "Logout",
+      "request": {
+        "method": "POST",
+        "header": [],
+        "url": { "raw": "{{baseUrl}}/auth/logout", "host": ["{{baseUrl}}"], "path": ["auth", "logout"] },
+        "description": "Clears auth cookies and revokes the stored refresh token."
+      },
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "if (pm.response.code === 200) {",
+              "  pm.environment.set('accessToken', '');",
+              "  pm.environment.set('refreshToken', '');",
+              "}"
+            ]
+          }
+        }
+      ],
+      "response": [
+        {
+          "name": "200 OK",
+          "originalRequest": { "method": "POST", "url": "{{baseUrl}}/auth/logout" },
+          "status": "OK",
+          "code": 200,
+          "_postman_previewlanguage": "json",
+          "header": [{ "key": "Content-Type", "value": "application/json" }],
+          "body": "{\n  \"success\": true,\n  \"message\": \"Logged out successfully\"\n}"
+        }
+      ]
+    },
+    {
+      "name": "Deactivate My Account",
+      "request": {
+        "method": "DELETE",
+        "header": [],
+        "url": { "raw": "{{baseUrl}}/auth/me", "host": ["{{baseUrl}}"], "path": ["auth", "me"] },
+        "description": "Deactivates (soft-deletes) the current user's own account."
+      },
+      "response": [
+        {
+          "name": "200 OK",
+          "originalRequest": { "method": "DELETE", "url": "{{baseUrl}}/auth/me" },
+          "status": "OK",
+          "code": 200,
+          "_postman_previewlanguage": "json",
+          "header": [{ "key": "Content-Type", "value": "application/json" }],
+          "body": "{\n  \"success\": true,\n  \"message\": \"Account deactivated successfully\"\n}"
+        }
+      ]
+    }
+  ]
+}
