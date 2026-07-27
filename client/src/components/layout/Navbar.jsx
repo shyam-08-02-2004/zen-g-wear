@@ -284,7 +284,7 @@ const Navbar = ({ onMenuClick }) => {
         <div className="md:hidden fixed inset-0 z-40" onClick={() => setMobileMenuOpen(false)}>
           <div className="absolute inset-0 bg-black/50" />
           <div
-            className="absolute top-0 right-0 h-full w-72 bg-white shadow-2xl flex flex-col"
+            className="absolute top-0 right-0 h-[100dvh] w-72 bg-white shadow-2xl flex flex-col pb-6"
             onClick={(e) => e.stopPropagation()}
           >
             {/* Drawer Header */}
@@ -393,18 +393,19 @@ const Navbar = ({ onMenuClick }) => {
               </div>
 
               <Link to="/shop?offers=true" onClick={() => setMobileMenuOpen(false)} className="flex items-center gap-3 px-5 py-3.5 text-sm text-red-600 font-bold hover:bg-red-50 border-b border-gray-100">🔥 Top Offers</Link>
-            {/* Logout */}
+            </div>
+
+            {/* Logout (Pinned to bottom) */}
             {isAuthenticated && (
-              <div className="p-4 border-t border-gray-200 mt-auto">
+              <div className="p-4 border-t border-gray-200 bg-gray-50 mt-auto">
                 <button
                   onClick={handleLogout}
-                  className="w-full flex items-center justify-center gap-2 py-3 text-sm font-bold text-red-600 border border-red-200 bg-red-50 hover:bg-red-100 rounded-sm transition-colors"
+                  className="w-full flex items-center justify-center gap-2 py-3 text-sm font-bold text-red-600 border border-red-200 bg-white hover:bg-red-50 rounded-sm transition-colors shadow-sm"
                 >
                   <LogOut size={16} /> Logout
                 </button>
               </div>
             )}
-            </div>
           </div>
         </div>
       )}
