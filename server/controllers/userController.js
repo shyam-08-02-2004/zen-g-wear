@@ -67,6 +67,17 @@ export const updateUserRole = asyncHandler(async (req, res) => {
 export const updateUserStatus = asyncHandler(async (req, res) => {
   const { isActive } = req.body;
 
+  const targetUser = await User.findById(req.params.id);
+  if (!targetUser) {
+    res.status(404);
+    throw new Error('User not found');
+  }
+
+  if (targetUser.role === 'admin' && !isActive) {
+    res.status(403);
+    throw new Error('Admin accounts cannot be deactivated');
+  }
+
   const user = await User.findByIdAndUpdate(
     req.params.id,
     { isActive },
@@ -90,6 +101,11 @@ export const deleteUser = asyncHandler(async (req, res) => {
   if (!user) {
     res.status(404);
     throw new Error('User not found');
+  }
+
+  if (user.role === 'admin') {
+    res.status(403);
+    throw new Error('Admin accounts cannot be deleted');
   }
 
   await user.deleteOne();
