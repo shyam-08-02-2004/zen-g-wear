@@ -165,12 +165,11 @@ const AdminUsersPage = () => {
                     <td className="px-6 py-4">
                       <button 
                         onClick={() => handleStatusToggle(user._id, user.isActive)}
-                        disabled={user.role === 'admin'}
                         className={`inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-bold uppercase tracking-wider transition-colors ${
                           user.isActive 
                             ? 'bg-green-100 text-green-700 hover:bg-green-200' 
                             : 'bg-red-100 text-red-700 hover:bg-red-200'
-                        } ${user.role === 'admin' ? 'opacity-50 cursor-not-allowed' : ''}`}
+                        }`}
                       >
                         {user.isActive ? <UserCheck size={14} /> : <UserX size={14} />}
                         {user.isActive ? 'Active' : 'Banned'}
@@ -182,9 +181,8 @@ const AdminUsersPage = () => {
                     <td className="px-6 py-4 text-right">
                       <button 
                         onClick={() => setUserToDelete(user)}
-                        disabled={user.role === 'admin'}
-                        className={`p-2 transition-all ${user.role === 'admin' ? 'text-gray-200 cursor-not-allowed opacity-100' : 'text-gray-400 hover:text-red-600 hover:bg-red-50 rounded-lg opacity-0 group-hover:opacity-100'}`} 
-                        title={user.role === 'admin' ? "Cannot delete admin" : "Delete User"}
+                        className="p-2 text-gray-400 hover:text-red-600 hover:bg-red-50 rounded-lg transition-all opacity-0 group-hover:opacity-100" 
+                        title="Delete User"
                       >
                         <Trash2 size={18} />
                       </button>
@@ -220,9 +218,8 @@ const AdminUsersPage = () => {
                     </div>
                     <button 
                       onClick={() => setUserToDelete(user)}
-                      disabled={user.role === 'admin'}
-                      className={`p-2 transition-all ${user.role === 'admin' ? 'text-gray-200 cursor-not-allowed' : 'text-gray-400 hover:text-red-600 rounded-lg'}`} 
-                      title={user.role === 'admin' ? "Cannot delete admin" : "Delete User"}
+                      className="p-2 text-gray-400 hover:text-red-600 rounded-lg transition-all" 
+                      title="Delete User"
                     >
                       <Trash2 size={16} />
                     </button>
@@ -243,12 +240,11 @@ const AdminUsersPage = () => {
                     
                     <button 
                       onClick={() => handleStatusToggle(user._id, user.isActive)}
-                      disabled={user.role === 'admin'}
                       className={`inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-[10px] font-bold uppercase tracking-wider transition-colors ${
                         user.isActive 
                           ? 'bg-green-100 text-green-700 hover:bg-green-200' 
                           : 'bg-red-100 text-red-700 hover:bg-red-200'
-                      } ${user.role === 'admin' ? 'opacity-50 cursor-not-allowed' : ''}`}
+                      }`}
                     >
                       {user.isActive ? <UserCheck size={12} /> : <UserX size={12} />}
                       {user.isActive ? 'Active' : 'Banned'}
