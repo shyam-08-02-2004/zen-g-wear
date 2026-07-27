@@ -2,6 +2,7 @@ import { useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { useNavigate, Link } from 'react-router-dom';
 import { motion } from 'framer-motion';
+import { Eye, EyeOff } from 'lucide-react';
 import { setCredentials, setLoading, setError } from '../../redux/slices/authSlice';
 import authService from '../../services/authService';
 import toast from 'react-hot-toast';
@@ -9,6 +10,7 @@ import toast from 'react-hot-toast';
 function Login() {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
+  const [showPassword, setShowPassword] = useState(false);
 
   const dispatch = useDispatch();
   const navigate = useNavigate();
@@ -101,15 +103,24 @@ function Login() {
                   Forgot?
                 </a>
               </div>
-              <input
-                id="password"
-                type="password"
-                required
-                className="block w-full rounded-none border border-gray-200 px-4 py-3 placeholder-gray-400 focus:border-black focus:outline-none transition-colors bg-gray-50 focus:bg-white text-sm"
-                placeholder="••••••••"
-                value={password}
-                onChange={(e) => setPassword(e.target.value)}
-              />
+              <div className="relative">
+                <input
+                  id="password"
+                  type={showPassword ? "text" : "password"}
+                  required
+                  className="block w-full rounded-none border border-gray-200 px-4 py-3 pr-12 placeholder-gray-400 focus:border-black focus:outline-none transition-colors bg-gray-50 focus:bg-white text-sm"
+                  placeholder="••••••••"
+                  value={password}
+                  onChange={(e) => setPassword(e.target.value)}
+                />
+                <button
+                  type="button"
+                  onClick={() => setShowPassword(!showPassword)}
+                  className="absolute inset-y-0 right-0 px-4 flex items-center text-gray-400 hover:text-gray-600 transition-colors"
+                >
+                  {showPassword ? <EyeOff size={18} /> : <Eye size={18} />}
+                </button>
+              </div>
             </div>
 
             <button
