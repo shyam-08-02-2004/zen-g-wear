@@ -5,17 +5,17 @@ import { ChevronLeft, ChevronRight } from 'lucide-react';
 const banners = [
   {
     id: 1,
-    image: '/images/banners/mens_banner.jpg',
+    image: '/images/banners/mens_banner.jpg?v=2',
     link: '/shop?category=men'
   },
   {
     id: 2,
-    image: '/images/banners/sale_banner.jpg',
+    image: '/images/banners/sale_banner.jpg?v=2',
     link: '/shop?offers=true'
   },
   {
     id: 3,
-    image: '/images/banners/womens_banner.jpg',
+    image: '/images/banners/womens_banner.jpg?v=2',
     link: '/shop?category=women'
   }
 ];

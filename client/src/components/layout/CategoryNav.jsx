@@ -6,13 +6,13 @@ const categories = [
   { 
     name: 'Top Offers', 
     link: '/shop?offers=true', 
-    image: 'https://images.unsplash.com/photo-1607083206968-13611e3d76db?auto=format&fit=crop&w=256&q=80', // Sale tags/bags
+    image: 'https://images.unsplash.com/photo-1607083206968-13611e3d76db?auto=format&fit=crop&w=256&q=80&v=2', // Sale tags/bags
     dropdown: null
   },
   { 
     name: 'Men', 
     link: '/shop?category=men', 
-    image: 'https://images.unsplash.com/photo-1516826957135-73ff61a242fa?auto=format&fit=crop&w=256&q=80', // Cool men fashion
+    image: 'https://images.unsplash.com/photo-1516826957135-73ff61a242fa?auto=format&fit=crop&w=256&q=80&v=2', // Cool men fashion
     dropdown: [
       {
         title: 'Topwear',
@@ -49,7 +49,7 @@ const categories = [
   { 
     name: 'Women', 
     link: '/shop?category=women', 
-    image: 'https://images.unsplash.com/photo-1515886657613-9f3515b0c78f?auto=format&fit=crop&w=256&q=80', // Elegant women fashion
+    image: 'https://images.unsplash.com/photo-1515886657613-9f3515b0c78f?auto=format&fit=crop&w=256&q=80&v=2', // Elegant women fashion
     dropdown: [
       {
         title: 'Western Wear',
@@ -85,7 +85,7 @@ const categories = [
   { 
     name: 'Kids', 
     link: '/shop?category=kids', 
-    image: 'https://images.unsplash.com/photo-1519689680058-324335c77eba?auto=format&fit=crop&w=256&q=80', // Cute kid fashion
+    image: 'https://images.unsplash.com/photo-1519689680058-324335c77eba?auto=format&fit=crop&w=256&q=80&v=2', // Cute kid fashion
     dropdown: [
       {
         title: 'Boys Clothing',
