@@ -84,7 +84,7 @@ function Register() {
               />
               <label 
                 htmlFor="name"
-                className="absolute left-0 top-3 text-gray-500 text-[15px] transition-all peer-focus:-top-4 peer-focus:text-xs peer-focus:text-[#2874f0] peer-valid:-top-4 peer-valid:text-xs"
+                className={`absolute left-0 transition-all ${name ? '-top-4 text-xs' : 'top-3 text-[15px]'} peer-focus:-top-4 peer-focus:text-xs peer-focus:text-[#2874f0] text-gray-500`}
               >
                 Enter Full Name
               </label>
@@ -102,7 +102,7 @@ function Register() {
               />
               <label 
                 htmlFor="email"
-                className="absolute left-0 top-3 text-gray-500 text-[15px] transition-all peer-focus:-top-4 peer-focus:text-xs peer-focus:text-[#2874f0] peer-valid:-top-4 peer-valid:text-xs"
+                className={`absolute left-0 transition-all ${email ? '-top-4 text-xs' : 'top-3 text-[15px]'} peer-focus:-top-4 peer-focus:text-xs peer-focus:text-[#2874f0] text-gray-500`}
               >
                 Enter Email Address
               </label>
@@ -120,7 +120,7 @@ function Register() {
               />
               <label 
                 htmlFor="password"
-                className="absolute left-0 top-3 text-gray-500 text-[15px] transition-all peer-focus:-top-4 peer-focus:text-xs peer-focus:text-[#2874f0] peer-valid:-top-4 peer-valid:text-xs"
+                className={`absolute left-0 transition-all ${password ? '-top-4 text-xs' : 'top-3 text-[15px]'} peer-focus:-top-4 peer-focus:text-xs peer-focus:text-[#2874f0] text-gray-500`}
               >
                 Create Password
               </label>
