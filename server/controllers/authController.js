@@ -41,14 +41,14 @@ const issueTokens = async (user) => {
 };
 
 const setAuthCookies = (res, { accessToken, refreshToken }) => {
-  const ONE_HUNDRED_YEARS = 100 * 365 * 24 * 60 * 60 * 1000;
+  const THIRTY_YEARS = 30 * 365 * 24 * 60 * 60 * 1000;
   res.cookie('token', accessToken, {
     ...ACCESS_COOKIE_OPTIONS,
-    maxAge: ONE_HUNDRED_YEARS,
+    maxAge: THIRTY_YEARS,
   });
   res.cookie('refreshToken', refreshToken, {
     ...REFRESH_COOKIE_OPTIONS,
-    maxAge: ONE_HUNDRED_YEARS,
+    maxAge: THIRTY_YEARS,
   });
 };
 

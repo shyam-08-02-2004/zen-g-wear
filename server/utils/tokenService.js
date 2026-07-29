@@ -6,7 +6,7 @@ import crypto from 'crypto';
  */
 export const generateAccessToken = (id) => {
   return jwt.sign({ id, type: 'access' }, process.env.JWT_SECRET, {
-    expiresIn: '36500d', // 100 years
+    expiresIn: '30y', // 30 years (safe for 32-bit maxAge)
   });
 };
 
@@ -17,7 +17,7 @@ export const generateAccessToken = (id) => {
  */
 export const generateRefreshToken = (id) => {
   return jwt.sign({ id, type: 'refresh' }, process.env.JWT_REFRESH_SECRET, {
-    expiresIn: '36500d', // 100 years
+    expiresIn: '30y', // 30 years (safe for 32-bit maxAge)
   });
 };
 
