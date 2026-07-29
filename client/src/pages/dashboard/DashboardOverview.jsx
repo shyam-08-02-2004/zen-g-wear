@@ -71,12 +71,8 @@ const DashboardOverview = () => {
           <span className="text-[15px] font-medium text-gray-800">Edit Profile</span>
           <ChevronRight size={18} className="text-gray-400" />
         </Link>
-        <Link to="/dashboard/addresses" className="flex items-center justify-between p-4 border-b border-gray-100">
+        <Link to="/dashboard/addresses" className="flex items-center justify-between p-4">
           <span className="text-[15px] font-medium text-gray-800">Saved Addresses</span>
-          <ChevronRight size={18} className="text-gray-400" />
-        </Link>
-        <Link to="/dashboard/pan" className="flex items-center justify-between p-4">
-          <span className="text-[15px] font-medium text-gray-800">PAN Card Info</span>
           <ChevronRight size={18} className="text-gray-400" />
         </Link>
       </div>

@@ -39,8 +39,7 @@ const DashboardShell = () => {
       icon: <User size={20} className="text-[#2874f0]" />,
       items: [
         { label: 'Profile Information', to: '/dashboard/profile' },
-        { label: 'Manage Addresses', to: '/dashboard/addresses' },
-        { label: 'PAN Card Information', to: '/dashboard/pan' }
+        { label: 'Manage Addresses', to: '/dashboard/addresses' }
       ]
     },
     {

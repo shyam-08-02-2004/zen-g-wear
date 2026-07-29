@@ -15,6 +15,7 @@ import OrderTracking from '../pages/shop/OrderTracking.jsx';
 
 import DashboardOverview from '../pages/dashboard/DashboardOverview.jsx';
 import ProfilePage from '../pages/dashboard/ProfilePage.jsx';
+import AddressesPage from '../pages/dashboard/AddressesPage.jsx';
 import WishlistPage from '../pages/dashboard/WishlistPage.jsx';
 import OrdersPage from '../pages/dashboard/OrdersPage.jsx';
 import InvoicesPage from '../pages/dashboard/InvoicesPage.jsx';
@@ -66,6 +67,7 @@ function AppRoutes() {
         <Route path="/dashboard" element={<DashboardShell />}>
           <Route index element={<DashboardOverview />} />
           <Route path="profile" element={<ProfilePage />} />
+          <Route path="addresses" element={<AddressesPage />} />
           <Route path="wishlist" element={<WishlistPage />} />
           <Route path="orders" element={<OrdersPage />} />
           <Route path="invoices" element={<InvoicesPage />} />
