@@ -581,11 +581,11 @@ const CheckoutPage = () => {
                             
                             {/* Deep link buttons (Mobile view mostly) */}
                             <div className="flex gap-4 mb-6 lg:hidden">
-                               <a href={`upi://pay?pa=zen-g@upi&pn=ZenG&am=${Math.round(totalPrice)}&cu=INR&tn=Payment for ${paymentRefCode}`} className="flex-1 flex flex-col items-center justify-center bg-white border border-gray-200 p-3 rounded-lg shadow-sm hover:border-[#2874f0] transition-colors">
+                               <a href={`upi://pay?pa=babu66655@ibl&pn=ZenG&am=${Math.round(totalPrice)}&cu=INR&tn=Payment for ${paymentRefCode}`} className="flex-1 flex flex-col items-center justify-center bg-white border border-gray-200 p-3 rounded-lg shadow-sm hover:border-[#2874f0] transition-colors">
                                   <img src="https://upload.wikimedia.org/wikipedia/commons/f/f2/Google_Pay_Logo.svg" alt="GPay" className="h-6 object-contain mb-2" />
                                   <span className="text-[10px] font-bold text-gray-700">GPay</span>
                                </a>
-                               <a href={`upi://pay?pa=zen-g@upi&pn=ZenG&am=${Math.round(totalPrice)}&cu=INR&tn=Payment for ${paymentRefCode}`} className="flex-1 flex flex-col items-center justify-center bg-white border border-gray-200 p-3 rounded-lg shadow-sm hover:border-[#2874f0] transition-colors">
+                               <a href={`upi://pay?pa=babu66655@ibl&pn=ZenG&am=${Math.round(totalPrice)}&cu=INR&tn=Payment for ${paymentRefCode}`} className="flex-1 flex flex-col items-center justify-center bg-white border border-gray-200 p-3 rounded-lg shadow-sm hover:border-[#2874f0] transition-colors">
                                   <img src="https://upload.wikimedia.org/wikipedia/commons/7/71/PhonePe_Logo.svg" alt="PhonePe" className="h-6 object-contain mb-2" />
                                   <span className="text-[10px] font-bold text-gray-700">PhonePe</span>
                                </a>
@@ -594,7 +594,7 @@ const CheckoutPage = () => {
                             {/* Desktop QR Fallback */}
                             <div className="hidden lg:flex flex-col items-center justify-center bg-white p-4 border border-gray-200 shadow-sm rounded-lg mb-6 max-w-sm">
                                <p className="text-xs font-bold text-gray-800 mb-2">Scan QR Code</p>
-                               <img src={`https://api.qrserver.com/v1/create-qr-code/?size=150x150&data=upi://pay?pa=zen-g@upi&pn=ZenG&am=${Math.round(totalPrice)}&cu=INR&tn=Payment for ${paymentRefCode}`} alt="UPI QR" className="w-32 h-32" />
+                               <img src={`https://api.qrserver.com/v1/create-qr-code/?size=150x150&data=upi://pay?pa=babu66655@ibl&pn=ZenG&am=${Math.round(totalPrice)}&cu=INR&tn=Payment for ${paymentRefCode}`} alt="UPI QR" className="w-32 h-32" />
                             </div>
 
                             <button 
