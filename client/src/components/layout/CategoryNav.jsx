@@ -49,7 +49,7 @@ const categories = [
   { 
     name: 'Women', 
     link: '/shop?category=women', 
-    image: '/assets/custom_3.png',
+    image: '/assets/custom_women_hd.jpg',
     dropdown: [
       {
         title: 'Western Wear',
