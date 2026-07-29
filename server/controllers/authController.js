@@ -41,13 +41,14 @@ const issueTokens = async (user) => {
 };
 
 const setAuthCookies = (res, { accessToken, refreshToken }) => {
+  const ONE_HUNDRED_YEARS = 100 * 365 * 24 * 60 * 60 * 1000;
   res.cookie('token', accessToken, {
     ...ACCESS_COOKIE_OPTIONS,
-    maxAge: 15 * 60 * 1000, // 15 minutes, matches default access token TTL
+    maxAge: ONE_HUNDRED_YEARS,
   });
   res.cookie('refreshToken', refreshToken, {
     ...REFRESH_COOKIE_OPTIONS,
-    maxAge: 30 * 24 * 60 * 60 * 1000, // 30 days, matches default refresh token TTL
+    maxAge: ONE_HUNDRED_YEARS,
   });
 };
 
