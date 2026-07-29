@@ -30,7 +30,7 @@ const orderSchema = new mongoose.Schema(
       state: { type: String, required: true },
       postalCode: { type: String, required: true },
       country: { type: String, required: true },
-      mobileNumber: { type: String, required: true, match: [/^[6-9]\d{9}$/, 'Please provide a valid 10-digit mobile number'] },
+      mobileNumber: { type: String, required: false, match: [/^[6-9]\d{9}$/, 'Please provide a valid 10-digit mobile number'] },
     },
     paymentMethod: {
       type: String,
