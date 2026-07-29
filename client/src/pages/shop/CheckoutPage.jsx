@@ -22,6 +22,7 @@ const CheckoutPage = () => {
   const [city, setCity] = useState(shippingAddress.city || '');
   const [postalCode, setPostalCode] = useState(shippingAddress.postalCode || '');
   const [country, setCountry] = useState(shippingAddress.country || 'India');
+  const [mobileNumber, setMobileNumber] = useState(shippingAddress.mobileNumber || '');
   
   const paymentMethod = 'UPI'; // ONLY QR/UPI payment allowed now
   
@@ -59,6 +60,7 @@ const CheckoutPage = () => {
           setCity(defaultAddr.city || '');
           setPostalCode(defaultAddr.zipCode || '');
           setCountry(defaultAddr.country || 'India');
+          setMobileNumber(defaultAddr.mobileNumber || '');
         } else {
           setShowAddressForm(true);
         }
@@ -76,6 +78,7 @@ const CheckoutPage = () => {
     setCity(addr.city || '');
     setPostalCode(addr.zipCode || '');
     setCountry(addr.country || 'India');
+    setMobileNumber(addr.mobileNumber || '');
     setShowAddressForm(false);
   };
 
@@ -144,10 +147,10 @@ const CheckoutPage = () => {
     if (e && e.preventDefault) e.preventDefault();
 
     if (showAddressForm) {
-      if (!fullName || !address || !city || !postalCode) {
+      if (!fullName || !address || !city || !postalCode || !mobileNumber) {
         toast.custom((t) => (
           <div className="max-w-md w-full bg-red-600 text-white shadow-lg rounded-lg pointer-events-auto p-4 font-bold">
-            Please fill all required address fields.
+            Please fill all required address fields, including mobile number.
           </div>
         ));
         return;
@@ -170,7 +173,7 @@ const CheckoutPage = () => {
       return;
     }
 
-    dispatch(saveShippingAddress({ fullName, address, city, postalCode, country }));
+    dispatch(saveShippingAddress({ fullName, address, city, postalCode, country, mobileNumber }));
     
     setLoadingPay(true);
 
@@ -191,7 +194,8 @@ const CheckoutPage = () => {
         city,
         state: 'N/A',
         postalCode,
-        country
+        country,
+        mobileNumber
       };
 
       if (showAddressForm) {
@@ -203,6 +207,7 @@ const CheckoutPage = () => {
             state: 'N/A',
             country,
             zipCode: postalCode,
+            mobileNumber,
             isDefault: savedAddresses.length === 0
           });
         } catch (e) {
@@ -281,6 +286,7 @@ const CheckoutPage = () => {
                               </p>
                               <p className="text-sm text-gray-600 mt-1">{addr.street}</p>
                               <p className="text-sm text-gray-600 font-medium">{addr.city}, {addr.zipCode}</p>
+                              {addr.mobileNumber && <p className="text-sm text-gray-600 font-medium flex items-center gap-1 mt-1"><Smartphone size={14}/> {addr.mobileNumber}</p>}
                             </div>
                             <input 
                               type="radio" 
@@ -292,7 +298,7 @@ const CheckoutPage = () => {
                         </div>
                       ))}
                       <div 
-                        onClick={() => { setSelectedAddressId(null); setShowAddressForm(true); setFullName(''); setAddress(''); setCity(''); setPostalCode(''); }}
+                        onClick={() => { setSelectedAddressId(null); setShowAddressForm(true); setFullName(''); setAddress(''); setCity(''); setPostalCode(''); setMobileNumber(''); }}
                         className={`p-4 border cursor-pointer flex items-center justify-center transition-colors ${showAddressForm ? 'border-[#2874f0] bg-blue-50/30' : 'border-gray-200 hover:bg-gray-50'}`}
                       >
                         <span className="text-sm font-bold text-[#2874f0]">+ Add New Address</span>
@@ -319,13 +325,25 @@ const CheckoutPage = () => {
                     </div>
 
                     <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                      <div className="sm:col-span-2">
+                      <div className="sm:col-span-1">
                         <label className="block text-xs font-bold text-gray-500 mb-1">Full Name</label>
                         <input 
                           type="text" 
                           value={fullName} 
                           onChange={(e) => setFullName(e.target.value)} 
                           required 
+                          className="w-full px-4 py-3 border border-gray-300 rounded-sm text-sm font-medium focus:outline-none focus:border-[#2874f0] transition-colors" 
+                        />
+                      </div>
+
+                      <div className="sm:col-span-1">
+                        <label className="block text-xs font-bold text-gray-500 mb-1">Mobile Number</label>
+                        <input 
+                          type="tel" 
+                          value={mobileNumber} 
+                          onChange={(e) => setMobileNumber(e.target.value)} 
+                          required 
+                          placeholder="10-digit mobile number"
                           className="w-full px-4 py-3 border border-gray-300 rounded-sm text-sm font-medium focus:outline-none focus:border-[#2874f0] transition-colors" 
                         />
                       </div>

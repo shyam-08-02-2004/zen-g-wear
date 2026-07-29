@@ -60,6 +60,7 @@ const userSchema = new mongoose.Schema(
         state: { type: String, trim: true },
         country: { type: String, trim: true },
         zipCode: { type: String, trim: true },
+        mobileNumber: { type: String, trim: true },
         isDefault: { type: Boolean, default: false }
       }
     ],

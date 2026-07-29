@@ -170,14 +170,14 @@ export const getAddresses = asyncHandler(async (req, res) => {
 // @route   POST /api/users/addresses
 // @access  Private
 export const addAddress = asyncHandler(async (req, res) => {
-  const { name, street, city, state, country, zipCode, isDefault } = req.body;
+  const { name, street, city, state, country, zipCode, mobileNumber, isDefault } = req.body;
   const user = await User.findById(req.user._id);
   
   if (isDefault) {
     user.addresses.forEach(addr => { addr.isDefault = false; });
   }
   
-  user.addresses.push({ name, street, city, state, country, zipCode, isDefault: isDefault || user.addresses.length === 0 });
+  user.addresses.push({ name, street, city, state, country, zipCode, mobileNumber, isDefault: isDefault || user.addresses.length === 0 });
   await user.save();
   
   return sendResponse(res, {

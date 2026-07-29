@@ -202,6 +202,11 @@ const AdminOrdersPage = () => {
                       <p className="text-xs text-gray-700 leading-relaxed">
                         {order.shippingAddress?.streetAddress}<br />
                         {order.shippingAddress?.city} - {order.shippingAddress?.postalCode}
+                        {order.shippingAddress?.mobileNumber && (
+                          <span className="block mt-1 font-bold text-black flex items-center gap-1">
+                            <Phone size={10} /> {order.shippingAddress.mobileNumber}
+                          </span>
+                        )}
                       </p>
                     </div>
                   </div>
