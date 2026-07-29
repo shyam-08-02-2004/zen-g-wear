@@ -65,6 +65,14 @@ const orderSchema = new mongoose.Schema(
       required: true,
       default: 0.0,
     },
+    coinsUsed: {
+      type: Number,
+      default: 0,
+    },
+    coinDiscount: {
+      type: Number,
+      default: 0.0,
+    },
     shippingPrice: {
       type: Number,
       required: true,

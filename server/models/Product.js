@@ -60,6 +60,12 @@ const productSchema = new mongoose.Schema(
       trim: true,
       index: true,
     },
+    linkedProducts: [
+      {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'Product'
+      }
+    ],
     brand: {
       type: String,
       trim: true,

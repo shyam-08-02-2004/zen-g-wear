@@ -5,6 +5,7 @@ import { Search, ShoppingCart, User as UserIcon, LogOut, ChevronDown, Menu, X, P
 import { useTheme } from '../../context/ThemeContext';
 import { logout as logoutAction } from '../../redux/slices/authSlice';
 import api from '../../services/api';
+import { toggleCart } from '../../redux/slices/cartSlice';
 import { notify } from '../ui/Toast';
 
 const Navbar = ({ onMenuClick }) => {
@@ -241,7 +242,10 @@ const Navbar = ({ onMenuClick }) => {
 
               {/* Cart (all sizes) */}
               {!isAdmin && (
-                <Link to="/cart" className="relative text-white p-1.5 hover:bg-white/10 rounded-sm transition-colors flex items-center gap-1.5">
+                <button 
+                  onClick={() => dispatch(toggleCart(true))} 
+                  className="relative text-white p-1.5 hover:bg-white/10 rounded-sm transition-colors flex items-center gap-1.5"
+                >
                   <ShoppingCart size={20} />
                   <span className="hidden sm:block text-sm font-bold">Cart</span>
                   {cartCount > 0 && (
@@ -249,7 +253,7 @@ const Navbar = ({ onMenuClick }) => {
                       {cartCount}
                     </span>
                   )}
-                </Link>
+                </button>
               )}
 
             </div>

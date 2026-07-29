@@ -74,6 +74,10 @@ const userSchema = new mongoose.Schema(
       used: { type: Number, default: 0 }, // bytes
       limit: { type: Number, default: DEFAULT_STORAGE_LIMIT_BYTES }, // bytes
     },
+    walletBalance: {
+      type: Number,
+      default: 0,
+    },
     isActive: {
       type: Boolean,
       default: true,

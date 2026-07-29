@@ -1,6 +1,7 @@
 import { useEffect, useRef } from 'react';
 import { useSelector } from 'react-redux';
 import AppRoutes from './routes/AppRoutes.jsx';
+import SlideOutCart from './components/cart/SlideOutCart.jsx';
 
 // One-time migration: clear old malformed auth storage so refresh works correctly
 try {
@@ -55,7 +56,12 @@ function App() {
     }
   }, [cartItems, totalPrice, userInfo]);
 
-  return <AppRoutes />;
+  return (
+    <>
+      <SlideOutCart />
+      <AppRoutes />
+    </>
+  );
 }
 
 export default App;

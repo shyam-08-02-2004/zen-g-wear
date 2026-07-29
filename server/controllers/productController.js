@@ -97,7 +97,9 @@ export const getProducts = asyncHandler(async (req, res) => {
 });
 
 export const getProductById = asyncHandler(async (req, res) => {
-  const product = await Product.findById(req.params.id).populate('category', 'name slug');
+  const product = await Product.findById(req.params.id)
+    .populate('category', 'name slug')
+    .populate('linkedProducts', 'name images price discountPrice sizes stock');
   if (product) {
     res.json({ success: true, data: product });
   } else {
@@ -128,7 +130,7 @@ export const updateProduct = asyncHandler(async (req, res) => {
     name, price, discountPrice, discountPercentage, description, images, 
     brand, category, stock, sizes, colors, material, sku,
     isFeatured, isTrending, isBestSeller, isNewArrival, isActive,
-    specifications, shippingDetails, returnPolicy 
+    specifications, shippingDetails, returnPolicy, linkedProducts
   } = req.body;
   
   const product = await Product.findById(req.params.id);
@@ -157,6 +159,7 @@ export const updateProduct = asyncHandler(async (req, res) => {
     product.specifications = specifications !== undefined ? specifications : product.specifications;
     product.shippingDetails = shippingDetails !== undefined ? shippingDetails : product.shippingDetails;
     product.returnPolicy = returnPolicy !== undefined ? returnPolicy : product.returnPolicy;
+    product.linkedProducts = linkedProducts !== undefined ? linkedProducts : product.linkedProducts;
     
     const updatedProduct = await product.save();
     res.json({ success: true, data: updatedProduct });

@@ -12,6 +12,7 @@ const initialState = {
   cartItems: cartItemsFromStorage,
   shippingAddress: {},
   coupon: couponFromStorage,
+  isCartOpen: false,
 };
 
 const cartSlice = createSlice({
@@ -53,9 +54,12 @@ const cartSlice = createSlice({
     removeCoupon: (state) => {
       state.coupon = null;
       localStorage.removeItem('cartCoupon');
+    },
+    toggleCart: (state, action) => {
+      state.isCartOpen = action.payload !== undefined ? action.payload : !state.isCartOpen;
     }
   },
 });
 
-export const { addToCart, removeFromCart, saveShippingAddress, clearCartItems, applyCoupon, removeCoupon } = cartSlice.actions;
+export const { addToCart, removeFromCart, saveShippingAddress, clearCartItems, applyCoupon, removeCoupon, toggleCart } = cartSlice.actions;
 export default cartSlice.reducer;

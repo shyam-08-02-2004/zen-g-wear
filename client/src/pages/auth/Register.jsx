@@ -59,7 +59,7 @@ function Register() {
           <p className="text-white/80 text-sm font-medium">Create your account</p>
         </div>
 
-        <div className="w-full bg-white rounded-t-3xl lg:rounded-none px-6 py-8 sm:px-10 lg:px-20 xl:px-24 h-auto min-h-[75vh] lg:min-h-0 flex flex-col lg:justify-center">
+        <div className="w-full bg-white rounded-t-3xl lg:rounded-none px-6 pt-12 pb-8 sm:px-10 lg:px-20 xl:px-24 h-auto min-h-[75vh] lg:min-h-0 flex flex-col lg:justify-center">
           <div className="mx-auto w-full max-w-sm lg:w-96">
             <Link to="/" className="hidden lg:block font-bold text-3xl italic text-[#2874f0] mb-8">
               ZEN-G WEAR
@@ -83,7 +83,7 @@ function Register() {
                 id="name"
                 type="text"
                 required
-                className="block w-full rounded-none border border-gray-200 px-4 py-3 placeholder-gray-400 focus:border-black focus:outline-none transition-colors bg-gray-50 focus:bg-white text-sm"
+                className="block w-full rounded-none border border-gray-200 px-4 py-3 placeholder-gray-400 text-gray-900 focus:border-black focus:outline-none transition-colors bg-gray-50 focus:bg-white text-sm"
                 placeholder="JOHN DOE"
                 value={name}
                 onChange={(e) => setName(e.target.value)}
@@ -98,7 +98,7 @@ function Register() {
                 id="email"
                 type="email"
                 required
-                className="block w-full rounded-none border border-gray-200 px-4 py-3 placeholder-gray-400 focus:border-black focus:outline-none transition-colors bg-gray-50 focus:bg-white text-sm"
+                className="block w-full rounded-none border border-gray-200 px-4 py-3 placeholder-gray-400 text-gray-900 focus:border-black focus:outline-none transition-colors bg-gray-50 focus:bg-white text-sm"
                 placeholder="EMAIL@EXAMPLE.COM"
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
@@ -114,7 +114,7 @@ function Register() {
                   id="password"
                   type={showPassword ? "text" : "password"}
                   required
-                  className="block w-full rounded-none border border-gray-200 px-4 py-3 pr-12 placeholder-gray-400 focus:border-black focus:outline-none transition-colors bg-gray-50 focus:bg-white text-sm"
+                  className="block w-full rounded-none border border-gray-200 px-4 py-3 pr-12 placeholder-gray-400 text-gray-900 focus:border-black focus:outline-none transition-colors bg-gray-50 focus:bg-white text-sm"
                   placeholder="••••••••"
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}

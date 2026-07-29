@@ -8,7 +8,7 @@ import Footer from '../../components/layout/Footer';
 import productsService from '../../services/productsService';
 import wishlistService from '../../services/wishlistService';
 import { useDispatch, useSelector } from 'react-redux';
-import { addToCart } from '../../redux/slices/cartSlice';
+import { addToCart, toggleCart } from '../../redux/slices/cartSlice';
 import toast from 'react-hot-toast';
 import SkeletonProductCard from '../../components/SkeletonProductCard';
 
@@ -89,7 +89,7 @@ const ProductCard = ({ product }) => {
       size: product.sizes?.[0] || 'M',
       quantity: 1,
     }));
-    toast.success('Added to cart');
+    dispatch(toggleCart(true));
   };
 
   // Check if we have a second image for the hover effect

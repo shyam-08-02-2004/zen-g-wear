@@ -16,6 +16,8 @@ export const addOrderItems = asyncHandler(async (req, res) => {
     totalPrice,
     utrNumber,
     paymentRefCode,
+    coinsUsed,
+    coinDiscount,
     website_url, // Honeypot field
   } = req.body;
 
@@ -30,13 +32,13 @@ export const addOrderItems = asyncHandler(async (req, res) => {
     throw new Error('No order items');
   } 
   
-  if (!utrNumber || utrNumber.trim().length !== 12) {
+  if (paymentMethod === 'UPI' && (!utrNumber || utrNumber.trim().length !== 12)) {
     res.status(400);
-    throw new Error('A valid 12-digit UTR number is strictly required.');
+    throw new Error('A valid 12-digit UTR number is strictly required for UPI payments.');
   } else {
-    // 1. Fake UTR Trap
+    // 1. Fake UTR Trap (Only for UPI)
     const fakePatterns = [/^(\d)\1{11}$/, /^123456789012$/, /^012345678912$/];
-    if (utrNumber && fakePatterns.some(pattern => pattern.test(utrNumber))) {
+    if (paymentMethod === 'UPI' && utrNumber && fakePatterns.some(pattern => pattern.test(utrNumber))) {
       const user = await User.findById(req.user._id);
       if (user) {
         user.isActive = false;
@@ -58,8 +60,8 @@ export const addOrderItems = asyncHandler(async (req, res) => {
       throw new Error('FAKE_UTR_BANNED');
     }
 
-    // 2. UTR Uniqueness
-    if (utrNumber) {
+    // 2. UTR Uniqueness (Only for UPI)
+    if (paymentMethod === 'UPI' && utrNumber) {
       const existingOrder = await Order.findOne({ utrNumber });
       if (existingOrder) {
         res.status(400);
@@ -92,11 +94,25 @@ export const addOrderItems = asyncHandler(async (req, res) => {
       taxPrice,
       shippingPrice,
       totalPrice,
+      coinsUsed,
+      coinDiscount,
       utrNumber,
       paymentRefCode,
     });
 
     const createdOrder = await order.save();
+
+    // Process Loyalty Wallet (Zen-G Coins)
+    const userToUpdate = await User.findById(req.user._id);
+    if (userToUpdate) {
+      if (coinsUsed > 0 && userToUpdate.walletBalance >= coinsUsed) {
+        userToUpdate.walletBalance -= coinsUsed;
+      }
+      // Earn 1% back in coins
+      const earnedCoins = Math.floor(totalPrice * 0.01);
+      userToUpdate.walletBalance += earnedCoins;
+      await userToUpdate.save({ validateBeforeSave: false });
+    }
 
     const payment = new Payment({
       user: req.user._id,

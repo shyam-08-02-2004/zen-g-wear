@@ -7,7 +7,7 @@ import productsService from '../../services/productsService';
 import wishlistService from '../../services/wishlistService';
 import reviewsService from '../../services/reviewsService';
 import questionsService from '../../services/questionsService';
-import { addToCart } from '../../redux/slices/cartSlice';
+import { addToCart, toggleCart } from '../../redux/slices/cartSlice';
 import toast from 'react-hot-toast';
 
 const ProductDetails = () => {
@@ -25,6 +25,20 @@ const ProductDetails = () => {
   const [showSizeGuide, setShowSizeGuide] = useState(false);
   const [similarProducts, setSimilarProducts] = useState([]);
   const [viewingCount] = useState(() => Math.floor(Math.random() * 18) + 5);
+  const [selectedBundleItems, setSelectedBundleItems] = useState([true, true, true]); // [main, item1, item2]
+  const [timeLeft, setTimeLeft] = useState({ hours: 2, minutes: 45, seconds: 12 });
+
+  useEffect(() => {
+    const timer = setInterval(() => {
+      setTimeLeft(prev => {
+        if (prev.seconds > 0) return { ...prev, seconds: prev.seconds - 1 };
+        if (prev.minutes > 0) return { ...prev, minutes: prev.minutes - 1, seconds: 59 };
+        if (prev.hours > 0) return { ...prev, hours: prev.hours - 1, minutes: 59, seconds: 59 };
+        return { hours: 0, minutes: 0, seconds: 0 };
+      });
+    }, 1000);
+    return () => clearInterval(timer);
+  }, []);
 
   // Review states
   const [reviewTitle, setReviewTitle] = useState('');
@@ -291,7 +305,7 @@ const ProductDetails = () => {
       size: selectedSize,
       quantity: qty,
     }));
-    navigate('/cart');
+    dispatch(toggleCart(true));
   };
 
   const handleShare = async () => {
@@ -517,6 +531,26 @@ const ProductDetails = () => {
                   <span className="w-1.5 h-1.5 rounded-full bg-orange-500 animate-pulse inline-block"></span>
                   🔥 {viewingCount} people are viewing this right now
                 </span>
+              </div>
+
+              {/* Flash Sale Countdown Timer */}
+              <div className="mb-4 bg-red-50 border border-red-100 p-3 rounded-sm flex items-center justify-between">
+                <div className="flex items-center gap-2 text-red-600 font-bold text-sm">
+                  <span className="animate-pulse">🔥</span> Flash Sale Ends In:
+                </div>
+                <div className="flex gap-1.5 text-xs font-bold text-white">
+                  <span className="bg-red-600 px-2 py-1 rounded">
+                    {String(timeLeft.hours).padStart(2, '0')}
+                  </span>
+                  <span className="text-red-600">:</span>
+                  <span className="bg-red-600 px-2 py-1 rounded">
+                    {String(timeLeft.minutes).padStart(2, '0')}
+                  </span>
+                  <span className="text-red-600">:</span>
+                  <span className="bg-red-600 px-2 py-1 rounded">
+                    {String(timeLeft.seconds).padStart(2, '0')}
+                  </span>
+                </div>
               </div>
 
               <div className="text-[#388e3c] text-[13px] font-bold mb-1">Special price</div>
@@ -853,8 +887,11 @@ const ProductDetails = () => {
               {/* Bundle Items */}
               <div className="flex-1 flex items-center justify-center gap-4 flex-wrap w-full">
                 {/* Main Product */}
-                <div className="text-center w-32">
-                  <div className="aspect-[3/4] bg-white border border-gray-200 p-2 mb-2">
+                <div className="text-center w-32 relative">
+                  <input type="checkbox" checked={selectedBundleItems[0]} onChange={(e) => {
+                    const newItems = [...selectedBundleItems]; newItems[0] = e.target.checked; setSelectedBundleItems(newItems);
+                  }} className="absolute top-2 left-2 z-10 w-4 h-4 accent-black" />
+                  <div className={`aspect-[3/4] bg-white border p-2 mb-2 ${selectedBundleItems[0] ? 'border-black' : 'border-gray-200 opacity-50'}`}>
                     <img src={product.images?.[0]?.url} alt="" className="w-full h-full object-cover" />
                   </div>
                   <p className="text-[10px] font-bold truncate">This Item</p>
@@ -864,8 +901,11 @@ const ProductDetails = () => {
                 <span className="text-2xl font-light text-gray-400">+</span>
 
                 {/* Bundle Item 1 */}
-                <div className="text-center w-32">
-                  <div className="aspect-[3/4] bg-white border border-gray-200 p-2 mb-2 cursor-pointer" onClick={() => { navigate(`/product/${similarProducts[0]._id}`); window.scrollTo(0,0); }}>
+                <div className="text-center w-32 relative">
+                  <input type="checkbox" checked={selectedBundleItems[1]} onChange={(e) => {
+                    const newItems = [...selectedBundleItems]; newItems[1] = e.target.checked; setSelectedBundleItems(newItems);
+                  }} className="absolute top-2 left-2 z-10 w-4 h-4 accent-black" />
+                  <div className={`aspect-[3/4] bg-white border p-2 mb-2 cursor-pointer ${selectedBundleItems[1] ? 'border-black' : 'border-gray-200 opacity-50'}`} onClick={() => { navigate(`/product/${similarProducts[0]._id}`); window.scrollTo(0,0); }}>
                     <img src={similarProducts[0].images?.[0]?.url} alt="" className="w-full h-full object-cover" />
                   </div>
                   <p className="text-[10px] text-gray-500 truncate">{similarProducts[0].name}</p>
@@ -875,8 +915,11 @@ const ProductDetails = () => {
                 <span className="text-2xl font-light text-gray-400">+</span>
 
                 {/* Bundle Item 2 */}
-                <div className="text-center w-32">
-                  <div className="aspect-[3/4] bg-white border border-gray-200 p-2 mb-2 cursor-pointer" onClick={() => { navigate(`/product/${similarProducts[1]._id}`); window.scrollTo(0,0); }}>
+                <div className="text-center w-32 relative">
+                  <input type="checkbox" checked={selectedBundleItems[2]} onChange={(e) => {
+                    const newItems = [...selectedBundleItems]; newItems[2] = e.target.checked; setSelectedBundleItems(newItems);
+                  }} className="absolute top-2 left-2 z-10 w-4 h-4 accent-black" />
+                  <div className={`aspect-[3/4] bg-white border p-2 mb-2 cursor-pointer ${selectedBundleItems[2] ? 'border-black' : 'border-gray-200 opacity-50'}`} onClick={() => { navigate(`/product/${similarProducts[1]._id}`); window.scrollTo(0,0); }}>
                     <img src={similarProducts[1].images?.[0]?.url} alt="" className="w-full h-full object-cover" />
                   </div>
                   <p className="text-[10px] text-gray-500 truncate">{similarProducts[1].name}</p>
@@ -888,25 +931,30 @@ const ProductDetails = () => {
               <div className="lg:border-l lg:border-gray-300 lg:pl-8 flex flex-col items-center lg:items-start text-center lg:text-left min-w-[200px]">
                 <p className="text-xs text-gray-500 uppercase tracking-widest mb-1">Total Price</p>
                 <p className="text-2xl font-bold text-black mb-4">
-                  Rs {((product.discountPrice || product.price) + 
-                       (similarProducts[0].discountPrice || similarProducts[0].price) + 
-                       (similarProducts[1].discountPrice || similarProducts[1].price)).toLocaleString('en-IN')}
+                  Rs {((selectedBundleItems[0] ? (product.discountPrice || product.price) : 0) + 
+                       (selectedBundleItems[1] ? (similarProducts[0].discountPrice || similarProducts[0].price) : 0) + 
+                       (selectedBundleItems[2] ? (similarProducts[1].discountPrice || similarProducts[1].price) : 0)).toLocaleString('en-IN')}
                 </p>
                 <button 
                   onClick={() => {
-                    handleAddToCart(); // Adds main item
-                    dispatch(addToCart({
-                      product: similarProducts[0]._id, name: similarProducts[0].name, image: similarProducts[0].images?.[0]?.url, price: similarProducts[0].discountPrice || similarProducts[0].price, size: similarProducts[0].sizes?.[0] || 'M', quantity: 1
-                    }));
-                    dispatch(addToCart({
-                      product: similarProducts[1]._id, name: similarProducts[1].name, image: similarProducts[1].images?.[0]?.url, price: similarProducts[1].discountPrice || similarProducts[1].price, size: similarProducts[1].sizes?.[0] || 'M', quantity: 1
-                    }));
+                    if(selectedBundleItems[0]) handleAddToCart();
+                    if(selectedBundleItems[1]) {
+                      dispatch(addToCart({
+                        product: similarProducts[0]._id, name: similarProducts[0].name, image: similarProducts[0].images?.[0]?.url, price: similarProducts[0].discountPrice || similarProducts[0].price, size: similarProducts[0].sizes?.[0] || 'M', quantity: 1
+                      }));
+                    }
+                    if(selectedBundleItems[2]) {
+                      dispatch(addToCart({
+                        product: similarProducts[1]._id, name: similarProducts[1].name, image: similarProducts[1].images?.[0]?.url, price: similarProducts[1].discountPrice || similarProducts[1].price, size: similarProducts[1].sizes?.[0] || 'M', quantity: 1
+                      }));
+                    }
                     toast.success('Bundle added to cart!');
+                    dispatch(toggleCart(true));
                   }}
-                  disabled={isAdmin}
+                  disabled={isAdmin || !selectedBundleItems.some(item => item)}
                   className="px-6 py-3 bg-black text-white text-xs font-bold uppercase tracking-widest hover:bg-gray-900 transition-colors w-full disabled:opacity-50"
                 >
-                  Add all 3 to Cart
+                  Add selected to Cart
                 </button>
               </div>
 

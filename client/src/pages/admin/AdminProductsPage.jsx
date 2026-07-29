@@ -63,6 +63,24 @@ const AdminProductsPage = () => {
     }));
   };
 
+  const handleImageUpload = (e) => {
+    const file = e.target.files[0];
+    if (file) {
+      if (file.size > 2 * 1024 * 1024) {
+        toast.error('Image size should be less than 2MB for direct upload.');
+        return;
+      }
+      const reader = new FileReader();
+      reader.onloadend = () => {
+        setEditingProduct(prev => ({
+          ...prev,
+          imageUrl: reader.result
+        }));
+      };
+      reader.readAsDataURL(file);
+    }
+  };
+
   const handleAddNew = () => {
     setEditingProduct({
       _id: null,
@@ -269,12 +287,12 @@ const AdminProductsPage = () => {
       {/* Edit Modal */}
       <AnimatePresence>
         {editingProduct && (
-          <div className="fixed inset-0 z-50 flex items-center justify-center bg-gray-900/60 backdrop-blur-sm p-4 sm:p-6">
+          <div className="fixed inset-0 z-50 flex items-center justify-center bg-gray-900/60 backdrop-blur-sm sm:p-6">
             <motion.div 
               initial={{ opacity: 0, scale: 0.95 }}
               animate={{ opacity: 1, scale: 1 }}
               exit={{ opacity: 0, scale: 0.95 }}
-              className="w-full max-w-4xl bg-white border border-gray-200 shadow-2xl flex flex-col max-h-[90vh]"
+              className="w-full sm:max-w-4xl bg-white sm:border border-gray-200 shadow-2xl flex flex-col h-[100dvh] sm:h-auto sm:max-h-[90vh]"
             >
               {/* Modal Header */}
               <div className="px-6 py-4 border-b border-gray-200 flex justify-between items-center bg-[#0a2885] text-white shrink-0 rounded-t-sm">
@@ -301,18 +319,34 @@ const AdminProductsPage = () => {
                           <ImageIcon size={48} className="text-gray-300" />
                         )}
                       </div>
-                      <div className="flex-1 flex flex-col justify-center">
-                        <label className="block text-xs font-bold text-gray-900 uppercase tracking-widest mb-2">Image URL *</label>
-                        <input 
-                          type="url" 
-                          name="imageUrl" 
-                          value={editingProduct.imageUrl} 
-                          onChange={handleEditChange} 
-                          required 
-                          placeholder="https://example.com/image.jpg"
-                          className="w-full rounded-none border border-gray-200 px-4 py-3 text-sm focus:outline-none focus:border-black transition-colors bg-gray-50" 
-                        />
-                        <p className="text-[10px] text-gray-500 uppercase tracking-widest mt-2">Paste a valid image URL. The preview will update automatically.</p>
+                      <div className="flex-1 flex flex-col justify-center space-y-4">
+                        <div>
+                          <label className="block text-xs font-bold text-gray-900 uppercase tracking-widest mb-2">Upload from Gallery</label>
+                          <input 
+                            type="file" 
+                            accept="image/*"
+                            onChange={handleImageUpload}
+                            className="w-full text-sm file:mr-4 file:py-2 file:px-4 file:rounded-sm file:border-0 file:text-xs file:font-bold file:bg-[#2874f0] file:text-white hover:file:bg-[#0a2885] cursor-pointer bg-gray-50 border border-gray-200"
+                          />
+                        </div>
+                        <div className="flex items-center gap-4">
+                           <hr className="flex-1 border-gray-200" />
+                           <span className="text-xs font-bold text-gray-400 uppercase">OR</span>
+                           <hr className="flex-1 border-gray-200" />
+                        </div>
+                        <div>
+                          <label className="block text-xs font-bold text-gray-900 uppercase tracking-widest mb-2">Image URL *</label>
+                          <input 
+                            type="url" 
+                            name="imageUrl" 
+                            value={editingProduct.imageUrl} 
+                            onChange={handleEditChange} 
+                            required={!editingProduct.imageUrl}
+                            placeholder="https://example.com/image.jpg"
+                            className="w-full rounded-none border border-gray-200 px-4 py-3 text-sm focus:outline-none focus:border-black transition-colors bg-gray-50" 
+                          />
+                          <p className="text-[10px] text-gray-500 uppercase tracking-widest mt-2">Paste a valid image URL. The preview will update automatically.</p>
+                        </div>
                       </div>
                     </div>
                   </section>

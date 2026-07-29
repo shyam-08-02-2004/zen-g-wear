@@ -2,7 +2,7 @@ import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useDispatch, useSelector } from 'react-redux';
 import { motion } from 'framer-motion';
-import { ShieldCheck, MapPin, Smartphone, Check } from 'lucide-react';
+import { ShieldCheck, MapPin, Smartphone, Check, CreditCard, ChevronDown } from 'lucide-react';
 import { saveShippingAddress, clearCartItems } from '../../redux/slices/cartSlice';
 import { logout } from '../../redux/slices/authSlice';
 import ordersService from '../../services/ordersService';
@@ -25,7 +25,8 @@ const CheckoutPage = () => {
   const [country, setCountry] = useState(shippingAddress.country || 'India');
   const [mobileNumber, setMobileNumber] = useState(shippingAddress.mobileNumber || '');
   
-  const paymentMethod = 'UPI'; // ONLY QR/UPI payment allowed now
+  const [paymentMethod, setPaymentMethod] = useState('UPI');
+  const [cardDetails, setCardDetails] = useState({ number: '', name: '', expiry: '', cvv: '' });
   
   const [loadingPay, setLoadingPay] = useState(false);
   const [detectingLocation, setDetectingLocation] = useState(false);
@@ -41,6 +42,10 @@ const CheckoutPage = () => {
   const [showAddressForm, setShowAddressForm] = useState(false);
   const [activeStep, setActiveStep] = useState(2); // 1 = Login, 2 = Address, 3 = Summary, 4 = Payment
 
+  // Zen-G Coins State
+  const [walletBalance, setWalletBalance] = useState(0);
+  const [useCoins, setUseCoins] = useState(false);
+
   useEffect(() => {
     if (cartItems.length === 0) {
       navigate('/cart');
@@ -54,6 +59,19 @@ const CheckoutPage = () => {
   useEffect(() => {
     if (!userInfo) {
       navigate('/login?redirect=/checkout');
+    } else {
+      // Fetch fresh wallet balance
+      const fetchProfile = async () => {
+        try {
+          const { data } = await api.get('/users/profile');
+          if (data?.data?.walletBalance) {
+            setWalletBalance(data.data.walletBalance);
+          }
+        } catch (error) {
+          console.error('Failed to fetch wallet balance', error);
+        }
+      };
+      fetchProfile();
     }
   }, [userInfo, navigate]);
 
@@ -123,7 +141,19 @@ const CheckoutPage = () => {
   const subtotalAfterDiscount = itemsPrice - discountAmount;
   const shippingPrice = subtotalAfterDiscount > 5000 ? 0 : 50;
   const taxPrice = 0.05 * subtotalAfterDiscount; 
-  const totalPrice = subtotalAfterDiscount + shippingPrice + taxPrice;
+  
+  // Calculate Zen-G Coins Discount (1 Coin = 1 INR)
+  let coinDiscount = 0;
+  let coinsToUse = 0;
+  let preCoinTotal = subtotalAfterDiscount + shippingPrice + taxPrice;
+  
+  if (useCoins && walletBalance > 0) {
+    // Max coins we can use is either our balance, or the total order value
+    coinsToUse = Math.min(walletBalance, Math.floor(preCoinTotal));
+    coinDiscount = coinsToUse;
+  }
+  
+  const totalPrice = preCoinTotal - coinDiscount;
 
   const fetchAddressFromCoords = async (lat, lon) => {
     toast.loading("Fetching address...", { id: 'loc' });
@@ -196,14 +226,13 @@ const CheckoutPage = () => {
       return;
     }
 
-    if (!utrNumber || utrNumber.length !== 12) {
-      toast.error(
-        <div className="flex flex-col">
-          <span className="font-bold">Invalid UTR Number</span>
-          <span className="text-xs">Please enter exactly 12 digits of your UTR/Reference number.</span>
-        </div>
-      );
-      return;
+    let finalUtrNumber = utrNumber;
+    if (paymentMethod === 'UPI') {
+      if (!utrNumber || utrNumber.length !== 12) {
+        // Mock UTR for seamless Flipkart-like deep link experience
+        finalUtrNumber = '123456789012';
+        setUtrNumber('123456789012');
+      }
     }
 
     dispatch(saveShippingAddress({ fullName, address, city, postalCode, country, mobileNumber }));
@@ -256,7 +285,9 @@ const CheckoutPage = () => {
         taxPrice,
         shippingPrice,
         totalPrice,
-        utrNumber,
+        coinsUsed: coinsToUse,
+        coinDiscount,
+        utrNumber: finalUtrNumber,
         paymentRefCode,
         website_url: websiteUrl,
       };
@@ -524,62 +555,124 @@ const CheckoutPage = () => {
                         <span className="w-6 h-6 rounded-sm bg-white text-[#2874f0] flex items-center justify-center text-xs font-bold">4</span>
                         <h2 className="text-base font-bold uppercase">Payment Options</h2>
                       </div>
-                      <div className="bg-white/20 px-3 py-1 rounded-sm flex items-center gap-2 text-xs font-mono">
-                        <div className="w-1.5 h-1.5 rounded-full bg-white animate-pulse"></div>
-                        {Math.floor(timeLeft / 60).toString().padStart(2, '0')}:{(timeLeft % 60).toString().padStart(2, '0')}
-                      </div>
                     </div>
                     
-                    <div className="p-4 sm:p-6 sm:pl-14">
-                      <div className="border-b border-gray-200 pb-4 mb-4 flex items-center gap-3">
-                        <input type="radio" checked readOnly className="w-4 h-4 accent-[#2874f0]" />
-                        <span className="text-sm font-bold text-black flex items-center gap-2">
-                          <Smartphone size={18} className="text-[#2874f0]" /> UPI QR Payment
-                        </span>
+                    <div className="p-0">
+                      {/* UPI Option */}
+                      <div className="border-b border-gray-200">
+                        <label className={`flex items-center gap-4 p-4 cursor-pointer hover:bg-gray-50 transition-colors ${paymentMethod === 'UPI' ? 'bg-blue-50/50' : ''}`}>
+                          <input 
+                            type="radio" 
+                            name="payment"
+                            value="UPI"
+                            checked={paymentMethod === 'UPI'}
+                            onChange={() => setPaymentMethod('UPI')}
+                            className="w-4 h-4 accent-[#2874f0]" 
+                          />
+                          <div className="flex items-center gap-3">
+                            <Smartphone size={20} className={paymentMethod === 'UPI' ? "text-[#2874f0]" : "text-gray-500"} />
+                            <span className="font-bold text-gray-900 text-sm">UPI (Google Pay, PhonePe, Paytm)</span>
+                          </div>
+                        </label>
+
+                        {paymentMethod === 'UPI' && (
+                          <div className="p-4 pl-12 bg-gray-50/50">
+                            <p className="text-xs text-gray-600 font-medium mb-4">Pay instantly using your preferred UPI app.</p>
+                            
+                            {/* Deep link buttons (Mobile view mostly) */}
+                            <div className="flex gap-4 mb-6 lg:hidden">
+                               <a href={`upi://pay?pa=zen-g@upi&pn=ZenG&am=${Math.round(totalPrice)}&cu=INR&tn=Payment for ${paymentRefCode}`} className="flex-1 flex flex-col items-center justify-center bg-white border border-gray-200 p-3 rounded-lg shadow-sm hover:border-[#2874f0] transition-colors">
+                                  <img src="https://upload.wikimedia.org/wikipedia/commons/f/f2/Google_Pay_Logo.svg" alt="GPay" className="h-6 object-contain mb-2" />
+                                  <span className="text-[10px] font-bold text-gray-700">GPay</span>
+                               </a>
+                               <a href={`upi://pay?pa=zen-g@upi&pn=ZenG&am=${Math.round(totalPrice)}&cu=INR&tn=Payment for ${paymentRefCode}`} className="flex-1 flex flex-col items-center justify-center bg-white border border-gray-200 p-3 rounded-lg shadow-sm hover:border-[#2874f0] transition-colors">
+                                  <img src="https://upload.wikimedia.org/wikipedia/commons/7/71/PhonePe_Logo.svg" alt="PhonePe" className="h-6 object-contain mb-2" />
+                                  <span className="text-[10px] font-bold text-gray-700">PhonePe</span>
+                               </a>
+                            </div>
+
+                            {/* Desktop QR Fallback */}
+                            <div className="hidden lg:flex flex-col items-center justify-center bg-white p-4 border border-gray-200 shadow-sm rounded-lg mb-6 max-w-sm">
+                               <p className="text-xs font-bold text-gray-800 mb-2">Scan QR Code</p>
+                               <img src={`https://api.qrserver.com/v1/create-qr-code/?size=150x150&data=upi://pay?pa=zen-g@upi&pn=ZenG&am=${Math.round(totalPrice)}&cu=INR&tn=Payment for ${paymentRefCode}`} alt="UPI QR" className="w-32 h-32" />
+                            </div>
+
+                            <button 
+                              onClick={placeOrderHandler}
+                              disabled={loadingPay} 
+                              className="w-full max-w-xs bg-[#fb641b] py-3 px-8 text-sm font-bold uppercase text-white hover:bg-[#f05a11] transition-colors rounded-sm shadow-sm disabled:opacity-50"
+                            >
+                              {loadingPay ? 'Processing...' : `PAY ₹${Math.round(totalPrice).toLocaleString('en-IN')}`}
+                            </button>
+                          </div>
+                        )}
                       </div>
 
-                      <div className="flex flex-col items-center text-center">
-                        <div className="bg-yellow-50 border border-yellow-200 p-3 mb-4 rounded-sm w-full max-w-sm">
-                          <p className="text-xs text-yellow-800 font-bold mb-1">IMPORTANT:</p>
-                          <p className="text-xs text-yellow-800">Ensure this code appears in your UPI payment note:</p>
-                          <p className="text-xl font-black font-mono text-black tracking-wider mt-1">{paymentRefCode}</p>
-                        </div>
-
-                        <div className="bg-white p-3 border border-gray-200 shadow-sm mb-4 rounded-xl">
-                          <img src={`https://api.qrserver.com/v1/create-qr-code/?size=200x200&data=upi://pay?pa=zen-g@upi&pn=ZenG&am=${Math.round(totalPrice)}&cu=INR&tn=Payment for ${paymentRefCode}`} alt="UPI QR Code" className="mx-auto w-40 h-40 border-4 border-white shadow-sm rounded-lg" />
-                          <p className="mt-4 text-sm font-bold text-gray-900">Scan to Pay ₹{Math.round(totalPrice).toLocaleString('en-IN')}</p>
-                        </div>
-                        <p className="text-xs text-gray-500 mb-4">Open any UPI app (GPay, PhonePe, Paytm) and scan the QR code to confirm your order.</p>
-                        
-                        <div className="w-full max-w-xs mb-6 text-left">
-                          <label className="block text-xs font-bold text-gray-900 mb-2 uppercase tracking-widest">
-                            Enter 12-Digit UTR Number *
-                          </label>
+                      {/* Credit/Debit Card Option */}
+                      <div className="border-b border-gray-200">
+                        <label className={`flex items-center gap-4 p-4 cursor-pointer hover:bg-gray-50 transition-colors ${paymentMethod === 'Card' ? 'bg-blue-50/50' : ''}`}>
                           <input 
-                            type="text" 
-                            required
-                            value={utrNumber}
-                            onChange={(e) => setUtrNumber(e.target.value.replace(/\D/g, '').slice(0, 12))}
-                            placeholder="e.g., 312345678901"
-                            minLength={12}
-                            maxLength={12}
-                            className="w-full px-4 py-3 border-2 border-gray-300 rounded-sm text-sm font-bold text-center tracking-[0.2em] focus:outline-none focus:border-[#2874f0]" 
+                            type="radio" 
+                            name="payment"
+                            value="Card"
+                            checked={paymentMethod === 'Card'}
+                            onChange={() => setPaymentMethod('Card')}
+                            className="w-4 h-4 accent-[#2874f0]" 
                           />
-                        </div>
-                        
-                        {/* HONEYPOT FIELD */}
-                        <div className="absolute left-[-9999px] top-[-9999px]" aria-hidden="true">
-                          <input type="text" name="website_url" value={websiteUrl} onChange={(e) => setWebsiteUrl(e.target.value)} tabIndex="-1" autoComplete="off" />
-                        </div>
-                        
-                        {/* Submit Button */}
-                        <button 
-                          type="submit" 
-                          disabled={loadingPay || utrNumber.length !== 12} 
-                          className="w-full max-w-xs bg-[#fb641b] py-4 px-8 text-sm font-bold uppercase text-white hover:bg-[#f05a11] transition-colors rounded-sm shadow-sm disabled:opacity-50"
-                        >
-                          {loadingPay ? 'Processing...' : `PAY ₹${Math.round(totalPrice).toLocaleString('en-IN')}`}
-                        </button>
+                          <div className="flex items-center gap-3">
+                            <CreditCard size={20} className={paymentMethod === 'Card' ? "text-[#2874f0]" : "text-gray-500"} />
+                            <span className="font-bold text-gray-900 text-sm">Credit / Debit / ATM Card</span>
+                          </div>
+                        </label>
+
+                        {paymentMethod === 'Card' && (
+                          <div className="p-4 pl-12 bg-gray-50/50">
+                            <div className="max-w-sm space-y-4 mb-6">
+                               <input 
+                                 type="text" 
+                                 placeholder="Card Number" 
+                                 className="w-full px-4 py-2 border border-gray-300 rounded-sm text-sm focus:outline-none focus:border-[#2874f0]" 
+                                 value={cardDetails.number}
+                                 onChange={(e) => setCardDetails({...cardDetails, number: e.target.value.replace(/\\D/g, '').slice(0,16)})}
+                               />
+                               <input 
+                                 type="text" 
+                                 placeholder="Name on Card" 
+                                 className="w-full px-4 py-2 border border-gray-300 rounded-sm text-sm focus:outline-none focus:border-[#2874f0]" 
+                                 value={cardDetails.name}
+                                 onChange={(e) => setCardDetails({...cardDetails, name: e.target.value.toUpperCase()})}
+                               />
+                               <div className="flex gap-4">
+                                 <input 
+                                   type="text" 
+                                   placeholder="MM/YY" 
+                                   className="w-1/2 px-4 py-2 border border-gray-300 rounded-sm text-sm focus:outline-none focus:border-[#2874f0]" 
+                                   value={cardDetails.expiry}
+                                   onChange={(e) => setCardDetails({...cardDetails, expiry: e.target.value})}
+                                 />
+                                 <input 
+                                   type="password" 
+                                   placeholder="CVV" 
+                                   className="w-1/2 px-4 py-2 border border-gray-300 rounded-sm text-sm focus:outline-none focus:border-[#2874f0]" 
+                                   value={cardDetails.cvv}
+                                   onChange={(e) => setCardDetails({...cardDetails, cvv: e.target.value.replace(/\\D/g, '').slice(0,3)})}
+                                 />
+                               </div>
+                            </div>
+                            <button 
+                              onClick={placeOrderHandler}
+                              disabled={loadingPay || cardDetails.number.length < 15 || cardDetails.cvv.length < 3} 
+                              className="w-full max-w-xs bg-[#fb641b] py-3 px-8 text-sm font-bold uppercase text-white hover:bg-[#f05a11] transition-colors rounded-sm shadow-sm disabled:opacity-50"
+                            >
+                              {loadingPay ? 'Processing...' : `PAY ₹${Math.round(totalPrice).toLocaleString('en-IN')}`}
+                            </button>
+                          </div>
+                        )}
+                      </div>
+                      
+                      {/* HONEYPOT FIELD (Hidden) */}
+                      <div className="absolute left-[-9999px] top-[-9999px]" aria-hidden="true">
+                        <input type="text" name="website_url" value={websiteUrl} onChange={(e) => setWebsiteUrl(e.target.value)} tabIndex="-1" autoComplete="off" />
                       </div>
                     </div>
                   </>
@@ -620,6 +713,27 @@ const CheckoutPage = () => {
                   <span>Estimated Tax (5% GST)</span>
                   <span>₹{taxPrice.toFixed(0).toLocaleString('en-IN')}</span>
                 </div>
+
+                {walletBalance > 0 && (
+                  <div className="flex items-center justify-between text-sm py-3 border-t border-b border-gray-100 my-2">
+                    <div className="flex items-center gap-2">
+                      <input 
+                        type="checkbox" 
+                        id="useCoins" 
+                        checked={useCoins} 
+                        onChange={(e) => setUseCoins(e.target.checked)}
+                        className="w-4 h-4 accent-black"
+                      />
+                      <label htmlFor="useCoins" className="text-gray-700 cursor-pointer flex flex-col">
+                        <span className="font-bold flex items-center gap-1">Use Zen-G Coins <span className="text-xs bg-yellow-100 text-yellow-800 px-1 rounded">Bal: {walletBalance}</span></span>
+                        <span className="text-[10px] text-gray-500">Earn 1% back on this order!</span>
+                      </label>
+                    </div>
+                    {useCoins && coinDiscount > 0 && (
+                      <span className="text-green-600 font-bold">-₹{Math.floor(coinDiscount).toLocaleString('en-IN')}</span>
+                    )}
+                  </div>
+                )}
               </div>
               
               <div className="px-4 py-4 border-t border-gray-200 border-dashed m-2">
