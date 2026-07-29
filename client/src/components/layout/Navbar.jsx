@@ -214,14 +214,7 @@ const Navbar = ({ onMenuClick }) => {
                 </Link>
               )}
 
-              {/* Mobile: Hamburger / User Menu */}
-              <button
-                className="md:hidden text-white p-1.5 hover:bg-white/10 rounded-sm transition-colors"
-                onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
-                aria-label="Menu"
-              >
-                {mobileMenuOpen ? <X size={22} /> : <UserIcon size={20} />}
-              </button>
+
 
               {/* Dark Mode Toggle */}
               <button
@@ -232,19 +225,19 @@ const Navbar = ({ onMenuClick }) => {
                 {isDarkMode ? <Sun size={20} /> : <Moon size={20} />}
               </button>
 
-              {/* Wishlist */}
+              {/* Wishlist (Desktop Only) */}
               {!isAdmin && (
-                <Link to="/dashboard/wishlist" className="relative text-white p-1.5 hover:bg-white/10 rounded-sm transition-colors flex items-center gap-1.5">
+                <Link to="/dashboard/wishlist" className="hidden md:flex relative text-white p-1.5 hover:bg-white/10 rounded-sm transition-colors items-center gap-1.5">
                   <Heart size={20} />
                   <span className="hidden sm:block text-sm font-bold">Wishlist</span>
                 </Link>
               )}
 
-              {/* Cart (all sizes) */}
+              {/* Cart (Desktop Only) */}
               {!isAdmin && (
                 <button 
                   onClick={() => dispatch(toggleCart(true))} 
-                  className="relative text-white p-1.5 hover:bg-white/10 rounded-sm transition-colors flex items-center gap-1.5"
+                  className="hidden md:flex relative text-white p-1.5 hover:bg-white/10 rounded-sm transition-colors items-center gap-1.5"
                 >
                   <ShoppingCart size={20} />
                   <span className="hidden sm:block text-sm font-bold">Cart</span>

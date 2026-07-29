@@ -1,9 +1,21 @@
-import { Link } from 'react-router-dom';
-import { useSelector } from 'react-redux';
-import { Package, Heart, CreditCard, User, Bell, HeadphonesIcon, Settings, ChevronRight, ShoppingCart } from 'lucide-react';
+import { Link, useNavigate } from 'react-router-dom';
+import { useSelector, useDispatch } from 'react-redux';
+import { Package, Heart, CreditCard, User, Bell, HeadphonesIcon, Settings, ChevronRight, ShoppingCart, LogOut } from 'lucide-react';
+import { logout as logoutAction } from '../../redux/slices/authSlice';
+import api from '../../services/api';
+import { notify } from '../../components/ui/Toast';
 
 const DashboardOverview = () => {
   const { userInfo } = useSelector((state) => state.auth);
+  const dispatch = useDispatch();
+  const navigate = useNavigate();
+
+  const handleLogout = async () => {
+    try { await api.post('/auth/logout'); } catch (_) {}
+    dispatch(logoutAction());
+    notify.success('Logged out successfully');
+    navigate('/login');
+  };
 
   const menuItems = [
     { icon: <Package size={24} className="text-[#2874f0]" />, label: 'Orders', to: '/dashboard/orders', subtext: 'Check your order status' },
@@ -63,11 +75,12 @@ const DashboardOverview = () => {
       </div>
 
       {/* Account Settings List (Mobile Only) */}
-      <div className="lg:hidden bg-white shadow-sm mb-4">
-        <div className="px-4 py-3 border-b border-gray-100 bg-gray-50">
-          <h3 className="font-bold text-gray-500 text-sm tracking-wider uppercase">Account Settings</h3>
-        </div>
-        <Link to="/dashboard/profile" className="flex items-center justify-between p-4 border-b border-gray-100">
+      <div className="bg-white lg:rounded-sm lg:shadow-sm flex flex-col divide-y divide-gray-100">
+        <Link to="/dashboard/settings" className="flex items-center justify-between p-4">
+          <span className="text-[15px] font-medium text-gray-800">Account Settings</span>
+          <ChevronRight size={18} className="text-gray-400" />
+        </Link>
+        <Link to="/dashboard/profile" className="flex items-center justify-between p-4 border-t border-gray-100">
           <span className="text-[15px] font-medium text-gray-800">Edit Profile</span>
           <ChevronRight size={18} className="text-gray-400" />
         </Link>
@@ -75,6 +88,10 @@ const DashboardOverview = () => {
           <span className="text-[15px] font-medium text-gray-800">Saved Addresses</span>
           <ChevronRight size={18} className="text-gray-400" />
         </Link>
+        <button onClick={handleLogout} className="flex items-center justify-between p-4 w-full text-left active:bg-gray-50 transition-colors">
+          <span className="text-[15px] font-bold text-red-500">Logout</span>
+          <LogOut size={18} className="text-red-500" />
+        </button>
       </div>
 
     </div>
