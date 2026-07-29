@@ -6,13 +6,13 @@ const categories = [
   { 
     name: 'Top Offers', 
     link: '/shop?offers=true', 
-    image: 'https://images.unsplash.com/photo-1607083206325-caf1edba7a0f?auto=format&fit=crop&w=256&q=80&v=3', // New vibrant offer bag
+    image: '/assets/cat_top_offers_1785317371447.jpg', 
     dropdown: null
   },
   { 
     name: 'Men', 
     link: '/shop?category=men', 
-    image: 'https://images.unsplash.com/photo-1550246140-5119ae4790b8?auto=format&fit=crop&w=256&q=80&v=3', // New stylish man
+    image: '/assets/cat_men_1785317383821.jpg',
     dropdown: [
       {
         title: 'Topwear',
@@ -49,7 +49,7 @@ const categories = [
   { 
     name: 'Women', 
     link: '/shop?category=women', 
-    image: 'https://images.unsplash.com/photo-1485230895905-ef10ce5e7773?auto=format&fit=crop&w=256&q=80&v=3', // New elegant woman
+    image: '/assets/cat_women_1785317394425.jpg',
     dropdown: [
       {
         title: 'Western Wear',
@@ -85,7 +85,7 @@ const categories = [
   { 
     name: 'Kids', 
     link: '/shop?category=kids', 
-    image: 'https://images.unsplash.com/photo-1514090458221-65bb69cf63e6?auto=format&fit=crop&w=256&q=80&v=3', // New cute kid
+    image: '/assets/cat_kids_1785317405666.jpg',
     dropdown: [
       {
         title: 'Boys Clothing',

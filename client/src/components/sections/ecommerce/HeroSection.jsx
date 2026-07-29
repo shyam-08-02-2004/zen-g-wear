@@ -5,17 +5,17 @@ import { ChevronLeft, ChevronRight } from 'lucide-react';
 const banners = [
   {
     id: 1,
-    image: 'https://images.unsplash.com/photo-1490578474895-699cd4e2cf59?auto=format&fit=crop&w=1600&q=80&v=3',
+    image: '/assets/banner_mens_fashion_1785317224477.jpg',
     link: '/shop?category=men'
   },
   {
     id: 2,
-    image: 'https://images.unsplash.com/photo-1607082348824-0a96f2a4b9da?auto=format&fit=crop&w=1600&q=80&v=3',
+    image: '/assets/banner_summer_sale_1785317235107.jpg',
     link: '/shop?offers=true'
   },
   {
     id: 3,
-    image: 'https://images.unsplash.com/photo-1469334031218-e382a71b716b?auto=format&fit=crop&w=1600&q=80&v=3',
+    image: '/assets/banner_womens_fashion_1785317245637.jpg',
     link: '/shop?category=women'
   }
 ];
