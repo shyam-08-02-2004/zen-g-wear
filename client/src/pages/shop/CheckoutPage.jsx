@@ -4,6 +4,7 @@ import { useDispatch, useSelector } from 'react-redux';
 import { motion } from 'framer-motion';
 import { ShieldCheck, MapPin, Smartphone } from 'lucide-react';
 import { saveShippingAddress, clearCartItems } from '../../redux/slices/cartSlice';
+import { logout } from '../../redux/slices/authSlice';
 import ordersService from '../../services/ordersService';
 import api from '../../services/api';
 import toast from 'react-hot-toast';
@@ -250,7 +251,20 @@ const CheckoutPage = () => {
       });
     } catch (err) {
       console.error(err);
-      toast.error(err?.response?.data?.message || 'Failed to place order');
+      const errorMessage = err?.response?.data?.message || 'Failed to place order';
+      
+      if (errorMessage === 'FAKE_UTR_BANNED') {
+        toast.error('Account Suspended: Fraudulent UTR detected. You can no longer place orders.', { duration: 6000 });
+        // Force logout
+        dispatch(logout());
+        navigate('/login');
+      } else if (errorMessage === 'DUPLICATE_UTR') {
+        toast.error('This UTR has already been used for another order. Please provide a valid unique UTR.');
+      } else if (errorMessage === 'PENDING_ORDER_LIMIT') {
+        toast.error('You already have a Pending Order. Please wait for our team to verify it before placing another one.', { duration: 5000 });
+      } else {
+        toast.error(errorMessage);
+      }
     } finally {
       setLoadingPay(false);
     }

@@ -2,6 +2,8 @@ import asyncHandler from 'express-async-handler';
 import Order from '../models/Order.js';
 import Notification from '../models/Notification.js';
 import Payment from '../models/Payment.js';
+import User from '../models/User.js';
+import Product from '../models/Product.js';
 
 export const addOrderItems = asyncHandler(async (req, res) => {
   const {
@@ -19,6 +21,43 @@ export const addOrderItems = asyncHandler(async (req, res) => {
     res.status(400);
     throw new Error('No order items');
   } else {
+    // 1. Fake UTR Trap
+    const fakePatterns = [/^(\d)\1{11}$/, /^123456789012$/, /^012345678912$/];
+    if (utrNumber && fakePatterns.some(pattern => pattern.test(utrNumber))) {
+      const user = await User.findById(req.user._id);
+      if (user) {
+        user.isActive = false;
+        await user.save({ validateBeforeSave: false });
+      }
+      res.status(403);
+      throw new Error('FAKE_UTR_BANNED');
+    }
+
+    // 2. UTR Uniqueness
+    if (utrNumber) {
+      const existingOrder = await Order.findOne({ utrNumber });
+      if (existingOrder) {
+        res.status(400);
+        throw new Error('DUPLICATE_UTR');
+      }
+    }
+
+    // 3. One Pending Order Limit (bypassed if trusted)
+    const pastSuccessOrders = await Order.countDocuments({ 
+      user: req.user._id, 
+      status: { $in: ['processing', 'shipped', 'delivered'] } 
+    });
+    if (pastSuccessOrders === 0) {
+      const pendingOrders = await Order.countDocuments({ 
+        user: req.user._id, 
+        status: 'pending' 
+      });
+      if (pendingOrders > 0) {
+        res.status(400);
+        throw new Error('PENDING_ORDER_LIMIT');
+      }
+    }
+
     const order = new Order({
       orderItems,
       user: req.user._id,
@@ -129,6 +168,17 @@ export const updateOrderStatus = asyncHandler(async (req, res) => {
     }
     
     const updatedOrder = await order.save();
+
+    // 4. Stock Protection (reduce stock only on verification)
+    if (req.body.status === 'processing' && oldStatus === 'pending') {
+      for (const item of order.orderItems) {
+        const product = await Product.findById(item.product);
+        if (product) {
+          product.stock = Math.max(0, product.stock - item.qty);
+          await product.save({ validateBeforeSave: false });
+        }
+      }
+    }
 
     if (req.body.status && req.body.status !== oldStatus) {
       await Notification.create({

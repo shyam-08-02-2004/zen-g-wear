@@ -1,7 +1,8 @@
 import { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { RefreshCw, Search, CheckCircle, Package, Eye, MapPin, Phone, Mail, User, ShoppingBag, ChevronDown, X } from 'lucide-react';
+import { RefreshCw, Search, CheckCircle, Package, Eye, MapPin, Phone, Mail, User, ShoppingBag, ChevronDown, X, Ban } from 'lucide-react';
 import ordersService from '../../services/ordersService';
+import api from '../../services/api';
 import toast from 'react-hot-toast';
 
 const STATUS_MAP = {
@@ -28,10 +29,21 @@ const AdminOrdersPage = () => {
       setOrders(data?.data || []);
     } catch (error) {
       console.error('Failed to fetch orders', error);
-      toast.error('Failed to load orders');
+      toast.error('Failed to fetch orders');
     } finally {
       setLoading(false);
       setIsRefreshing(false);
+    }
+  };
+
+  const handleBanUser = async (userId) => {
+    if (!window.confirm("Are you sure you want to permanently BAN this user? They will not be able to log in or place orders.")) return;
+    try {
+      await api.patch(`/users/${userId}/status`, { isActive: false });
+      toast.success("User has been permanently banned.");
+    } catch (error) {
+      console.error(error);
+      toast.error(error?.response?.data?.message || "Failed to ban user.");
     }
   };
 
@@ -349,6 +361,14 @@ const AdminOrdersPage = () => {
                                   </div>
                                 )}
                               </div>
+                              {order.user && (
+                                <button 
+                                  onClick={() => handleBanUser(order.user._id)}
+                                  className="mt-4 w-full bg-red-50 hover:bg-red-100 text-red-600 font-bold text-xs py-2 px-3 rounded flex justify-center items-center gap-1 transition-colors border border-red-200"
+                                >
+                                  <Ban size={14} /> Permanently Ban User
+                                </button>
+                              )}
                             </div>
 
                             {/* Delivery Address */}
