@@ -10,6 +10,7 @@ import wishlistService from '../../services/wishlistService';
 import { useDispatch, useSelector } from 'react-redux';
 import { addToCart } from '../../redux/slices/cartSlice';
 import toast from 'react-hot-toast';
+import SkeletonProductCard from '../../components/SkeletonProductCard';
 
 const SORT_OPTIONS = [
   { label: 'Popularity (Rating)', value: '-rating' },
@@ -581,14 +582,9 @@ const ProductListing = () => {
           {/* Product Grid */}
           <div className="flex-1">
             {loading ? (
-              <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-x-4 gap-y-10 sm:gap-x-6 sm:gap-y-12">
+              <div className="grid grid-cols-2 md:grid-cols-3 xl:grid-cols-4 gap-x-4 gap-y-10 sm:gap-x-6 sm:gap-y-12">
                 {[...Array(8)].map((_, i) => (
-                  <div key={i} className="animate-pulse">
-                    <div className="aspect-[3/4] bg-gray-100 mb-4" />
-                    <div className="h-3 bg-gray-200 rounded w-1/3 mb-2" />
-                    <div className="h-4 bg-gray-200 rounded w-3/4 mb-2" />
-                    <div className="h-4 bg-gray-200 rounded w-1/4" />
-                  </div>
+                  <SkeletonProductCard key={i} />
                 ))}
               </div>
             ) : products.length === 0 ? (

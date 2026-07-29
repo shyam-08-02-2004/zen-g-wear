@@ -2,7 +2,7 @@ import { useState, useEffect } from 'react';
 import { useParams, useNavigate, Link } from 'react-router-dom';
 import { useDispatch, useSelector } from 'react-redux';
 import { motion, AnimatePresence } from 'framer-motion';
-import { ShoppingBag, ShoppingCart, ChevronRight, Star, Heart, MapPin, CheckCircle2, XCircle, Edit2, Trash2, Image as ImageIcon, X } from 'lucide-react';
+import { ShoppingBag, ShoppingCart, ChevronRight, Star, Heart, MapPin, CheckCircle2, XCircle, Edit2, Trash2, Image as ImageIcon, X, Share2 } from 'lucide-react';
 import productsService from '../../services/productsService';
 import wishlistService from '../../services/wishlistService';
 import reviewsService from '../../services/reviewsService';
@@ -294,13 +294,50 @@ const ProductDetails = () => {
     navigate('/cart');
   };
 
-  const [activeImageIndex, setActiveImageIndex] = useState(0);
+  const handleShare = async () => {
+    const shareData = {
+      title: product.name,
+      text: `Check out this amazing product on ZEN-G WEAR: ${product.name}`,
+      url: window.location.href,
+    };
+    if (navigator.share) {
+      try {
+        await navigator.share(shareData);
+      } catch (err) {
+        console.error('Error sharing:', err);
+      }
+    } else {
+      navigator.clipboard.writeText(window.location.href);
+      toast.success('Link copied to clipboard!');
+    }
+  };
 
-  if (loading) {
+  const [activeImageIndex, setActiveImageIndex] = useState(0);  if (loading) {
     return (
-      <div className="flex flex-col bg-white">
-        <main className="flex-grow flex justify-center items-center py-32">
-          <div className="animate-spin rounded-full h-10 w-10 border-b-2 border-black"></div>
+      <div className="flex flex-col bg-white animate-pulse">
+        <main className="flex-grow max-w-[1400px] mx-auto px-4 sm:px-6 lg:px-8 py-8 lg:py-16 w-full">
+          <div className="lg:grid lg:grid-cols-12 lg:gap-x-8 xl:gap-x-12">
+            {/* Image Skeleton */}
+            <div className="lg:col-span-5 flex flex-col gap-4">
+              <div className="w-full h-[450px] lg:h-[600px] bg-gray-200"></div>
+              <div className="flex gap-2">
+                <div className="h-12 flex-1 bg-gray-200"></div>
+                <div className="h-12 flex-1 bg-gray-200"></div>
+              </div>
+            </div>
+            {/* Info Skeleton */}
+            <div className="lg:col-span-7 mt-10 lg:mt-0 space-y-4">
+              <div className="h-4 w-24 bg-gray-200"></div>
+              <div className="h-8 w-3/4 bg-gray-200"></div>
+              <div className="h-6 w-1/3 bg-gray-200"></div>
+              <div className="h-12 w-32 bg-gray-200 mt-8"></div>
+              <div className="space-y-2 mt-8">
+                <div className="h-4 w-full bg-gray-200"></div>
+                <div className="h-4 w-full bg-gray-200"></div>
+                <div className="h-4 w-2/3 bg-gray-200"></div>
+              </div>
+            </div>
+          </div>
         </main>
       </div>
     );
@@ -453,9 +490,18 @@ const ProductDetails = () => {
             <div className="sticky top-28">
               
               <h2 className="text-[13px] font-medium text-gray-500 uppercase tracking-wide mb-1">{product.brand || 'ZEN-G WEAR'}</h2>
-              <h1 className="text-[18px] sm:text-[22px] font-normal text-gray-900 leading-tight mb-2">
-                {product.name}
-              </h1>
+              <div className="flex items-start justify-between gap-4 mb-2">
+                <h1 className="text-[18px] sm:text-[22px] font-normal text-gray-900 leading-tight">
+                  {product.name}
+                </h1>
+                <button 
+                  onClick={handleShare}
+                  className="p-2 text-gray-400 hover:text-black hover:bg-gray-100 rounded-full transition-colors flex-shrink-0"
+                  aria-label="Share product"
+                >
+                  <Share2 size={20} />
+                </button>
+              </div>
 
               {/* Flipkart Assured & Ratings */}
               <div className="flex items-center gap-3 mb-3">

@@ -169,13 +169,13 @@ const OrdersPage = () => {
                           </div>
                         </div>
                       ) : (
-                        <div className="relative">
-                          {/* Timeline Line */}
-                          <div className="absolute top-5 left-6 right-6 h-1 bg-gray-200 hidden sm:block">
-                            <div 
-                              className="h-full bg-green-500 transition-all duration-1000" 
-                              style={{ 
-                                width: order.status === 'completed' ? '100%' : 
+                          <div className="relative">
+                            {/* Timeline Line */}
+                            <div className="absolute top-4 sm:top-5 left-4 sm:left-5 right-4 sm:right-5 h-1 bg-gray-200 hidden sm:block">
+                              <div 
+                                className="h-full bg-[#388e3c] transition-all duration-1000" 
+                                style={{ 
+                                  width: order.status === 'completed' ? '100%' : 
                                        order.status === 'shipped' ? '66%' : 
                                        order.status === 'processing' ? '33%' : '0%' 
                               }}
@@ -185,36 +185,36 @@ const OrdersPage = () => {
                           <div className="flex flex-col sm:flex-row justify-between relative z-10 gap-8 sm:gap-0">
                             
                             {/* Step 1: Placed */}
-                            <div className="flex flex-row sm:flex-col items-center gap-4 sm:gap-2 text-center">
-                              <div className={`w-10 h-10 rounded-full flex items-center justify-center border-2 bg-white ${order.createdAt ? 'border-green-500 text-green-500' : 'border-gray-300 text-gray-300'}`}>
-                                <CheckCircle2 size={20} />
+                            <div className="flex flex-row sm:flex-col items-center gap-4 sm:gap-2 text-center relative">
+                              <div className={`w-8 h-8 sm:w-10 sm:h-10 rounded-full flex items-center justify-center border-2 bg-white ${order.createdAt ? 'border-[#388e3c] bg-[#388e3c] text-white' : 'border-gray-300 text-gray-300'}`}>
+                                <CheckCircle2 size={18} />
                               </div>
-                              <div className="text-left sm:text-center">
-                                <p className={`text-xs font-bold uppercase tracking-widest ${order.createdAt ? 'text-black' : 'text-gray-400'}`}>Order Placed</p>
+                              <div className="text-left sm:text-center mt-0 sm:mt-1">
+                                <p className={`text-[11px] sm:text-xs font-bold uppercase tracking-widest ${order.createdAt ? 'text-[#388e3c]' : 'text-gray-400'}`}>Order Placed</p>
                                 <p className="text-[10px] text-gray-500 mt-0.5">{new Date(order.createdAt).toLocaleDateString()}</p>
                               </div>
                             </div>
 
                             {/* Step 2: Processing */}
-                            <div className="flex flex-row sm:flex-col items-center gap-4 sm:gap-2 text-center">
-                              <div className={`w-10 h-10 rounded-full flex items-center justify-center border-2 bg-white ${['processing', 'shipped', 'out_for_delivery', 'completed'].includes(order.status) ? 'border-green-500 text-green-500' : 'border-gray-300 text-gray-300'}`}>
-                                <Package size={18} />
+                            <div className="flex flex-row sm:flex-col items-center gap-4 sm:gap-2 text-center relative">
+                              <div className={`w-8 h-8 sm:w-10 sm:h-10 rounded-full flex items-center justify-center border-2 bg-white ${['processing', 'shipped', 'out_for_delivery', 'completed'].includes(order.status) ? 'border-[#388e3c] bg-[#388e3c] text-white' : 'border-gray-300 text-gray-300'}`}>
+                                <Package size={16} />
                               </div>
-                              <div className="text-left sm:text-center">
-                                <p className={`text-xs font-bold uppercase tracking-widest ${['processing', 'shipped', 'out_for_delivery', 'completed'].includes(order.status) ? 'text-black' : 'text-gray-400'}`}>Processing</p>
+                              <div className="text-left sm:text-center mt-0 sm:mt-1">
+                                <p className={`text-[11px] sm:text-xs font-bold uppercase tracking-widest ${['processing', 'shipped', 'out_for_delivery', 'completed'].includes(order.status) ? 'text-[#388e3c]' : 'text-gray-400'}`}>Packed</p>
                                 {['processing', 'shipped', 'out_for_delivery', 'completed'].includes(order.status) && (
-                                  <p className="text-[10px] text-gray-500 mt-0.5">Item packed</p>
+                                  <p className="text-[10px] text-gray-500 mt-0.5">Item is packed</p>
                                 )}
                               </div>
                             </div>
 
-                            {/* Step 3: Shipped (Mock) */}
-                            <div className="flex flex-row sm:flex-col items-center gap-4 sm:gap-2 text-center">
-                              <div className={`w-10 h-10 rounded-full flex items-center justify-center border-2 bg-white ${['shipped', 'out_for_delivery', 'completed'].includes(order.status) ? 'border-green-500 text-green-500' : 'border-gray-300 text-gray-300'}`}>
-                                <Truck size={18} />
+                            {/* Step 3: Shipped */}
+                            <div className="flex flex-row sm:flex-col items-center gap-4 sm:gap-2 text-center relative">
+                              <div className={`w-8 h-8 sm:w-10 sm:h-10 rounded-full flex items-center justify-center border-2 bg-white ${['shipped', 'out_for_delivery', 'completed'].includes(order.status) ? 'border-[#388e3c] bg-[#388e3c] text-white' : 'border-gray-300 text-gray-300'}`}>
+                                <Truck size={16} />
                               </div>
-                              <div className="text-left sm:text-center">
-                                <p className={`text-xs font-bold uppercase tracking-widest ${['shipped', 'out_for_delivery', 'completed'].includes(order.status) ? 'text-black' : 'text-gray-400'}`}>Shipped</p>
+                              <div className="text-left sm:text-center mt-0 sm:mt-1">
+                                <p className={`text-[11px] sm:text-xs font-bold uppercase tracking-widest ${['shipped', 'out_for_delivery', 'completed'].includes(order.status) ? 'text-[#388e3c]' : 'text-gray-400'}`}>Shipped</p>
                                 {['shipped', 'out_for_delivery', 'completed'].includes(order.status) && (
                                   <p className="text-[10px] text-gray-500 mt-0.5">In transit</p>
                                 )}
@@ -222,12 +222,12 @@ const OrdersPage = () => {
                             </div>
 
                             {/* Step 4: Delivered */}
-                            <div className="flex flex-row sm:flex-col items-center gap-4 sm:gap-2 text-center">
-                              <div className={`w-10 h-10 rounded-full flex items-center justify-center border-2 bg-white ${order.status === 'completed' ? 'border-green-500 text-green-500' : 'border-gray-300 text-gray-300'}`}>
-                                <Home size={18} />
+                            <div className="flex flex-row sm:flex-col items-center gap-4 sm:gap-2 text-center relative">
+                              <div className={`w-8 h-8 sm:w-10 sm:h-10 rounded-full flex items-center justify-center border-2 bg-white ${order.status === 'completed' ? 'border-[#388e3c] bg-[#388e3c] text-white' : 'border-gray-300 text-gray-300'}`}>
+                                <Home size={16} />
                               </div>
-                              <div className="text-left sm:text-center">
-                                <p className={`text-xs font-bold uppercase tracking-widest ${order.status === 'completed' ? 'text-black' : 'text-gray-400'}`}>Successful</p>
+                              <div className="text-left sm:text-center mt-0 sm:mt-1">
+                                <p className={`text-[11px] sm:text-xs font-bold uppercase tracking-widest ${order.status === 'completed' ? 'text-[#388e3c]' : 'text-gray-400'}`}>Delivered</p>
                                 {order.status === 'completed' && (
                                   <p className="text-[10px] text-gray-500 mt-0.5">Package delivered</p>
                                 )}

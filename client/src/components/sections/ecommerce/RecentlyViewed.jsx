@@ -103,13 +103,21 @@ const RecentlyViewed = () => {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    setLoading(true);
-    productsService.getProducts('?limit=8')
-      .then(res => {
-        setProducts(res.data?.data || []);
-      })
-      .catch(err => console.error(err))
-      .finally(() => setLoading(false));
+    try {
+      const storedItems = JSON.parse(localStorage.getItem('recentlyViewed')) || [];
+      // To match the existing structure, we map 'image' to 'images[0].url' if needed
+      // because the ProductDetails page stores it as { image: '...' }
+      // The RecentlyViewedItem expects { images: [{ url: '...' }] }
+      const formattedItems = storedItems.map(item => ({
+        ...item,
+        images: [{ url: item.image || (item.images && item.images[0]?.url) }]
+      }));
+      setProducts(formattedItems);
+    } catch (error) {
+      console.error('Error reading recently viewed products:', error);
+    } finally {
+      setLoading(false);
+    }
   }, []);
 
   if (loading) return <RecentlyViewedSkeleton />;
