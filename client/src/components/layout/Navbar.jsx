@@ -1,7 +1,7 @@
 import { useState, useEffect, useRef } from 'react';
 import { Link, useNavigate, useLocation } from 'react-router-dom';
 import { useDispatch, useSelector } from 'react-redux';
-import { Search, ShoppingCart, User as UserIcon, LogOut, ChevronDown, Menu, X, Package, Heart } from 'lucide-react';
+import { Search, ShoppingCart, User as UserIcon, LogOut, ChevronDown, Menu, X, Package, Heart, Loader } from 'lucide-react';
 import { logout as logoutAction } from '../../redux/slices/authSlice';
 import api from '../../services/api';
 import { notify } from '../ui/Toast';
@@ -122,9 +122,9 @@ const Navbar = ({ onMenuClick }) => {
                   placeholder="Search for Mens, Womens, Kids, Watches, Shoes..."
                   className="w-full pl-4 pr-10 py-2 bg-white rounded-sm text-sm text-black focus:outline-none placeholder-gray-400"
                 />
-                <button type="submit" className="absolute right-0 top-0 bottom-0 px-3 flex items-center justify-center text-[#2874f0]">
-                  <Search size={20} strokeWidth={2.5} />
-                </button>
+          <button type="submit" className="absolute right-0 top-0 bottom-0 px-3 flex items-center justify-center text-[#2874f0]">
+            {searchLoading ? <Loader size={20} className="animate-spin text-[#2874f0]" /> : <Search size={20} strokeWidth={2.5} />}
+          </button>
               </form>
 
               {/* Desktop Search Autocomplete */}
@@ -257,7 +257,7 @@ const Navbar = ({ onMenuClick }) => {
                 className="w-full pl-4 pr-10 py-2.5 bg-white rounded-sm text-sm text-black focus:outline-none placeholder-gray-400"
               />
               <button type="submit" className="absolute right-0 top-0 bottom-0 px-3 flex items-center justify-center text-[#2874f0]">
-                <Search size={18} strokeWidth={2.5} />
+                {searchLoading ? <Loader size={20} className="animate-spin text-[#2874f0]" /> : <Search size={20} strokeWidth={2.5} />}
               </button>
             </form>
             {/* Mobile Search Results */}

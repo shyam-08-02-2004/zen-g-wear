@@ -83,6 +83,31 @@ const CartPage = () => {
                   <span className="font-bold text-gray-900">New Delhi 110001</span>
                 </div>
               </div>
+              
+              {/* Free Shipping Progress Bar */}
+              {subtotal < 5000 && (
+                <div className="px-4 sm:px-5 py-3 bg-blue-50 border-b border-blue-100">
+                  <div className="flex items-center justify-between mb-1.5">
+                    <span className="text-xs text-blue-800 font-medium">
+                      🚚 Add <span className="font-bold">₹{(5000 - subtotal).toLocaleString('en-IN')}</span> more for FREE delivery!
+                    </span>
+                    <span className="text-xs text-blue-600 font-bold">{Math.round((subtotal/5000)*100)}%</span>
+                  </div>
+                  <div className="w-full bg-blue-200 rounded-full h-1.5">
+                    <div
+                      className="bg-[#2874f0] h-1.5 rounded-full transition-all duration-500"
+                      style={{ width: `${Math.min((subtotal/5000)*100, 100)}%` }}
+                    />
+                  </div>
+                </div>
+              )}
+              {subtotal >= 5000 && subtotal > 0 && (
+                <div className="px-4 sm:px-5 py-2.5 bg-green-50 border-b border-green-100 flex items-center gap-2">
+                  <span className="text-green-600 text-sm">✅</span>
+                  <span className="text-xs text-green-800 font-bold">Congratulations! You get FREE delivery on this order!</span>
+                </div>
+              )}
+              
               <ul className="divide-y divide-gray-100">
                 <AnimatePresence>
                   {cartItems.map((item, index) => (

@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { useParams, useNavigate } from 'react-router-dom';
+import { useParams, useNavigate, Link } from 'react-router-dom';
 import { useDispatch, useSelector } from 'react-redux';
 import { motion, AnimatePresence } from 'framer-motion';
 import { ShoppingBag, ShoppingCart, ChevronRight, Star, Heart, MapPin, CheckCircle2, XCircle, Edit2, Trash2, Image as ImageIcon, X } from 'lucide-react';
@@ -24,6 +24,7 @@ const ProductDetails = () => {
   const [selectedSize, setSelectedSize] = useState(null);
   const [showSizeGuide, setShowSizeGuide] = useState(false);
   const [similarProducts, setSimilarProducts] = useState([]);
+  const [viewingCount] = useState(() => Math.floor(Math.random() * 18) + 5);
 
   // Review states
   const [reviewTitle, setReviewTitle] = useState('');
@@ -457,17 +458,46 @@ const ProductDetails = () => {
               </h1>
 
               {/* Flipkart Assured & Ratings */}
-              <div className="flex items-center gap-3 mb-4">
+              <div className="flex items-center gap-3 mb-3">
                 <span className="bg-[#388e3c] text-white text-[12px] font-bold px-2 py-0.5 rounded-sm flex items-center">
                   {product.rating ? product.rating.toFixed(1) : '4.2'} <Star size={10} className="ml-1 fill-white" />
                 </span>
                 <span className="text-[#878787] text-[14px] font-medium">{product.numReviews || 8} Ratings & Reviews</span>
                 <img src="https://static-assets-web.flixcart.com/fk-p-linchpin-web/fk-cp-zion/img/fa_62673a.png" alt="Assured" className="h-5 ml-auto sm:ml-4" />
               </div>
+              {/* Viewing Badge */}
+              <div className="flex items-center gap-2 mb-4">
+                <span className="inline-flex items-center gap-1.5 bg-orange-50 border border-orange-200 text-orange-700 text-[11px] font-bold px-2.5 py-1 rounded-sm">
+                  <span className="w-1.5 h-1.5 rounded-full bg-orange-500 animate-pulse inline-block"></span>
+                  🔥 {viewingCount} people are viewing this right now
+                </span>
+              </div>
 
               <div className="text-[#388e3c] text-[13px] font-bold mb-1">Special price</div>
               {/* Price */}
               <div className="flex items-end gap-3 mb-6">
+  {/* Calculate price with packaging fee and GST */}
+  {(() => {
+    const basePrice = product.discountPrice || product.price;
+    const packagingFee = 20; // Secured packaging fee (INR)
+    const priceWithGst = ((basePrice + packagingFee) * 1.05).toFixed(2);
+    return (
+      <span className="text-[28px] font-bold text-[#212121] leading-none">
+        ₹{Number(priceWithGst).toLocaleString('en-IN')}
+      </span>
+    );
+  })()}
+  {product.discountPrice && (
+    <>
+      <span className="text-[16px] text-[#878787] line-through mb-1">
+        ₹{product.price.toLocaleString('en-IN')}
+      </span>
+      <span className="text-[16px] font-bold text-[#388e3c] mb-1">
+        {product.discountPercentage}% off
+      </span>
+    </>
+  )}
+</div>
                 <span className="text-[28px] font-bold text-[#212121] leading-none">
                   ₹{(product.discountPrice || product.price).toLocaleString('en-IN')}
                 </span>
@@ -521,8 +551,19 @@ const ProductDetails = () => {
                   </div>
                 )}
 
+                {/* Low Stock Alert */}
+                {product.stock > 0 && product.stock <= 5 && (
+                  <div className="mt-4 mb-2 flex items-center gap-2 bg-red-50 border border-red-200 px-3 py-2 rounded-sm">
+                    <span className="text-red-500 text-sm font-bold">⚡</span>
+                    <span className="text-red-700 text-xs font-bold">Only {product.stock} left in stock — Order soon!</span>
+                  </div>
+                )}
+                {product.stock === 0 && (
+                  <div className="mt-4 mb-2 flex items-center gap-2 bg-gray-100 border border-gray-200 px-3 py-2 rounded-sm">
+                    <span className="text-gray-500 text-xs font-bold">❌ Out of Stock</span>
+                  </div>
+                )}
 
-                
               </form>
 
               {/* Delivery & Services */}
@@ -764,7 +805,7 @@ const ProductDetails = () => {
                 </div>
               </div>
 
-            </div>
+
           </div>
         </div>
 
@@ -839,26 +880,112 @@ const ProductDetails = () => {
         )}
 
         {/* Similar Products */}
-        {similarProducts.length > 0 && (
-          <div className="mt-24 border-t border-gray-200 pt-16">
-            <div className="flex items-center justify-between mb-8">
-              <h2 className="text-2xl font-display font-black uppercase tracking-widest text-black">Similar Products</h2>
+        {/* Similar Products */}
+{similarProducts.length > 0 && (
+  <div className="mt-24 border-t border-gray-200 pt-16">
+    <div className="flex items-center justify-between mb-8">
+      <h2 className="text-2xl font-display font-black uppercase tracking-widest text-black">Related Products</h2>
+      <Link to={`/search?relatedTo=${product._id}`} className="text-sm text-[#0a2885] font-semibold hover:underline">View All</Link>
+    </div>
+    <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-6">
+      {similarProducts.map((p) => (
+        <div
+          key={p._id}
+          className="group bg-white rounded-lg shadow-sm premium-shadow-hover overflow-hidden cursor-pointer hover:scale-105 transition-transform"
+          onClick={() => { navigate(`/product/${p._id}`); window.scrollTo(0, 0); }}
+        >
+          <div className="relative aspect-[3/4] bg-gray-100">
+            <img
+              src={p.images?.[0]?.url}
+              alt={p.name}
+              className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105"
+            />
+          </div>
+          <div className="p-3 flex flex-col">
+            <h3 className="text-xs font-bold text-gray-500 uppercase tracking-widest mb-1">
+              {p.brand || 'ZEN-G WEAR'}
+            </h3>
+            <p className="text-sm font-bold text-black mb-1 line-clamp-1">{p.name}</p>
+            <div className="flex items-center justify-between mt-2">
+              <span className="text-sm font-bold text-black">
+                Rs {(p.discountPrice || p.price).toLocaleString('en-IN')}
+              </span>
+              {p.discountPrice && (
+                <span className="text-xs text-gray-400 line-through ml-1">
+                  Rs {p.price.toLocaleString('en-IN')}
+                </span>
+              )}
             </div>
-            <div className="grid grid-cols-2 md:grid-cols-4 gap-6">
-              {similarProducts.map((p) => (
-                <div key={p._id} className="group cursor-pointer" onClick={() => { navigate(`/product/${p._id}`); window.scrollTo(0,0); }}>
-                  <div className="aspect-[3/4] bg-gray-100 mb-4 overflow-hidden relative">
-                    <img src={p.images?.[0]?.url} alt={p.name} className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" />
+            <button
+              onClick={(e) => {
+                e.stopPropagation();
+                dispatch(
+                  addToCart({
+                    product: p._id,
+                    name: p.name,
+                    image: p.images?.[0]?.url,
+                    price: p.discountPrice || p.price,
+                    size: p.sizes?.[0] || 'M',
+                    quantity: 1,
+                  })
+                );
+                toast.success('Added to cart');
+              }}
+              className="mt-2 w-full bg-[#0a2885] text-white text-xs font-bold py-2 rounded hover:bg-[#0a2885]/90 transition-colors"
+            >
+              Add to Cart
+            </button>
+          </div>
+        </div>
+      ))}
+    </div>
+  </div>
+)}
+                  key={p._id}
+                  className="group bg-white rounded-lg shadow-sm premium-shadow-hover overflow-hidden cursor-pointer hover:scale-105 transition-transform"
+                  onClick={() => { navigate(`/product/${p._id}`); window.scrollTo(0, 0); }}
+                >
+                  <div className="relative aspect-[3/4] bg-gray-100">
+                    <img
+                      src={p.images?.[0]?.url}
+                      alt={p.name}
+                      className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105"
+                    />
                   </div>
-                  <div>
-                    <h3 className="text-xs font-bold text-gray-500 uppercase tracking-widest mb-1">{p.brand || 'ZEN-G WEAR'}</h3>
-                    <p className="text-sm font-bold text-black mb-2 line-clamp-1">{p.name}</p>
-                    <div className="flex items-center gap-2">
-                      <span className="text-sm font-bold text-black">Rs {(p.discountPrice || p.price).toLocaleString('en-IN')}</span>
+                  <div className="p-3 flex flex-col">
+                    <h3 className="text-xs font-bold text-gray-500 uppercase tracking-widest mb-1">
+                      {p.brand || 'ZEN-G WEAR'}
+                    </h3>
+                    <p className="text-sm font-bold text-black mb-1 line-clamp-1">{p.name}</p>
+                    <div className="flex items-center justify-between mt-2">
+                      <span className="text-sm font-bold text-black">
+                        Rs {(p.discountPrice || p.price).toLocaleString('en-IN')}
+                      </span>
                       {p.discountPrice && (
-                        <span className="text-xs text-gray-400 line-through">Rs {p.price.toLocaleString('en-IN')}</span>
+                        <span className="text-xs text-gray-400 line-through ml-1">
+                          Rs {p.price.toLocaleString('en-IN')}
+                        </span>
                       )}
                     </div>
+                    <button
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        dispatch(
+                          addToCart({
+                            product: p._id,
+                            name: p.name,
+                            image: p.images?.[0]?.url,
+                            price: p.discountPrice || p.price,
+                            size: p.sizes?.[0] || 'M',
+                            quantity: 1,
+                          })
+                        );
+                        toast.success('Added to cart');
+                      }}
+                      className="mt-2 w-full bg-[#0a2885] text-white text-xs font-bold py-2 rounded hover:bg-[#0a2885]/90 transition-colors"
+                    >
+                      Add to Cart
+                    </button>
                   </div>
                 </div>
               ))}

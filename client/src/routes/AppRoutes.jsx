@@ -11,7 +11,7 @@ import ProductListing from '../pages/shop/ProductListing.jsx';
 import ProductDetails from '../pages/shop/ProductDetails.jsx';
 import CartPage from '../pages/shop/CartPage.jsx';
 import CheckoutPage from '../pages/shop/CheckoutPage.jsx';
-import OrderSuccessPage from '../pages/shop/OrderSuccessPage.jsx';
+import OrderTracking from '../pages/shop/OrderTracking.jsx';
 
 import DashboardOverview from '../pages/dashboard/DashboardOverview.jsx';
 import ProfilePage from '../pages/dashboard/ProfilePage.jsx';
@@ -55,7 +55,9 @@ function AppRoutes() {
         <Route element={<ProtectedRoute />}>
           <Route path="/cart" element={<CartPage />} />
           <Route path="/checkout" element={<CheckoutPage />} />
-          <Route path="/order-success" element={<OrderSuccessPage />} />
+
+
+          <Route path="/track-order" element={<OrderTracking />} />
         </Route>
       </Route>
 
