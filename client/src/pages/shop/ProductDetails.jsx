@@ -36,10 +36,6 @@ const ProductDetails = () => {
   const [wishlistLoading, setWishlistLoading] = useState(false);
 
   const [reviews, setReviews] = useState([]);
-  const [reviewRating, setReviewRating] = useState(0);
-  const [reviewTitle, setReviewTitle] = useState('');
-  const [reviewComment, setReviewComment] = useState('');
-  const [reviewSubmitLoading, setReviewSubmitLoading] = useState(false);
 
   const [pincode, setPincode] = useState('');
   const [deliveryStatus, setDeliveryStatus] = useState(null); // null, 'checking', 'success', 'error'
