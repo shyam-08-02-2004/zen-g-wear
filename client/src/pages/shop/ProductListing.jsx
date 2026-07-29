@@ -384,26 +384,29 @@ const ProductListing = () => {
           {/* Mobile Filter Backdrop */}
           {filterOpen && (
             <div 
-              className="fixed inset-0 bg-black/50 z-30 lg:hidden"
+              className="fixed inset-0 bg-black/60 backdrop-blur-sm z-[60] lg:hidden transition-opacity"
               onClick={() => setFilterOpen(false)}
             />
           )}
 
           {/* Sidebar Filters */}
           <aside className={`
-            fixed top-0 left-0 h-full w-72 bg-white z-40 shadow-2xl transform transition-transform duration-300
-            lg:relative lg:top-auto lg:left-auto lg:h-auto lg:w-64 lg:shadow-none lg:transform-none lg:z-auto
+            fixed top-0 left-0 h-[100dvh] w-[85vw] max-w-[320px] bg-white z-[70] shadow-[4px_0_24px_rgba(0,0,0,0.15)] transform transition-transform duration-300 ease-in-out flex flex-col
+            lg:relative lg:top-auto lg:left-auto lg:h-auto lg:w-64 lg:shadow-none lg:transform-none lg:z-auto lg:block lg:bg-transparent
             ${filterOpen ? 'translate-x-0' : '-translate-x-full lg:translate-x-0'}
           `}>
             {/* Mobile Filter Header */}
-            <div className="lg:hidden flex items-center justify-between p-4 border-b border-gray-200 bg-gray-50">
-              <h2 className="text-sm font-bold uppercase tracking-wider">Filters</h2>
-              <button onClick={() => setFilterOpen(false)} className="p-1 hover:bg-gray-200 rounded-full">
-                <X size={18} />
+            <div className="lg:hidden flex items-center justify-between p-5 border-b border-gray-100 bg-white sticky top-0 z-10">
+              <div className="flex items-center gap-2">
+                <SlidersHorizontal size={20} className="text-[#2874f0]" />
+                <h2 className="text-[16px] font-bold uppercase tracking-wider text-gray-900">Filters</h2>
+              </div>
+              <button onClick={() => setFilterOpen(false)} className="p-2 hover:bg-gray-100 rounded-full transition-colors text-gray-500">
+                <X size={20} />
               </button>
             </div>
-            <div className="overflow-y-auto h-full pb-20 lg:pb-0 lg:overflow-visible lg:sticky lg:top-24">
-              <div className="pr-0 lg:pr-4 p-4 lg:p-0">
+            <div className="overflow-y-auto flex-1 pb-24 lg:pb-0 lg:overflow-visible lg:sticky lg:top-24 custom-scrollbar bg-white lg:bg-transparent">
+              <div className="pr-0 lg:pr-4 p-5 lg:p-0">
               
               {/* Category Filter */}
               <FilterAccordion title="Category" defaultOpen={true}>
@@ -550,6 +553,16 @@ const ProductListing = () => {
 
 
               </div>
+            </div>
+            
+            {/* Mobile Filter Footer */}
+            <div className="lg:hidden p-4 border-t border-gray-100 bg-white sticky bottom-0 z-10 shadow-[0_-4px_12px_rgba(0,0,0,0.05)]">
+              <button 
+                onClick={() => setFilterOpen(false)}
+                className="w-full bg-[#fb641b] text-white py-3 rounded-sm font-bold text-[14px] uppercase tracking-wider shadow-sm hover:shadow-md transition-shadow"
+              >
+                Apply Filters
+              </button>
             </div>
           </aside>
 
