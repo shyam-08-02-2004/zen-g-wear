@@ -41,10 +41,14 @@ const OrderSuccessPage = () => {
               <CheckCircle size={40} />
             </motion.div>
             <h1 className="text-3xl font-display font-black text-black uppercase tracking-widest mb-4">Order Received!</h1>
-            <p className="text-sm font-bold text-gray-500 uppercase tracking-widest leading-relaxed">
-              Your order has been placed but is awaiting payment verification. <br/>
-              Our team will verify your UTR and confirm your order shortly.
-            </p>
+            <div className="bg-red-50 border-2 border-red-500 p-4 rounded-md my-6 inline-block w-full">
+              <h2 className="text-red-700 font-black text-lg uppercase tracking-wide mb-2">⚠️ IMPORTANT WARNING</h2>
+              <p className="text-sm font-bold text-red-600 uppercase tracking-widest leading-relaxed">
+                Your order is pending. Do not send a fake UTR.<br/>
+                Our system will cross-check the bank records before shipping your order. 
+              </p>
+              <p className="text-[10px] text-red-500 font-bold mt-2 uppercase">Fake UTRs will lead to permanent account suspension.</p>
+            </div>
           </div>
 
           <div className="bg-gray-50 border border-gray-200 p-6 sm:p-8 mb-10">

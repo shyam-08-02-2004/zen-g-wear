@@ -172,12 +172,13 @@ const CheckoutPage = () => {
       return;
     }
 
-    if (!utrNumber || utrNumber.length < 4) {
-      toast.custom((t) => (
-        <div className="max-w-md w-full bg-red-600 text-white shadow-lg rounded-lg pointer-events-auto p-4 font-bold">
-          Please enter a valid UTR/Reference number.
+    if (!utrNumber || utrNumber.length !== 12) {
+      toast.error(
+        <div className="flex flex-col">
+          <span className="font-bold">Invalid UTR Number</span>
+          <span className="text-xs">Please enter exactly 12 digits of your UTR/Reference number.</span>
         </div>
-      ));
+      );
       return;
     }
 
