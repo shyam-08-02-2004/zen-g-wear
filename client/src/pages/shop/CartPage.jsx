@@ -106,9 +106,9 @@ const CartPage = () => {
                           />
                         </div>
                         
-                        <div className="flex-1 flex flex-col justify-between">
-                          <div className="flex justify-between items-start">
-                            <div>
+                        <div className="flex-1 flex flex-col justify-between min-w-0">
+                          <div className="flex justify-between items-start gap-2">
+                            <div className="min-w-0">
                               <h3 className="text-[15px] text-gray-900 line-clamp-1 hover:text-[#2874f0]">
                                 <Link to={`/product/${item.product}`}>
                                   {item.name}
@@ -131,7 +131,7 @@ const CartPage = () => {
                             </p>
                           </div>
                           
-                          <div className="mt-4 flex items-center gap-6">
+                          <div className="mt-4 flex flex-wrap items-center gap-3 sm:gap-6">
                             <div className="flex items-center gap-2 border border-gray-300 rounded-sm">
                               <button 
                                 type="button"
