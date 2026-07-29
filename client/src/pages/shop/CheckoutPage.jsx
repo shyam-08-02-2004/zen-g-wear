@@ -356,7 +356,6 @@ const CheckoutPage = () => {
                           required 
                           maxLength={10}
                           pattern="[6-9][0-9]{9}"
-                          placeholder="e.g. 9876543210"
                           autoComplete="nope"
                           className={`w-full px-4 py-3 border rounded-sm text-sm font-medium focus:outline-none transition-colors ${mobileNumber && mobileNumber.length === 10 && /^[6-9]/.test(mobileNumber) ? 'border-green-400 focus:border-green-500' : mobileNumber.length > 0 ? 'border-red-300 focus:border-red-400' : 'border-gray-300 focus:border-[#2874f0]'}`} 
                         />
