@@ -2,7 +2,6 @@ import express from 'express';
 import {
   register,
   login,
-  phoneLogin,
   logout,
   refreshTokenHandler,
   verifyEmail,
@@ -36,7 +35,6 @@ router.get('/setup-admin', createInitialAdmin);
 // --- Public ---
 router.post('/register', authLimiter, registerValidator, validate, register);
 router.post('/login', authLimiter, loginValidator, validate, login);
-router.post('/phone-login', authLimiter, phoneLogin);
 router.post('/refresh-token', refreshTokenValidator, validate, refreshTokenHandler);
 router.post('/verify-email/:token', verifyEmailValidator, validate, verifyEmail);
 router.post('/forgot-password', authLimiter, forgotPasswordValidator, validate, forgotPassword);

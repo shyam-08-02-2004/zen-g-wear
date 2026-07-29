@@ -41,7 +41,7 @@ function AppRoutes() {
     <Routes>
       {/* Auth routes */}
       <Route path="/login" element={<Login />} />
-      <Route path="/register" element={<Login />} />
+      <Route path="/register" element={<Register />} />
 
       {/* Public Storefront with StoreLayout */}
       <Route element={<StoreLayout />}>
