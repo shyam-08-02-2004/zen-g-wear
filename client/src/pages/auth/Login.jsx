@@ -72,44 +72,42 @@ function Login() {
           )}
 
           <form className="space-y-8 mt-4 lg:mt-0" onSubmit={handleSubmit}>
-            <div className="relative group">
+            <div className="group">
+              <label 
+                htmlFor="email"
+                className="block text-xs font-semibold text-gray-500 mb-1 transition-colors group-focus-within:text-[#2874f0]"
+              >
+                Enter Email Address
+              </label>
               <input
                 id="email"
                 type="email"
                 required
-                className="block w-full border-b-[1.5px] border-gray-300 px-0 py-2.5 text-gray-900 focus:border-[#2874f0] focus:outline-none transition-colors bg-transparent text-[16px] peer"
-                placeholder=" "
+                className="block w-full border-b-[1.5px] border-gray-300 px-0 py-2 text-gray-900 focus:border-[#2874f0] focus:outline-none transition-colors bg-transparent text-[16px]"
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
               />
-              <label 
-                htmlFor="email"
-                className="absolute left-0 transition-all text-gray-500 peer-placeholder-shown:top-2.5 peer-placeholder-shown:text-[16px] -top-4 text-xs peer-focus:-top-4 peer-focus:text-xs peer-focus:text-[#2874f0]"
-              >
-                Enter Email Address
-              </label>
             </div>
 
             <div className="relative group">
+              <label 
+                htmlFor="password"
+                className="block text-xs font-semibold text-gray-500 mb-1 transition-colors group-focus-within:text-[#2874f0]"
+              >
+                Enter Password
+              </label>
               <input
                 id="password"
                 type={showPassword ? "text" : "password"}
                 required
-                className="block w-full border-b-[1.5px] border-gray-300 px-0 py-2.5 pr-12 text-gray-900 focus:border-[#2874f0] focus:outline-none transition-colors bg-transparent text-[16px] peer"
-                placeholder=" "
+                className="block w-full border-b-[1.5px] border-gray-300 px-0 py-2 pr-12 text-gray-900 focus:border-[#2874f0] focus:outline-none transition-colors bg-transparent text-[16px]"
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
               />
-              <label 
-                htmlFor="password"
-                className="absolute left-0 transition-all text-gray-500 peer-placeholder-shown:top-2.5 peer-placeholder-shown:text-[16px] -top-4 text-xs peer-focus:-top-4 peer-focus:text-xs peer-focus:text-[#2874f0]"
-              >
-                Enter Password
-              </label>
               <button
                 type="button"
                 onClick={() => setShowPassword(!showPassword)}
-                className="absolute right-0 top-2.5 text-[#2874f0] font-semibold text-sm hover:text-blue-700 transition-colors bg-white px-1"
+                className="absolute right-0 bottom-2 text-[#2874f0] font-semibold text-sm hover:text-blue-700 transition-colors bg-white px-1"
               >
                 {showPassword ? 'Hide' : 'Show'}
               </button>
