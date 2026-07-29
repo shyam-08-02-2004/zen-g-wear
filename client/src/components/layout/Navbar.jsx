@@ -1,7 +1,8 @@
 import { useState, useEffect, useRef } from 'react';
 import { Link, useNavigate, useLocation } from 'react-router-dom';
 import { useDispatch, useSelector } from 'react-redux';
-import { Search, ShoppingCart, User as UserIcon, LogOut, ChevronDown, Menu, X, Package, Heart, Loader } from 'lucide-react';
+import { Search, ShoppingCart, User as UserIcon, LogOut, ChevronDown, Menu, X, Package, Heart, Loader, Sun, Moon } from 'lucide-react';
+import { useTheme } from '../../context/ThemeContext';
 import { logout as logoutAction } from '../../redux/slices/authSlice';
 import api from '../../services/api';
 import { notify } from '../ui/Toast';
@@ -14,6 +15,7 @@ const Navbar = ({ onMenuClick }) => {
   const { cartItems } = useSelector((state) => state.cart);
   const cartCount = cartItems?.reduce((acc, item) => acc + item.quantity, 0) || 0;
   const isAdmin = userInfo?.role === 'admin';
+  const { isDarkMode, toggleDarkMode } = useTheme();
 
   const [searchQuery, setSearchQuery] = useState('');
   const [userMenuOpen, setUserMenuOpen] = useState(false);
@@ -85,9 +87,10 @@ const Navbar = ({ onMenuClick }) => {
 
   return (
     <>
-      <header className="sticky top-0 z-50 w-full bg-[#2874f0] shadow-md font-sans">
-        <div className="max-w-[1248px] mx-auto px-3 sm:px-6">
-          <div className="flex items-center justify-between h-14 lg:h-16 gap-2 lg:gap-8">
+      <header className="sticky top-0 z-50 w-full font-sans shadow-sm">
+      {/* Top Banner (Flipkart Style) */}
+      <div className="bg-[#2874f0] dark:bg-gray-800 text-white">
+        <div className="max-w-[1248px] mx-auto px-3 sm:px-6 h-14 lg:h-16 flex items-center justify-between gap-2 lg:gap-8">
 
             {/* Left: Logo */}
             <div className="flex items-center gap-2 shrink-0">
@@ -217,6 +220,15 @@ const Navbar = ({ onMenuClick }) => {
                 aria-label="Menu"
               >
                 {mobileMenuOpen ? <X size={22} /> : <UserIcon size={20} />}
+              </button>
+
+              {/* Dark Mode Toggle */}
+              <button
+                onClick={toggleDarkMode}
+                className="text-white p-1.5 hover:bg-white/10 rounded-sm transition-colors flex items-center gap-1.5"
+                aria-label="Toggle Dark Mode"
+              >
+                {isDarkMode ? <Sun size={20} /> : <Moon size={20} />}
               </button>
 
               {/* Wishlist */}

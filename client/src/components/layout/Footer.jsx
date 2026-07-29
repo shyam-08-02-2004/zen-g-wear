@@ -2,7 +2,7 @@ import { Link } from 'react-router-dom';
 import { Instagram, Facebook, Youtube, Twitter, Mail, MapPin, ShieldCheck, Truck, Headphones } from 'lucide-react';
 
 const Footer = () => (
-  <footer className="bg-[#172337] text-white font-sans">
+  <footer className="bg-[#172337] dark:bg-gray-950 text-white font-sans">
 
     {/* Trust Badges */}
     <div className="border-b border-white/10">

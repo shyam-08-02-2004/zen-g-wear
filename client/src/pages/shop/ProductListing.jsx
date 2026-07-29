@@ -174,13 +174,13 @@ const ProductCard = ({ product }) => {
       </Link>
 
       {/* Product Info - Premium Style */}
-      <div className="pt-4 px-3 pb-4 flex flex-col gap-1.5 flex-grow justify-between bg-white">
+      <div className="pt-4 px-3 pb-4 flex flex-col gap-1.5 flex-grow justify-between bg-white dark:bg-gray-800">
         <div className="flex flex-col">
           <Link to={`/product/${product._id}`}>
-            <h3 className="text-[10px] font-bold text-gray-400 uppercase tracking-widest mb-0.5">
+            <h3 className="text-[10px] font-bold text-gray-400 dark:text-gray-400 uppercase tracking-widest mb-0.5">
               {product.brand || 'Brand'}
             </h3>
-            <p className="text-sm font-semibold text-gray-800 line-clamp-1 hover:text-blue-600 transition-colors">
+            <p className="text-sm font-semibold text-gray-800 dark:text-gray-100 line-clamp-1 hover:text-blue-600 transition-colors">
               {product.name}
             </p>
           </Link>
@@ -200,9 +200,9 @@ const ProductCard = ({ product }) => {
           </div>
         </div>
 
-        <div className="flex items-center justify-between mt-2 pt-2 border-t border-gray-50">
+        <div className="flex items-center justify-between mt-2 pt-2 border-t border-gray-50 dark:border-gray-700">
           <div className="flex flex-wrap items-baseline gap-1.5">
-            <span className="text-base font-black text-black">
+            <span className="text-base font-black text-black dark:text-white">
               ₹{(product.discountPrice || product.price).toLocaleString('en-IN')}
             </span>
             {product.discountPrice && (
@@ -236,9 +236,9 @@ const ProductCard = ({ product }) => {
 const FilterAccordion = ({ title, defaultOpen = true, children }) => {
   const [isOpen, setIsOpen] = useState(defaultOpen);
   return (
-    <div className="border-b border-gray-200 py-4">
+    <div className="border-b border-gray-200 dark:border-gray-700 py-4">
       <button 
-        className="flex w-full items-center justify-between text-sm font-bold text-gray-900 uppercase tracking-wider"
+        className="flex w-full items-center justify-between text-sm font-bold text-gray-900 dark:text-gray-100 uppercase tracking-wider"
         onClick={() => setIsOpen(!isOpen)}
       >
         {title}
