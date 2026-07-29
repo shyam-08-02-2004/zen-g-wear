@@ -155,6 +155,14 @@ const CheckoutPage = () => {
         ));
         return;
       }
+      if (!/^[6-9]\d{9}$/.test(mobileNumber)) {
+        toast.custom((t) => (
+          <div className="max-w-md w-full bg-red-600 text-white shadow-lg rounded-lg pointer-events-auto p-4 font-bold">
+            Please enter a valid 10-digit Indian mobile number.
+          </div>
+        ));
+        return;
+      }
     } else if (!selectedAddressId) {
       toast.custom((t) => (
         <div className="max-w-md w-full bg-red-600 text-white shadow-lg rounded-lg pointer-events-auto p-4 font-bold">
@@ -337,15 +345,29 @@ const CheckoutPage = () => {
                       </div>
 
                       <div className="sm:col-span-1">
-                        <label className="block text-xs font-bold text-gray-500 mb-1">Mobile Number</label>
+                        <label className="block text-xs font-bold text-gray-500 mb-1">Mobile Number <span className="text-red-500">*</span></label>
                         <input 
                           type="tel" 
                           value={mobileNumber} 
-                          onChange={(e) => setMobileNumber(e.target.value)} 
+                          onChange={(e) => {
+                            const val = e.target.value.replace(/\D/g, '').slice(0, 10);
+                            setMobileNumber(val);
+                          }} 
                           required 
-                          placeholder="10-digit mobile number"
-                          className="w-full px-4 py-3 border border-gray-300 rounded-sm text-sm font-medium focus:outline-none focus:border-[#2874f0] transition-colors" 
+                          maxLength={10}
+                          pattern="[6-9][0-9]{9}"
+                          placeholder="e.g. 9876543210"
+                          className={`w-full px-4 py-3 border rounded-sm text-sm font-medium focus:outline-none transition-colors ${mobileNumber && mobileNumber.length === 10 && /^[6-9]/.test(mobileNumber) ? 'border-green-400 focus:border-green-500' : mobileNumber.length > 0 ? 'border-red-300 focus:border-red-400' : 'border-gray-300 focus:border-[#2874f0]'}`} 
                         />
+                        {mobileNumber.length > 0 && mobileNumber.length < 10 && (
+                          <p className="text-[10px] text-red-500 mt-1 font-bold">{10 - mobileNumber.length} more digit(s) needed</p>
+                        )}
+                        {mobileNumber.length === 10 && !/^[6-9]/.test(mobileNumber) && (
+                          <p className="text-[10px] text-red-500 mt-1 font-bold">Number must start with 6, 7, 8, or 9</p>
+                        )}
+                        {mobileNumber.length === 10 && /^[6-9]/.test(mobileNumber) && (
+                          <p className="text-[10px] text-green-600 mt-1 font-bold">✓ Valid number</p>
+                        )}
                       </div>
                       
                       <div className="sm:col-span-2">
