@@ -1,16 +1,16 @@
 import { useState } from 'react';
-import { Search, X, ShoppingBag, Eye, CheckCircle2, Package, Truck, Home, ChevronDown, ChevronUp } from 'lucide-react';
+import { Search, ShoppingBag, ChevronRight, CheckCircle2, Package, Truck, Home } from 'lucide-react';
 import ApiState from '../../components/dashboard/ApiState';
 import { useApi, getErrorMessage } from '../../hooks/useApi';
 import ordersService from '../../services/ordersService';
 import { notify } from '../../components/ui/Toast';
-import { motion, AnimatePresence } from 'framer-motion';
+import { Link } from 'react-router-dom';
 
 const STATUS_OPTIONS = [
-  { value: '', label: 'All Statuses' },
+  { value: '', label: 'All Orders' },
   { value: 'pending', label: 'Pending' },
   { value: 'processing', label: 'Processing' },
-  { value: 'completed', label: 'Successful' },
+  { value: 'completed', label: 'Delivered' },
   { value: 'cancelled', label: 'Cancelled' },
 ];
 
@@ -18,67 +18,60 @@ const OrdersPage = () => {
   const [search, setSearch] = useState('');
   const [status, setStatus] = useState('');
   const [page, setPage] = useState(1);
-  const [cancelTarget, setCancelTarget] = useState(null);
-  const [cancelling, setCancelling] = useState(false);
-  const [expandedOrderId, setExpandedOrderId] = useState(null);
 
   const { data, loading, error, refetch } = useApi(
     () => ordersService.getMyOrders({ search: search || undefined, status: status || undefined, page, limit: 10 }),
     [search, status, page]
   );
 
-  const handleCancel = async () => {
-    if (!cancelTarget) return;
-    setCancelling(true);
-    try {
-      await ordersService.cancelOrder(cancelTarget._id);
-      notify.success(`Order ${cancelTarget.orderNumber} cancelled`);
-      setCancelTarget(null);
-      refetch();
-    } catch (err) {
-      notify.error(getErrorMessage(err));
-    } finally {
-      setCancelling(false);
-    }
-  };
-
-  const getStatusStyle = (status) => {
+  const getStatusDisplay = (status, date) => {
+    const formattedDate = new Date(date).toLocaleDateString('en-IN', { month: 'short', day: 'numeric' });
     switch(status) {
-      case 'completed': return 'bg-green-100 text-green-800';
-      case 'processing': return 'bg-blue-100 text-blue-800';
-      case 'pending': return 'bg-yellow-100 text-yellow-800';
-      case 'cancelled': case 'failed': return 'bg-red-100 text-red-800';
-      default: return 'bg-gray-100 text-gray-800';
+      case 'completed': 
+        return { text: `Delivered on ${formattedDate}`, color: 'text-green-600', dot: 'bg-green-600', icon: <CheckCircle2 size={14}/> };
+      case 'processing': 
+        return { text: 'Arriving soon', color: 'text-blue-600', dot: 'bg-blue-600', icon: <Package size={14}/> };
+      case 'pending': 
+        return { text: 'Order Placed', color: 'text-orange-500', dot: 'bg-orange-500', icon: <Package size={14}/> };
+      case 'cancelled': case 'failed': 
+        return { text: 'Cancelled', color: 'text-red-500', dot: 'bg-red-500', icon: <CheckCircle2 size={14}/> };
+      default: 
+        return { text: status, color: 'text-gray-600', dot: 'bg-gray-600', icon: null };
     }
   };
 
   return (
-    <div className="font-sans max-w-6xl">
-      <div className="mb-8">
-        <h1 className="text-2xl font-display font-black text-black uppercase tracking-widest mb-2">My Orders</h1>
-        <p className="text-sm text-gray-500 uppercase tracking-widest">Track and manage your purchases.</p>
+    <div className="font-sans min-h-[500px]">
+      
+      {/* Filters (Desktop) */}
+      <div className="hidden lg:flex items-center gap-4 mb-4">
+        {STATUS_OPTIONS.map(opt => (
+          <button
+            key={opt.value}
+            onClick={() => { setPage(1); setStatus(opt.value); }}
+            className={`px-4 py-1.5 rounded-full text-sm font-medium transition-colors ${
+              status === opt.value 
+                ? 'bg-[#2874f0] text-white' 
+                : 'bg-white text-gray-700 border border-gray-200 hover:border-[#2874f0] hover:text-[#2874f0]'
+            }`}
+          >
+            {opt.label}
+          </button>
+        ))}
       </div>
 
-      {/* Toolbar */}
-      <div className="bg-gray-50 border border-gray-200 p-4 mb-8 flex flex-col sm:flex-row gap-4 justify-between items-center">
-        <div className="relative w-full sm:max-w-md">
-          <Search className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400" size={16} />
-          <input
-            type="text"
-            placeholder="Search order number..."
-            value={search}
-            onChange={(e) => { setPage(1); setSearch(e.target.value); }}
-            className="w-full pl-10 pr-4 py-3 bg-white border border-gray-200 focus:outline-none focus:border-black transition-colors text-sm"
-          />
-        </div>
-        <div className="w-full sm:w-auto">
-          <select
-            value={status}
-            onChange={(e) => { setPage(1); setStatus(e.target.value); }}
-            className="w-full sm:w-48 appearance-none px-4 py-3 bg-white border border-gray-200 text-sm font-bold uppercase tracking-widest focus:outline-none focus:border-black cursor-pointer"
-          >
-            {STATUS_OPTIONS.map(opt => <option key={opt.value} value={opt.value}>{opt.label}</option>)}
-          </select>
+      {/* Search Bar */}
+      <div className="bg-white lg:shadow-sm border-b lg:border border-gray-200 lg:rounded-sm mb-4 lg:mb-4 flex items-center px-4 py-2">
+        <input
+          type="text"
+          placeholder="Search your orders here"
+          value={search}
+          onChange={(e) => { setPage(1); setSearch(e.target.value); }}
+          className="w-full py-2 bg-transparent focus:outline-none text-sm text-gray-800 placeholder-gray-500"
+        />
+        <div className="bg-[#2874f0] text-white px-6 py-2 rounded-sm text-sm font-medium cursor-pointer">
+          <Search size={16} className="inline-block mr-2" />
+          Search Orders
         </div>
       </div>
 
@@ -93,217 +86,70 @@ const OrdersPage = () => {
           description: "You haven't placed any orders yet, or none match your search.",
         }}
       >
-        <div className="space-y-6">
-          {data?.orders?.map((order) => (
-            <div key={order._id} className="border border-gray-200 bg-white">
-              {/* Order Header */}
-              <div className="bg-gray-50 px-6 py-4 border-b border-gray-200 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
-                <div className="flex flex-wrap items-center gap-x-8 gap-y-2">
-                  <div>
-                    <p className="text-[10px] font-bold text-gray-500 uppercase tracking-widest mb-1">Order Placed</p>
-                    <p className="text-sm font-bold text-black">{new Date(order.createdAt).toLocaleDateString('en-IN', { year: 'numeric', month: 'long', day: 'numeric' })}</p>
-                  </div>
-                  <div>
-                    <p className="text-[10px] font-bold text-gray-500 uppercase tracking-widest mb-1">Total</p>
-                    <p className="text-sm font-bold text-black">Rs {order.totalPrice?.toLocaleString('en-IN')}</p>
-                  </div>
-                  <div>
-                    <p className="text-[10px] font-bold text-gray-500 uppercase tracking-widest mb-1">Order #</p>
-                    <p className="text-sm font-bold text-black uppercase">{order.orderNumber}</p>
-                  </div>
-                </div>
-                <div className="flex items-center gap-4">
-                  <span className={`text-[10px] font-bold uppercase tracking-widest px-3 py-1.5 ${getStatusStyle(order.status)}`}>
-                    {order.status === 'completed' ? 'SUCCESSFUL' : order.status}
-                  </span>
-                </div>
-              </div>
-
-              {/* Order Items Summary */}
-              <div className="px-6 py-6 flex flex-col sm:flex-row sm:items-center justify-between gap-6">
-                <div className="flex items-center gap-4">
-                  <div className="w-16 h-16 bg-gray-100 flex items-center justify-center shrink-0">
-                    <ShoppingBag size={24} className="text-gray-300" />
-                  </div>
-                  <div>
-                    <h3 className="text-sm font-bold text-black mb-1">{order.orderItems?.length ?? 0} Item(s) in this order</h3>
-                    <p className="text-xs text-gray-500">Includes clothing, accessories, and shipping.</p>
-                  </div>
-                </div>
-                <div className="flex gap-3">
-                  <button 
-                    onClick={() => setExpandedOrderId(expandedOrderId === order._id ? null : order._id)}
-                    className="px-6 py-2 text-xs font-bold uppercase tracking-widest text-black border border-black hover:bg-gray-50 transition-colors flex items-center gap-2"
+        <div className="space-y-2 lg:space-y-4">
+          {data?.orders?.map((order) => {
+            const statusInfo = getStatusDisplay(order.status, order.createdAt);
+            
+            return (
+              <div key={order._id} className="bg-white border-y lg:border border-gray-200 lg:rounded-sm hover:shadow-md transition-shadow cursor-pointer">
+                {/* We map through order items because Flipkart treats items individually in the list */}
+                {order.orderItems?.map((item, idx) => (
+                  <Link 
+                    key={idx}
+                    to={`/dashboard/orders/${order._id}`} 
+                    className={`flex flex-col sm:flex-row p-4 gap-4 ${idx !== 0 ? 'border-t border-gray-100' : ''}`}
                   >
-                    <Eye size={14} /> {expandedOrderId === order._id ? 'Hide Details' : 'View Details'}
-                  </button>
-                  {['pending', 'processing'].includes(order.status) && (
-                    <button 
-                      onClick={() => setCancelTarget(order)}
-                      className="px-6 py-2 text-xs font-bold uppercase tracking-widest text-red-600 border border-red-200 bg-red-50 hover:bg-red-100 transition-colors"
-                    >
-                      Cancel Order
-                    </button>
-                  )}
-                </div>
-              </div>
-
-              {/* Live Tracking Timeline */}
-              <AnimatePresence>
-                {expandedOrderId === order._id && (
-                  <motion.div
-                    initial={{ height: 0, opacity: 0 }}
-                    animate={{ height: 'auto', opacity: 1 }}
-                    exit={{ height: 0, opacity: 0 }}
-                    className="overflow-hidden border-t border-gray-200 bg-gray-50"
-                  >
-                    <div className="p-6 sm:p-8">
-                      <h4 className="text-sm font-bold text-black uppercase tracking-widest mb-6">Tracking Timeline</h4>
-                      
-                      {order.status === 'cancelled' ? (
-                        <div className="flex items-center gap-4 text-red-600">
-                          <X size={24} />
-                          <div>
-                            <p className="font-bold">Order Cancelled</p>
-                            <p className="text-sm text-gray-500 mt-1">This order was cancelled and will not be shipped.</p>
-                          </div>
-                        </div>
-                      ) : (
-                          <div className="relative">
-                            {/* Timeline Line */}
-                            <div className="absolute top-4 sm:top-5 left-4 sm:left-5 right-4 sm:right-5 h-1 bg-gray-200 hidden sm:block">
-                              <div 
-                                className="h-full bg-[#388e3c] transition-all duration-1000" 
-                                style={{ 
-                                  width: order.status === 'completed' ? '100%' : 
-                                       order.status === 'shipped' ? '66%' : 
-                                       order.status === 'processing' ? '33%' : '0%' 
-                              }}
-                            />
-                          </div>
-
-                          <div className="flex flex-col sm:flex-row justify-between relative z-10 gap-8 sm:gap-0">
-                            
-                            {/* Step 1: Placed */}
-                            <div className="flex flex-row sm:flex-col items-center gap-4 sm:gap-2 text-center relative">
-                              <div className={`w-8 h-8 sm:w-10 sm:h-10 rounded-full flex items-center justify-center border-2 bg-white ${order.createdAt ? 'border-[#388e3c] bg-[#388e3c] text-white' : 'border-gray-300 text-gray-300'}`}>
-                                <CheckCircle2 size={18} />
-                              </div>
-                              <div className="text-left sm:text-center mt-0 sm:mt-1">
-                                <p className={`text-[11px] sm:text-xs font-bold uppercase tracking-widest ${order.createdAt ? 'text-[#388e3c]' : 'text-gray-400'}`}>Order Placed</p>
-                                <p className="text-[10px] text-gray-500 mt-0.5">{new Date(order.createdAt).toLocaleDateString()}</p>
-                              </div>
-                            </div>
-
-                            {/* Step 2: Processing */}
-                            <div className="flex flex-row sm:flex-col items-center gap-4 sm:gap-2 text-center relative">
-                              <div className={`w-8 h-8 sm:w-10 sm:h-10 rounded-full flex items-center justify-center border-2 bg-white ${['processing', 'shipped', 'out_for_delivery', 'completed'].includes(order.status) ? 'border-[#388e3c] bg-[#388e3c] text-white' : 'border-gray-300 text-gray-300'}`}>
-                                <Package size={16} />
-                              </div>
-                              <div className="text-left sm:text-center mt-0 sm:mt-1">
-                                <p className={`text-[11px] sm:text-xs font-bold uppercase tracking-widest ${['processing', 'shipped', 'out_for_delivery', 'completed'].includes(order.status) ? 'text-[#388e3c]' : 'text-gray-400'}`}>Packed</p>
-                                {['processing', 'shipped', 'out_for_delivery', 'completed'].includes(order.status) && (
-                                  <p className="text-[10px] text-gray-500 mt-0.5">Item is packed</p>
-                                )}
-                              </div>
-                            </div>
-
-                            {/* Step 3: Shipped */}
-                            <div className="flex flex-row sm:flex-col items-center gap-4 sm:gap-2 text-center relative">
-                              <div className={`w-8 h-8 sm:w-10 sm:h-10 rounded-full flex items-center justify-center border-2 bg-white ${['shipped', 'out_for_delivery', 'completed'].includes(order.status) ? 'border-[#388e3c] bg-[#388e3c] text-white' : 'border-gray-300 text-gray-300'}`}>
-                                <Truck size={16} />
-                              </div>
-                              <div className="text-left sm:text-center mt-0 sm:mt-1">
-                                <p className={`text-[11px] sm:text-xs font-bold uppercase tracking-widest ${['shipped', 'out_for_delivery', 'completed'].includes(order.status) ? 'text-[#388e3c]' : 'text-gray-400'}`}>Shipped</p>
-                                {['shipped', 'out_for_delivery', 'completed'].includes(order.status) && (
-                                  <p className="text-[10px] text-gray-500 mt-0.5">In transit</p>
-                                )}
-                              </div>
-                            </div>
-
-                            {/* Step 4: Delivered */}
-                            <div className="flex flex-row sm:flex-col items-center gap-4 sm:gap-2 text-center relative">
-                              <div className={`w-8 h-8 sm:w-10 sm:h-10 rounded-full flex items-center justify-center border-2 bg-white ${order.status === 'completed' ? 'border-[#388e3c] bg-[#388e3c] text-white' : 'border-gray-300 text-gray-300'}`}>
-                                <Home size={16} />
-                              </div>
-                              <div className="text-left sm:text-center mt-0 sm:mt-1">
-                                <p className={`text-[11px] sm:text-xs font-bold uppercase tracking-widest ${order.status === 'completed' ? 'text-[#388e3c]' : 'text-gray-400'}`}>Delivered</p>
-                                {order.status === 'completed' && (
-                                  <p className="text-[10px] text-gray-500 mt-0.5">Package delivered</p>
-                                )}
-                              </div>
-                            </div>
-
-                          </div>
-                        </div>
-                      )}
-                      
-                      <div className="mt-8 pt-6 border-t border-gray-200">
-                        <h5 className="text-xs font-bold text-gray-500 uppercase tracking-widest mb-3">Order Items</h5>
-                        <ul className="space-y-4">
-                          {order.orderItems?.map((item, idx) => (
-                            <li key={idx} className="flex flex-col sm:flex-row sm:items-center gap-4">
-                              <div className="w-16 h-20 bg-gray-200 shrink-0">
-                                <img src={item.image} alt={item.name} className="w-full h-full object-cover" />
-                              </div>
-                              <div className="flex-1">
-                                <p className="text-sm font-bold text-black">{item.name}</p>
-                                <p className="text-xs text-gray-500 uppercase mt-1">Qty: {item.quantity} {item.size ? `| ${item.size}` : ''}</p>
-                                <p className="text-sm font-bold mt-2">Rs {item.price.toLocaleString('en-IN')}</p>
-                              </div>
-                            </li>
-                          ))}
-                        </ul>
+                    {/* Left: Image & Title */}
+                    <div className="flex gap-4 flex-1">
+                      <div className="w-16 h-16 sm:w-20 sm:h-20 bg-gray-100 shrink-0 rounded flex items-center justify-center p-1">
+                        <img src={item.image} alt={item.name} className="max-w-full max-h-full object-contain mix-blend-multiply" />
                       </div>
-
-                      <div className="mt-8 pt-6 border-t border-gray-200">
-                        <h5 className="text-xs font-bold text-gray-500 uppercase tracking-widest mb-3">Delivery Location</h5>
-                        <div className="flex flex-col lg:flex-row gap-6">
-                          <div className="flex-1">
-                            <p className="text-sm font-bold text-black">{order.shippingAddress?.fullName}</p>
-                            <p className="text-xs text-gray-600 mt-1">{order.shippingAddress?.streetAddress}</p>
-                            <p className="text-xs text-gray-600">{order.shippingAddress?.city}, {order.shippingAddress?.postalCode}</p>
-                            <p className="text-xs text-gray-600">{order.shippingAddress?.country}</p>
-                          </div>
-                          <div className="flex-1 h-48 sm:h-64 border border-gray-200 bg-gray-100">
-                            <iframe
-                              title="Delivery Location"
-                              width="100%"
-                              height="100%"
-                              frameBorder="0"
-                              style={{ border: 0 }}
-                              src={`https://maps.google.com/maps?q=${encodeURIComponent(`${order.shippingAddress?.streetAddress || ''}, ${order.shippingAddress?.city || ''}, ${order.shippingAddress?.country || ''}`)}&output=embed`}
-                              allowFullScreen
-                            />
-                          </div>
-                        </div>
+                      <div className="flex flex-col">
+                        <h3 className="text-sm font-medium text-gray-900 line-clamp-1 hover:text-[#2874f0]">{item.name}</h3>
+                        <p className="text-xs text-gray-500 mt-1">Size: {item.size || 'Free'} | Qty: {item.quantity}</p>
                       </div>
                     </div>
-                  </motion.div>
-                )}
-              </AnimatePresence>
-            </div>
-          ))}
+
+                    {/* Middle: Price */}
+                    <div className="hidden sm:block w-32 shrink-0">
+                      <p className="text-[15px] font-semibold text-gray-900">₹{(item.price * item.quantity).toLocaleString('en-IN')}</p>
+                    </div>
+
+                    {/* Right: Status */}
+                    <div className="sm:w-64 shrink-0 flex items-start gap-2">
+                      <div className={`w-2.5 h-2.5 rounded-full mt-1.5 ${statusInfo.dot}`}></div>
+                      <div>
+                        <p className={`text-sm font-bold ${statusInfo.color}`}>{statusInfo.text}</p>
+                        {order.status === 'completed' && (
+                          <p className="text-xs text-gray-500 mt-1 line-clamp-1">Your item has been delivered</p>
+                        )}
+                      </div>
+                    </div>
+                  </Link>
+                ))}
+              </div>
+            );
+          })}
         </div>
 
         {/* Pagination */}
         {data?.pages > 1 && (
-          <div className="mt-12 flex items-center justify-between border-t border-gray-200 pt-6">
-            <span className="text-xs font-bold text-gray-500 uppercase tracking-widest">
-              Page {data.page} of {data.pages}
-            </span>
-            <div className="flex gap-2">
+          <div className="mt-8 flex justify-center">
+            <div className="flex bg-white border border-gray-200 rounded-sm overflow-hidden">
               <button 
                 disabled={page <= 1} 
                 onClick={() => setPage(p => p - 1)}
-                className="px-4 py-2 border border-gray-200 text-xs font-bold uppercase tracking-widest hover:border-black disabled:opacity-50 disabled:hover:border-gray-200 transition-colors"
+                className="px-4 py-2 border-r border-gray-200 text-sm font-medium hover:bg-gray-50 disabled:opacity-50 transition-colors"
               >
-                Prev
+                Previous
               </button>
+              <span className="px-4 py-2 text-sm font-medium text-gray-700 bg-gray-50">
+                Page {data.page} of {data.pages}
+              </span>
               <button 
-                disabled={page >= data.pages} 
+                disabled={page >= data.pages}
                 onClick={() => setPage(p => p + 1)}
-                className="px-4 py-2 border border-gray-200 text-xs font-bold uppercase tracking-widest hover:border-black disabled:opacity-50 disabled:hover:border-gray-200 transition-colors"
+                className="px-4 py-2 border-l border-gray-200 text-sm font-medium hover:bg-gray-50 disabled:opacity-50 transition-colors"
               >
                 Next
               </button>
@@ -311,44 +157,6 @@ const OrdersPage = () => {
           </div>
         )}
       </ApiState>
-
-      {/* Cancel Order Modal */}
-      <AnimatePresence>
-        {cancelTarget && (
-          <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-gray-900/50 backdrop-blur-sm">
-            <motion.div 
-              initial={{ opacity: 0, scale: 0.95 }}
-              animate={{ opacity: 1, scale: 1 }}
-              exit={{ opacity: 0, scale: 0.95 }}
-              className="bg-white p-8 max-w-sm w-full border border-gray-200 shadow-2xl"
-            >
-              <div className="w-12 h-12 bg-red-100 text-red-600 rounded-full flex items-center justify-center mb-6 mx-auto">
-                <X size={24} />
-              </div>
-              <h3 className="text-lg font-bold text-center text-black mb-2 uppercase tracking-widest">Cancel Order?</h3>
-              <p className="text-center text-sm text-gray-500 mb-8">
-                Are you sure you want to cancel order <span className="font-bold text-black uppercase">{cancelTarget.orderNumber}</span>? This action is permanent.
-              </p>
-              
-              <div className="flex gap-3">
-                <button 
-                  onClick={() => setCancelTarget(null)}
-                  className="flex-1 px-4 py-3 bg-gray-100 hover:bg-gray-200 text-black text-xs font-bold uppercase tracking-widest transition-colors"
-                >
-                  Keep It
-                </button>
-                <button 
-                  onClick={handleCancel}
-                  disabled={cancelling}
-                  className="flex-1 px-4 py-3 bg-red-600 hover:bg-red-700 text-white text-xs font-bold uppercase tracking-widest transition-colors disabled:opacity-50"
-                >
-                  {cancelling ? 'Cancelling...' : 'Cancel Order'}
-                </button>
-              </div>
-            </motion.div>
-          </div>
-        )}
-      </AnimatePresence>
     </div>
   );
 };

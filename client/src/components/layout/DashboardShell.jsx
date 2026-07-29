@@ -68,10 +68,10 @@ const DashboardShell = () => {
     <div className="min-h-screen flex flex-col bg-[#f1f3f6] font-sans">
       <Navbar />
 
-      <main className="flex-1 max-w-[1248px] w-full mx-auto px-4 py-8 flex flex-col lg:flex-row gap-4">
+      <main className="flex-1 max-w-[1248px] w-full mx-auto lg:px-4 lg:py-8 flex flex-col lg:flex-row gap-4">
         
-        {/* Left Sidebar */}
-        <div className="w-full lg:w-[280px] shrink-0 flex flex-col gap-4">
+        {/* Left Sidebar (Hidden on Mobile) */}
+        <div className="hidden lg:flex w-[280px] shrink-0 flex-col gap-4">
           
           {/* User Greeting Card */}
           <div className="bg-white rounded-sm shadow-sm p-3 flex items-center gap-4">
@@ -85,7 +85,7 @@ const DashboardShell = () => {
           </div>
 
           {/* Navigation Card */}
-          <div className="bg-white rounded-sm shadow-sm overflow-hidden hidden lg:block">
+          <div className="bg-white rounded-sm shadow-sm overflow-hidden">
             
             <NavLink to="/dashboard/orders" className="flex items-center justify-between p-4 border-b border-gray-100 hover:bg-gray-50 group">
               <div className="flex items-center gap-4">
