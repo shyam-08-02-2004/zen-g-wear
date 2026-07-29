@@ -26,7 +26,6 @@ import blogRoutes from './routes/blogRoutes.js';
 import supportTicketRoutes from './routes/supportTicketRoutes.js';
 import contactRoutes from './routes/contactRoutes.js';
 import notificationRoutes from './routes/notificationRoutes.js';
-import paymentRoutes from './routes/paymentRoutes.js';
 import reviewRoutes from './routes/reviewRoutes.js';
 import couponRoutes from './routes/couponRoutes.js';
 import questionRoutes from './routes/questionRoutes.js';
