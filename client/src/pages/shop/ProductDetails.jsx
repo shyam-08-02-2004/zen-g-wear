@@ -693,10 +693,6 @@ const ProductDetails = () => {
                     <span className="text-[#388e3c] font-bold text-lg leading-none">₹</span>
                     Pay on Delivery available
                   </li>
-                  <li className="flex items-start gap-3">
-                    <img src="https://static-assets-web.flixcart.com/fk-p-linchpin-web/fk-cp-zion/img/return_6b919a.png" alt="return" className="w-5 object-contain" />
-                    10 days Return Policy
-                  </li>
                 </ul>
               </div>
 
