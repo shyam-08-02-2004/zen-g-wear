@@ -581,7 +581,24 @@ const ProductDetails = () => {
 
 
 
-              <div className="w-full h-px bg-gray-200 mb-6"></div>
+              {/* Available Offers */}
+              <div className="mt-4 mb-6">
+                <span className="text-[14px] font-medium text-gray-800 mb-2 block">Available offers</span>
+                <ul className="space-y-2 text-[14px]">
+                  <li className="flex items-start gap-2">
+                    <img src="https://rukminim2.flixcart.com/www/36/36/promos/06/09/2016/c22c9fc4-0555-4460-8401-bf5c28d7ba29.png" alt="tag" className="w-4 h-4 mt-0.5" />
+                    <span><span className="font-bold text-gray-900">Bank Offer:</span> 5% Cashback on Flipkart Axis Bank Card <a href="#" className="text-[#2874f0] font-medium text-xs">T&C</a></span>
+                  </li>
+                  <li className="flex items-start gap-2">
+                    <img src="https://rukminim2.flixcart.com/www/36/36/promos/06/09/2016/c22c9fc4-0555-4460-8401-bf5c28d7ba29.png" alt="tag" className="w-4 h-4 mt-0.5" />
+                    <span><span className="font-bold text-gray-900">Special Price:</span> Get extra {product.discountPercentage || 20}% off (price inclusive of cashback/coupon) <a href="#" className="text-[#2874f0] font-medium text-xs">T&C</a></span>
+                  </li>
+                  <li className="flex items-start gap-2">
+                    <img src="https://rukminim2.flixcart.com/www/36/36/promos/06/09/2016/c22c9fc4-0555-4460-8401-bf5c28d7ba29.png" alt="tag" className="w-4 h-4 mt-0.5" />
+                    <span><span className="font-bold text-gray-900">Partner Offer:</span> Sign up for Zen-G Pay Later and get free Gift Card <a href="#" className="text-[#2874f0] font-medium text-xs">Know More</a></span>
+                  </li>
+                </ul>
+              </div>
 
               <form className="mt-6" onSubmit={(e) => e.preventDefault()}>
                 
@@ -589,26 +606,26 @@ const ProductDetails = () => {
 
                 {/* Sizes */}
                 {product.sizes?.length > 0 && (
-                  <div className="mb-8">
-                    <div className="flex justify-between items-center mb-4">
-                      <h3 className="text-xs font-bold uppercase tracking-widest text-black">Select Size</h3>
+                  <div className="mb-6">
+                    <div className="flex justify-between items-center mb-3">
+                      <h3 className="text-[15px] font-medium text-gray-800">Size</h3>
                       <button 
                         type="button" 
                         onClick={() => setShowSizeGuide(true)}
-                        className="text-xs font-bold uppercase tracking-widest text-gray-500 underline underline-offset-4 hover:text-black"
+                        className="text-[13px] font-medium text-[#2874f0] hover:underline"
                       >
-                        Size Guide
+                        Size Chart
                       </button>
                     </div>
-                    <div className="grid grid-cols-4 sm:grid-cols-6 lg:grid-cols-4 gap-3">
+                    <div className="flex flex-wrap gap-3">
                       {product.sizes.map((size) => (
                         <button
                           key={size}
                           type="button"
-                          className={`py-3 px-2 flex items-center justify-center text-xs font-bold uppercase tracking-widest border transition-all ${
+                          className={`min-w-[48px] h-10 px-3 flex items-center justify-center text-sm font-medium rounded-full border transition-all ${
                             selectedSize === size 
-                              ? 'border-black bg-black text-white' 
-                              : 'border-gray-200 bg-white text-black hover:border-gray-400'
+                              ? 'border-[#2874f0] text-[#2874f0] bg-blue-50/50' 
+                              : 'border-gray-300 bg-white text-gray-800 hover:border-gray-400'
                           }`}
                           onClick={() => setSelectedSize(size)}
                         >
@@ -635,57 +652,70 @@ const ProductDetails = () => {
               </form>
 
               {/* Delivery & Services */}
-              <div className="mt-10 pt-8 border-t border-gray-200">
-                <h3 className="text-xs font-bold uppercase tracking-widest text-black mb-4 flex items-center gap-2">
-                  <MapPin size={16} /> Delivery Options
-                </h3>
-                <div className="bg-gray-50 p-4 border border-gray-100">
-                  <form onSubmit={checkDelivery} className="flex gap-2">
+              <div className="mt-8 pt-6 border-t border-gray-200">
+                <div className="flex items-center gap-2 mb-4">
+                  <span className="text-[16px] font-medium text-gray-800">Delivery</span>
+                </div>
+                <div className="flex gap-2 border-b-2 border-[#2874f0] pb-1 w-full max-w-[300px]">
+                  <MapPin size={18} className="text-[#2874f0] mt-0.5" />
+                  <form onSubmit={checkDelivery} className="flex-1 flex items-center justify-between">
                     <input 
                       type="text" 
-                      placeholder="Enter 6-digit PIN code" 
+                      placeholder="Enter Delivery Pincode" 
                       value={pincode}
                       onChange={(e) => setPincode(e.target.value)}
                       maxLength={6}
-                      className="flex-1 px-4 py-2 text-sm border border-gray-300 focus:border-black focus:outline-none"
+                      className="w-full text-[14px] font-medium text-gray-800 focus:outline-none bg-transparent placeholder-gray-400"
                     />
                     <button 
                       type="submit" 
                       disabled={deliveryStatus === 'checking'}
-                      className="px-4 py-2 bg-black text-white text-xs font-bold uppercase tracking-widest hover:bg-gray-900 transition-colors disabled:opacity-50"
+                      className="text-[#2874f0] text-[13px] font-bold hover:text-blue-700 transition-colors disabled:opacity-50 px-2"
                     >
-                      {deliveryStatus === 'checking' ? 'Checking' : 'Check'}
+                      {deliveryStatus === 'checking' ? 'CHECKING' : 'Check'}
                     </button>
                   </form>
-                  {deliveryStatus && deliveryStatus !== 'checking' && (
-                    <div className={`mt-3 flex items-start gap-2 text-sm ${deliveryStatus === 'success' ? 'text-green-700' : 'text-red-600'}`}>
-                      {deliveryStatus === 'success' ? <CheckCircle2 size={16} className="mt-0.5 shrink-0" /> : <XCircle size={16} className="mt-0.5 shrink-0" />}
-                      <span className="font-medium">{deliveryMessage}</span>
-                    </div>
-                  )}
-                  <ul className="mt-4 space-y-2 text-xs text-gray-500">
-                    <li className="flex items-center gap-2">• 100% Original Products</li>
-                    <li className="flex items-center gap-2">• Pay on delivery might be available</li>
-                  </ul>
                 </div>
+                
+                {deliveryStatus && deliveryStatus !== 'checking' && (
+                  <div className={`mt-3 flex items-start gap-2 text-sm ${deliveryStatus === 'success' ? 'text-[#388e3c]' : 'text-red-600'}`}>
+                    {deliveryStatus === 'success' ? <CheckCircle2 size={16} className="mt-0.5 shrink-0" /> : <XCircle size={16} className="mt-0.5 shrink-0" />}
+                    <span className="font-medium">{deliveryMessage}</span>
+                  </div>
+                )}
+                
+                <ul className="mt-5 space-y-3 text-[14px] text-gray-800 font-medium">
+                  <li className="flex items-start gap-3">
+                    <img src="https://static-assets-web.flixcart.com/fk-p-linchpin-web/fk-cp-zion/img/delivery_3b36ab.png" alt="delivery" className="w-5 object-contain" />
+                    Delivery by {new Date(Date.now() + 4 * 24 * 60 * 60 * 1000).toLocaleDateString('en-US', { weekday: 'short', day: 'numeric', month: 'short' })}
+                  </li>
+                  <li className="flex items-start gap-3">
+                    <span className="text-[#388e3c] font-bold text-lg leading-none">₹</span>
+                    Pay on Delivery available
+                  </li>
+                  <li className="flex items-start gap-3">
+                    <img src="https://static-assets-web.flixcart.com/fk-p-linchpin-web/fk-cp-zion/img/return_6b919a.png" alt="return" className="w-5 object-contain" />
+                    10 days Return Policy
+                  </li>
+                </ul>
               </div>
 
               {/* Description & Details */}
-              <div className="mt-12 space-y-6">
+              <div className="mt-8 pt-6 border-t border-gray-200 space-y-6">
                 <div>
-                  <h4 className="text-xs font-bold uppercase tracking-widest text-black mb-4">Description</h4>
-                  <div className="text-sm text-gray-600 leading-relaxed space-y-4" dangerouslySetInnerHTML={{ __html: product.description }} />
+                  <h4 className="text-[16px] font-medium text-gray-800 mb-3">Product Description</h4>
+                  <div className="text-[14px] text-gray-700 leading-relaxed" dangerouslySetInnerHTML={{ __html: product.description }} />
                 </div>
                 
                 <div className="h-px bg-gray-200 w-full"></div>
 
                 <div>
-                  <h4 className="text-xs font-bold uppercase tracking-widest text-black mb-4">Product Details</h4>
-                  <ul className="text-sm text-gray-600 space-y-2">
-                    <li className="flex gap-2"><span className="font-bold text-gray-900 min-w-[100px]">SKU:</span> {product.sku || 'N/A'}</li>
-                    <li className="flex gap-2"><span className="font-bold text-gray-900 min-w-[100px]">Material:</span> {product.material || '100% Cotton'}</li>
-                    <li className="flex gap-2"><span className="font-bold text-gray-900 min-w-[100px]">Fit:</span> Regular Fit</li>
-                    <li className="flex gap-2"><span className="font-bold text-gray-900 min-w-[100px]">Care:</span> Machine wash</li>
+                  <h4 className="text-[16px] font-medium text-gray-800 mb-3">Product Details</h4>
+                  <ul className="text-[14px] text-gray-700 space-y-3">
+                    <li className="flex gap-4"><span className="text-gray-500 min-w-[100px]">SKU</span> <span>{product.sku || 'N/A'}</span></li>
+                    <li className="flex gap-4"><span className="text-gray-500 min-w-[100px]">Material</span> <span>{product.material || '100% Cotton'}</span></li>
+                    <li className="flex gap-4"><span className="text-gray-500 min-w-[100px]">Fit</span> <span>Regular Fit</span></li>
+                    <li className="flex gap-4"><span className="text-gray-500 min-w-[100px]">Care</span> <span>Machine wash</span></li>
                   </ul>
                 </div>
                 
@@ -693,10 +723,10 @@ const ProductDetails = () => {
                 
                 {/* Reviews Section Placeholder */}
                 <div id="reviews">
-                  <h4 className="text-xs font-bold uppercase tracking-widest text-black mb-4 flex items-center gap-2">
+                  <h4 className="text-[16px] font-medium text-gray-800 mb-4 flex items-center justify-between">
                     Ratings & Reviews 
-                    <span className="bg-green-600 text-white px-2 py-0.5 rounded-sm text-[10px]">
-                      {product.rating ? product.rating.toFixed(1) : 'No Rating'} ★
+                    <span className="bg-[#388e3c] text-white px-2 py-0.5 rounded-sm text-[12px] flex items-center font-bold">
+                      {product.rating ? product.rating.toFixed(1) : '4.2'} <Star size={10} className="ml-1 fill-white" />
                     </span>
                   </h4>
                   <p className="text-sm text-gray-500 mb-6">{product.numReviews} Reviews</p>
