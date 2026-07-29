@@ -122,7 +122,7 @@ const CheckoutPage = () => {
 
   const subtotalAfterDiscount = itemsPrice - discountAmount;
   const shippingPrice = subtotalAfterDiscount > 5000 ? 0 : 50;
-  const taxPrice = 0.18 * subtotalAfterDiscount; 
+  const taxPrice = 0.05 * subtotalAfterDiscount; 
   const totalPrice = subtotalAfterDiscount + shippingPrice + taxPrice;
 
   const fetchAddressFromCoords = async (lat, lon) => {
@@ -617,7 +617,7 @@ const CheckoutPage = () => {
                   <span className="text-green-600">{shippingPrice === 0 ? 'FREE Delivery' : `₹${shippingPrice.toLocaleString('en-IN')}`}</span>
                 </div>
                 <div className="flex justify-between">
-                  <span>Secured Packaging Fee</span>
+                  <span>Estimated Tax (5% GST)</span>
                   <span>₹{taxPrice.toFixed(0).toLocaleString('en-IN')}</span>
                 </div>
               </div>

@@ -31,7 +31,7 @@ const CartPage = () => {
 
   const subtotalAfterDiscount = subtotal - discountAmount;
   const shippingPrice = subtotalAfterDiscount > 5000 || subtotalAfterDiscount === 0 ? 0 : 50;
-  const taxPrice = 0.18 * subtotalAfterDiscount; 
+  const taxPrice = 0.05 * subtotalAfterDiscount; 
   const totalPrice = subtotalAfterDiscount + shippingPrice + taxPrice;
 
   const handleApplyCoupon = async (e) => {
@@ -235,7 +235,7 @@ const CartPage = () => {
                     </dd>
                   </div>
                   <div className="flex items-center justify-between">
-                    <dt>Estimated Tax (18% GST)</dt>
+                    <dt>Estimated Tax (5% GST)</dt>
                     <dd>₹{Math.round(taxPrice).toLocaleString('en-IN')}</dd>
                   </div>
                   
