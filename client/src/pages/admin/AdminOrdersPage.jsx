@@ -23,6 +23,11 @@ const AdminOrdersPage = () => {
   const [updatingId, setUpdatingId] = useState(null);
   const [statusFilter, setStatusFilter] = useState('all');
 
+  // Bulk Actions State
+  const [selectedOrders, setSelectedOrders] = useState([]);
+  const [bulkAction, setBulkAction] = useState('');
+  const [isBulking, setIsBulking] = useState(false);
+
   const fetchOrders = async () => {
     try {
       const { data } = await ordersService.getAllOrders({ limit: 200, sortBy: 'createdAt', order: 'desc' });
@@ -70,6 +75,28 @@ const AdminOrdersPage = () => {
       toast.error('Failed to update status');
     } finally {
       setUpdatingId(null);
+    }
+  };
+
+  const handleBulkStatusChange = async () => {
+    if (!bulkAction || selectedOrders.length === 0) return;
+    setIsBulking(true);
+    
+    try {
+      const promises = selectedOrders.map(orderId => 
+        ordersService.updateOrderStatus(orderId, { status: bulkAction })
+      );
+      await Promise.all(promises);
+      
+      toast.success(`${selectedOrders.length} orders updated successfully!`);
+      setOrders(orders.map(o => selectedOrders.includes(o._id) ? { ...o, status: bulkAction } : o));
+      setSelectedOrders([]); // clear selection
+      setBulkAction(''); // reset dropdown
+    } catch (err) {
+      console.error(err);
+      toast.error('Failed to update some orders in bulk');
+    } finally {
+      setIsBulking(false);
     }
   };
 
@@ -131,6 +158,54 @@ const AdminOrdersPage = () => {
         </div>
       </div>
 
+      {/* Bulk Actions Toolbar */}
+      {selectedOrders.length > 0 && (
+        <div className="bg-[#2874f0] text-white p-3 mb-4 rounded-sm flex items-center justify-between sticky top-[60px] z-10 shadow-md">
+          <div className="text-sm font-bold">
+            {selectedOrders.length} orders selected
+          </div>
+          <div className="flex items-center gap-2">
+            <select
+              value={bulkAction}
+              onChange={(e) => setBulkAction(e.target.value)}
+              className="px-3 py-1.5 text-xs font-bold uppercase text-black bg-white rounded-sm outline-none"
+            >
+              <option value="">Select Bulk Action...</option>
+              <option value="processing">Mark Processing</option>
+              <option value="shipped">Mark Shipped</option>
+              <option value="completed">Mark Delivered</option>
+              <option value="cancelled">Cancel Orders</option>
+            </select>
+            <button
+              onClick={handleBulkStatusChange}
+              disabled={!bulkAction || isBulking}
+              className="bg-black hover:bg-gray-800 text-white px-4 py-1.5 text-xs font-bold uppercase rounded-sm disabled:opacity-50"
+            >
+              {isBulking ? 'Applying...' : 'Apply'}
+            </button>
+          </div>
+        </div>
+      )}
+
+      {/* Select All Row */}
+      {filteredOrders.length > 0 && (
+        <div className="mb-4 flex items-center gap-3 px-2">
+          <input
+            type="checkbox"
+            checked={selectedOrders.length === filteredOrders.length && filteredOrders.length > 0}
+            onChange={(e) => {
+              if (e.target.checked) setSelectedOrders(filteredOrders.map(o => o._id));
+              else setSelectedOrders([]);
+            }}
+            className="w-4 h-4 accent-black cursor-pointer"
+          />
+          <span className="text-sm font-bold text-gray-600 cursor-pointer" onClick={() => {
+              if (selectedOrders.length !== filteredOrders.length) setSelectedOrders(filteredOrders.map(o => o._id));
+              else setSelectedOrders([]);
+          }}>Select All</span>
+        </div>
+      )}
+
       {/* Orders List */}
       <div className="space-y-3">
         {loading ? (
@@ -154,19 +229,30 @@ const AdminOrdersPage = () => {
                 <div className="p-4 sm:p-5 flex flex-col gap-4">
 
                   {/* Top: Order ID + Status + Date */}
-                  <div className="flex flex-wrap items-center gap-2 justify-between">
-                    <div className="flex items-center gap-2 flex-wrap">
-                      <span className="text-[10px] font-bold text-gray-400 uppercase tracking-widest">
-                        #{order.orderNumber || order._id?.slice(-8).toUpperCase()}
-                      </span>
-                      <span className={`text-[10px] font-bold uppercase px-2 py-0.5 border rounded-full ${statusInfo.color}`}>
-                        {statusInfo.label}
-                      </span>
-                      {!order.isPaid && order.paymentMethod === 'UPI' && (
-                        <span className="text-[10px] font-bold uppercase px-2 py-0.5 bg-red-100 text-red-700 border border-red-200 rounded-full animate-pulse">
-                          ⚠ Unverified Payment
-                        </span>
-                      )}
+                  <div className="flex flex-col md:flex-row gap-4 items-start md:items-center justify-between mb-4 pb-4 border-b border-gray-100">
+                    <div className="flex items-start gap-4 w-full md:w-auto">
+                      <input
+                        type="checkbox"
+                        checked={selectedOrders.includes(order._id)}
+                        onChange={(e) => {
+                          if (e.target.checked) setSelectedOrders([...selectedOrders, order._id]);
+                          else setSelectedOrders(selectedOrders.filter(id => id !== order._id));
+                        }}
+                        className="w-5 h-5 accent-black cursor-pointer mt-1"
+                      />
+                      <div>
+                        <div className="flex items-center gap-3 mb-1">
+                          <span className="font-mono text-sm font-bold text-black">{order.orderNumber || order._id?.slice(-8).toUpperCase()}</span>
+                          <span className={`text-[10px] font-bold uppercase px-2 py-0.5 border rounded-full ${statusInfo.color}`}>
+                            {statusInfo.label}
+                          </span>
+                          {!order.isPaid && order.paymentMethod === 'UPI' && (
+                            <span className="text-[10px] font-bold uppercase px-2 py-0.5 bg-red-100 text-red-700 border border-red-200 rounded-full animate-pulse">
+                              ⚠ Unverified Payment
+                            </span>
+                          )}
+                        </div>
+                      </div>
                     </div>
                     <span className="text-xs text-gray-500">
                       {new Date(order.createdAt).toLocaleString('en-IN', { day: 'numeric', month: 'short', year: 'numeric', hour: '2-digit', minute: '2-digit' })}

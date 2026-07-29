@@ -1,7 +1,7 @@
 import { useState, useEffect, useRef } from 'react';
 import { Link, useNavigate, useLocation } from 'react-router-dom';
 import { useDispatch, useSelector } from 'react-redux';
-import { Search, ShoppingCart, User as UserIcon, LogOut, ChevronDown, Menu, X, Package } from 'lucide-react';
+import { Search, ShoppingCart, User as UserIcon, LogOut, ChevronDown, Menu, X, Package, Heart } from 'lucide-react';
 import { logout as logoutAction } from '../../redux/slices/authSlice';
 import api from '../../services/api';
 import { notify } from '../ui/Toast';
@@ -218,6 +218,14 @@ const Navbar = ({ onMenuClick }) => {
               >
                 {mobileMenuOpen ? <X size={22} /> : <UserIcon size={20} />}
               </button>
+
+              {/* Wishlist */}
+              {!isAdmin && (
+                <Link to="/dashboard/wishlist" className="relative text-white p-1.5 hover:bg-white/10 rounded-sm transition-colors flex items-center gap-1.5">
+                  <Heart size={20} />
+                  <span className="hidden sm:block text-sm font-bold">Wishlist</span>
+                </Link>
+              )}
 
               {/* Cart (all sizes) */}
               {!isAdmin && (
