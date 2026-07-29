@@ -2,7 +2,7 @@ import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useDispatch, useSelector } from 'react-redux';
 import { motion } from 'framer-motion';
-import { ShieldCheck, MapPin, Smartphone } from 'lucide-react';
+import { ShieldCheck, MapPin, Smartphone, Check } from 'lucide-react';
 import { saveShippingAddress, clearCartItems } from '../../redux/slices/cartSlice';
 import { logout } from '../../redux/slices/authSlice';
 import ordersService from '../../services/ordersService';
@@ -39,6 +39,7 @@ const CheckoutPage = () => {
   const [savedAddresses, setSavedAddresses] = useState([]);
   const [selectedAddressId, setSelectedAddressId] = useState(null);
   const [showAddressForm, setShowAddressForm] = useState(false);
+  const [activeStep, setActiveStep] = useState(2); // 1 = Login, 2 = Address, 3 = Summary, 4 = Payment
 
   useEffect(() => {
     if (cartItems.length === 0) {
@@ -295,290 +296,342 @@ const CheckoutPage = () => {
   };
 
   return (
-    <div className="flex flex-col bg-[#f1f3f6] font-sans selection:bg-black selection:text-white">
-      <main className="flex-grow max-w-[1200px] mx-auto px-4 sm:px-6 lg:px-8 py-8 w-full">
-        <h1 className="text-2xl font-bold uppercase tracking-tight text-black mb-8">
-          Secure Checkout
-        </h1>
-        
-        <div className="lg:grid lg:grid-cols-12 lg:gap-x-8 lg:items-start">
+    <div className="flex flex-col bg-[#f1f3f6] font-sans selection:bg-black selection:text-white min-h-screen">
+      <main className="flex-grow max-w-[1200px] mx-auto px-0 sm:px-6 lg:px-8 py-4 sm:py-8 w-full">
+        <div className="lg:grid lg:grid-cols-12 lg:gap-x-4 lg:items-start">
           
-          {/* Left Column - Form */}
-          <div className="lg:col-span-8">
-            <form id="checkout-form" onSubmit={placeOrderHandler} className="space-y-6">
+          {/* Left Column - Accordion Steps */}
+          <div className="lg:col-span-8 space-y-4">
+            <form id="checkout-form" onSubmit={placeOrderHandler}>
               
-              {/* Shipping Section */}
-              <section className="bg-white p-6 shadow-sm rounded-sm">
-                <div className="flex items-center justify-between mb-6">
+              {/* Step 1: LOGIN */}
+              <div className="bg-white shadow-sm sm:rounded-sm overflow-hidden mb-4">
+                <div className="p-4 flex items-center justify-between">
                   <div className="flex items-center gap-4">
-                    <span className="w-8 h-8 rounded-sm bg-[#2874f0] text-white flex items-center justify-center text-sm font-bold">1</span>
-                    <h2 className="text-base font-bold uppercase text-gray-900">Delivery Address</h2>
+                    <span className="w-6 h-6 rounded-sm bg-gray-100 text-[#2874f0] flex items-center justify-center text-xs font-bold">1</span>
+                    <div className="flex flex-col sm:flex-row sm:items-center gap-1 sm:gap-4">
+                      <h2 className="text-base font-bold text-gray-500 uppercase flex items-center gap-2">
+                        Login <Check size={16} className="text-[#2874f0]" />
+                      </h2>
+                      <span className="text-sm font-bold text-black">{userInfo?.name}</span>
+                      <span className="text-sm text-gray-600 hidden sm:inline-block">({userInfo?.email})</span>
+                    </div>
                   </div>
+                  <button type="button" className="text-[#2874f0] text-sm font-bold uppercase hidden">Change</button>
                 </div>
-                
-                {savedAddresses.length > 0 && (
-                  <div className="mb-6 pl-12">
-                    <div className="grid grid-cols-1 gap-4">
-                      {savedAddresses.map(addr => (
-                        <div 
-                          key={addr._id} 
-                          onClick={() => handleSelectSavedAddress(addr)}
-                          className={`p-4 border cursor-pointer transition-colors ${selectedAddressId === addr._id && !showAddressForm ? 'border-[#2874f0] bg-blue-50/30' : 'border-gray-200 hover:bg-gray-50'}`}
-                        >
-                          <div className="flex items-start justify-between">
-                            <div>
-                              <p className="text-sm font-bold text-black flex items-center gap-2">
-                                {addr.name} 
-                                {addr.isDefault && <span className="bg-gray-200 text-gray-800 text-[10px] px-2 py-0.5 rounded-sm uppercase font-bold">Default</span>}
-                              </p>
-                              <p className="text-sm text-gray-600 mt-1">{addr.street}</p>
-                              <p className="text-sm text-gray-600 font-medium">{addr.city}, {addr.zipCode}</p>
-                              {addr.mobileNumber && <p className="text-sm text-gray-600 font-medium flex items-center gap-1 mt-1"><Smartphone size={14}/> {addr.mobileNumber}</p>}
+              </div>
+
+              {/* Step 2: DELIVERY ADDRESS */}
+              <div className="bg-white shadow-sm sm:rounded-sm overflow-hidden mb-4">
+                {activeStep === 2 ? (
+                  <>
+                    <div className="bg-[#2874f0] p-4 flex items-center gap-4 text-white">
+                      <span className="w-6 h-6 rounded-sm bg-white text-[#2874f0] flex items-center justify-center text-xs font-bold">2</span>
+                      <h2 className="text-base font-bold uppercase">Delivery Address</h2>
+                    </div>
+                    <div className="p-0 sm:p-6 pb-6">
+                      {savedAddresses.length > 0 && (
+                        <div className="mb-6 pl-4 pr-4 sm:pl-12 sm:pr-0 pt-4 sm:pt-0">
+                          <div className="grid grid-cols-1 gap-4">
+                            {savedAddresses.map(addr => (
+                              <div 
+                                key={addr._id} 
+                                className={`p-4 border transition-colors ${selectedAddressId === addr._id && !showAddressForm ? 'border-[#2874f0] bg-blue-50/30' : 'border-gray-200 cursor-pointer hover:bg-gray-50'}`}
+                                onClick={() => handleSelectSavedAddress(addr)}
+                              >
+                                <div className="flex items-start gap-4">
+                                  <input 
+                                    type="radio" 
+                                    checked={selectedAddressId === addr._id && !showAddressForm} 
+                                    readOnly 
+                                    className="accent-[#2874f0] mt-1 w-4 h-4 cursor-pointer" 
+                                  />
+                                  <div className="flex-1">
+                                    <p className="text-sm font-bold text-black flex items-center gap-2">
+                                      {addr.name} 
+                                      {addr.isDefault && <span className="bg-gray-200 text-gray-800 text-[10px] px-2 py-0.5 rounded-sm uppercase font-bold">Default</span>}
+                                    </p>
+                                    <p className="text-sm text-gray-600 mt-1">{addr.street}</p>
+                                    <p className="text-sm text-gray-600 font-medium">{addr.city}, {addr.zipCode}</p>
+                                    {addr.mobileNumber && <p className="text-sm text-gray-600 font-medium flex items-center gap-1 mt-1"><Smartphone size={14}/> {addr.mobileNumber}</p>}
+                                    
+                                    {selectedAddressId === addr._id && !showAddressForm && (
+                                      <div className="mt-4">
+                                        <button 
+                                          type="button"
+                                          onClick={(e) => { e.stopPropagation(); setActiveStep(3); }}
+                                          className="bg-[#fb641b] text-white px-8 py-3.5 text-sm font-bold uppercase rounded-sm shadow-sm"
+                                        >
+                                          Deliver Here
+                                        </button>
+                                      </div>
+                                    )}
+                                  </div>
+                                </div>
+                              </div>
+                            ))}
+                            <div 
+                              onClick={() => { setSelectedAddressId(null); setShowAddressForm(true); setFullName(''); setAddress(''); setCity(''); setPostalCode(''); setMobileNumber(''); }}
+                              className={`p-4 border cursor-pointer flex items-center transition-colors gap-4 ${showAddressForm ? 'border-[#2874f0] bg-blue-50/30' : 'border-gray-200 hover:bg-gray-50'}`}
+                            >
+                              <input type="radio" checked={showAddressForm} readOnly className="accent-[#2874f0] w-4 h-4 cursor-pointer" />
+                              <span className="text-sm font-bold text-[#2874f0]">Add New Address</span>
                             </div>
-                            <input 
-                              type="radio" 
-                              checked={selectedAddressId === addr._id && !showAddressForm} 
-                              readOnly 
-                              className="accent-[#2874f0] mt-1 w-4 h-4" 
-                            />
                           </div>
                         </div>
-                      ))}
-                      <div 
-                        onClick={() => { setSelectedAddressId(null); setShowAddressForm(true); setFullName(''); setAddress(''); setCity(''); setPostalCode(''); setMobileNumber(''); }}
-                        className={`p-4 border cursor-pointer flex items-center justify-center transition-colors ${showAddressForm ? 'border-[#2874f0] bg-blue-50/30' : 'border-gray-200 hover:bg-gray-50'}`}
-                      >
-                        <span className="text-sm font-bold text-[#2874f0]">+ Add New Address</span>
+                      )}
+
+                      {(showAddressForm || savedAddresses.length === 0) && (
+                        <div className="pl-4 pr-4 sm:pl-12 sm:pr-0 pt-4 sm:pt-0">
+                          <div className="bg-blue-50/50 p-4 border border-blue-100 mb-6 rounded-sm">
+                            <div className="flex items-center justify-between mb-4">
+                              <h3 className="text-sm font-bold text-gray-900">Auto-Fill Location Details</h3>
+                              <button 
+                                type="button" 
+                                onClick={detectLocation}
+                                disabled={detectingLocation}
+                                className="flex items-center gap-2 text-xs font-bold text-white bg-blue-600 hover:bg-blue-700 transition-colors px-4 py-2 rounded-sm disabled:opacity-50"
+                              >
+                                <MapPin size={14} /> {detectingLocation ? 'Detecting...' : 'Auto-Detect Location'}
+                              </button>
+                            </div>
+                          </div>
+
+                          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                            <div className="sm:col-span-1">
+                              <label className="block text-xs font-bold text-gray-500 mb-1">Full Name</label>
+                              <input type="text" value={fullName} onChange={(e) => setFullName(e.target.value)} required className="w-full px-4 py-3 border border-gray-300 rounded-sm text-sm focus:outline-none focus:border-[#2874f0]" />
+                            </div>
+                            <div className="sm:col-span-1">
+                              <label className="block text-xs font-bold text-gray-500 mb-1">Mobile Number *</label>
+                              <input type="tel" value={mobileNumber} onChange={(e) => setMobileNumber(e.target.value.replace(/\D/g, '').slice(0, 10))} required maxLength={10} className="w-full px-4 py-3 border border-gray-300 rounded-sm text-sm focus:outline-none focus:border-[#2874f0]" />
+                            </div>
+                            <div className="sm:col-span-2">
+                              <label className="block text-xs font-bold text-gray-500 mb-1">Street Address</label>
+                              <textarea value={address} onChange={(e) => setAddress(e.target.value)} required rows="2" className="w-full px-4 py-3 border border-gray-300 rounded-sm text-sm focus:outline-none focus:border-[#2874f0]"></textarea>
+                            </div>
+                            <div>
+                              <label className="block text-xs font-bold text-gray-500 mb-1">City</label>
+                              <input type="text" value={city} onChange={(e) => setCity(e.target.value)} required className="w-full px-4 py-3 border border-gray-300 rounded-sm text-sm focus:outline-none focus:border-[#2874f0]" />
+                            </div>
+                            <div>
+                              <label className="block text-xs font-bold text-gray-500 mb-1">Postal Code</label>
+                              <input type="text" value={postalCode} onChange={(e) => setPostalCode(e.target.value)} required className="w-full px-4 py-3 border border-gray-300 rounded-sm text-sm focus:outline-none focus:border-[#2874f0]" />
+                            </div>
+                          </div>
+                          
+                          <div className="mt-6">
+                            <button 
+                              type="button"
+                              onClick={() => {
+                                if(fullName && address && city && postalCode && mobileNumber.length === 10) {
+                                  setActiveStep(3);
+                                } else {
+                                  toast.error("Please fill all required address fields correctly");
+                                }
+                              }}
+                              className="bg-[#fb641b] text-white px-8 py-3.5 text-sm font-bold uppercase rounded-sm shadow-sm hover:shadow-md"
+                            >
+                              Save and Deliver Here
+                            </button>
+                          </div>
+                        </div>
+                      )}
+                    </div>
+                  </>
+                ) : (
+                  <div className="p-4 flex items-start justify-between cursor-pointer group" onClick={() => setActiveStep(2)}>
+                    <div className="flex items-start gap-4">
+                      <span className="w-6 h-6 rounded-sm bg-gray-100 text-[#2874f0] flex items-center justify-center text-xs font-bold">2</span>
+                      <div className="flex flex-col">
+                        <h2 className="text-base font-bold text-gray-500 uppercase flex items-center gap-2">
+                          Delivery Address {activeStep > 2 && <Check size={16} className="text-[#2874f0]" />}
+                        </h2>
+                        {activeStep > 2 && (
+                          <p className="text-sm text-black font-bold mt-2">
+                            {fullName} <span className="font-normal text-gray-600">{address}, {city} - {postalCode}</span>
+                          </p>
+                        )}
                       </div>
                     </div>
+                    {activeStep > 2 && <button type="button" className="text-[#2874f0] text-sm font-bold uppercase border border-gray-200 px-4 py-1 rounded-sm hidden sm:block group-hover:bg-blue-50 transition-colors">Change</button>}
                   </div>
                 )}
+              </div>
 
-                {showAddressForm && (
-                  <div className="pl-0 sm:pl-12">
-                    <div className="bg-blue-50/50 p-4 border border-blue-100 mb-6 rounded-sm">
-                      <div className="flex items-center justify-between mb-4">
-                        <h3 className="text-sm font-bold text-gray-900">Auto-Fill Location Details</h3>
+              {/* Step 3: ORDER SUMMARY */}
+              <div className="bg-white shadow-sm sm:rounded-sm overflow-hidden mb-4">
+                {activeStep === 3 ? (
+                  <>
+                    <div className="bg-[#2874f0] p-4 flex items-center gap-4 text-white">
+                      <span className="w-6 h-6 rounded-sm bg-white text-[#2874f0] flex items-center justify-center text-xs font-bold">3</span>
+                      <h2 className="text-base font-bold uppercase">Order Summary</h2>
+                    </div>
+                    <div className="p-0 sm:p-6">
+                      <div className="divide-y divide-gray-100 pl-0 sm:pl-10">
+                        {cartItems.map((item, index) => (
+                          <div key={index} className="py-4 px-4 sm:px-0 flex gap-4">
+                            <div className="w-20 h-24 flex-shrink-0 bg-gray-50">
+                              <img src={item.image} alt={item.name} className="w-full h-full object-contain" />
+                            </div>
+                            <div className="flex-1">
+                              <p className="text-sm font-medium text-gray-900 line-clamp-1">{item.name}</p>
+                              {item.size && <p className="text-xs text-gray-500 mt-1">Size: {item.size}</p>}
+                              <p className="text-sm font-bold text-black mt-2">₹{item.price.toLocaleString('en-IN')} <span className="font-normal text-gray-500 text-xs">x {item.quantity}</span></p>
+                            </div>
+                          </div>
+                        ))}
+                      </div>
+                      
+                      <div className="mt-4 p-4 sm:pl-10 border-t border-gray-100 bg-gray-50 flex flex-col sm:flex-row justify-between sm:items-center gap-4">
+                        <p className="text-sm text-gray-600">Order confirmation email will be sent to <span className="font-bold text-black">{userInfo?.email}</span></p>
                         <button 
-                          type="button" 
-                          onClick={detectLocation}
-                          disabled={detectingLocation}
-                          className="flex items-center gap-2 text-xs font-bold text-white bg-blue-600 hover:bg-blue-700 transition-colors px-4 py-2 rounded-sm disabled:opacity-50"
+                          type="button"
+                          onClick={() => setActiveStep(4)}
+                          className="bg-[#fb641b] text-white px-8 py-3.5 text-sm font-bold uppercase rounded-sm shadow-sm"
                         >
-                          <MapPin size={14} /> {detectingLocation ? 'Detecting...' : 'Auto-Detect Location'}
+                          Continue
                         </button>
                       </div>
-                      
                     </div>
-
-                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                      <div className="sm:col-span-1">
-                        <label className="block text-xs font-bold text-gray-500 mb-1">Full Name</label>
-                        <input 
-                          type="text" 
-                          value={fullName} 
-                          onChange={(e) => setFullName(e.target.value)} 
-                          required 
-                          className="w-full px-4 py-3 border border-gray-300 rounded-sm text-sm font-medium focus:outline-none focus:border-[#2874f0] transition-colors" 
-                        />
-                      </div>
-
-                      <div className="sm:col-span-1">
-                        <label className="block text-xs font-bold text-gray-500 mb-1">Mobile Number <span className="text-red-500">*</span></label>
-                        <input 
-                          type="tel" 
-                          value={mobileNumber} 
-                          onChange={(e) => {
-                            const val = e.target.value.replace(/\D/g, '').slice(0, 10);
-                            setMobileNumber(val);
-                          }} 
-                          required 
-                          maxLength={10}
-                          pattern="[6-9][0-9]{9}"
-                          autoComplete="nope"
-                          className={`w-full px-4 py-3 border rounded-sm text-sm font-medium focus:outline-none transition-colors ${mobileNumber && mobileNumber.length === 10 && /^[6-9]/.test(mobileNumber) ? 'border-green-400 focus:border-green-500' : mobileNumber.length > 0 ? 'border-red-300 focus:border-red-400' : 'border-gray-300 focus:border-[#2874f0]'}`} 
-                        />
-                        {mobileNumber.length > 0 && mobileNumber.length < 10 && (
-                          <p className="text-[10px] text-red-500 mt-1 font-bold">{10 - mobileNumber.length} more digit(s) needed</p>
+                  </>
+                ) : (
+                  <div className="p-4 flex items-start justify-between cursor-pointer group" onClick={() => { if(activeStep > 2) setActiveStep(3) }}>
+                    <div className="flex items-start gap-4">
+                      <span className="w-6 h-6 rounded-sm bg-gray-100 text-[#2874f0] flex items-center justify-center text-xs font-bold">3</span>
+                      <div className="flex flex-col">
+                        <h2 className="text-base font-bold text-gray-500 uppercase flex items-center gap-2">
+                          Order Summary {activeStep > 3 && <Check size={16} className="text-[#2874f0]" />}
+                        </h2>
+                        {activeStep > 3 && (
+                          <p className="text-sm text-black font-bold mt-2">
+                            {cartItems.length} Item{cartItems.length > 1 ? 's' : ''}
+                          </p>
                         )}
-                        {mobileNumber.length === 10 && !/^[6-9]/.test(mobileNumber) && (
-                          <p className="text-[10px] text-red-500 mt-1 font-bold">Number must start with 6, 7, 8, or 9</p>
-                        )}
-                        {mobileNumber.length === 10 && /^[6-9]/.test(mobileNumber) && (
-                          <p className="text-[10px] text-green-600 mt-1 font-bold">✓ Valid number</p>
-                        )}
-                      </div>
-                      
-                      <div className="sm:col-span-2">
-                        <label className="block text-xs font-bold text-gray-500 mb-1">Street Address</label>
-                        <input 
-                          type="text" 
-                          value={address} 
-                          onChange={(e) => setAddress(e.target.value)} 
-                          required 
-                          className="w-full px-4 py-3 border border-gray-300 rounded-sm text-sm font-medium focus:outline-none focus:border-[#2874f0] transition-colors" 
-                        />
-                      </div>
-                      
-                      <div>
-                        <label className="block text-xs font-bold text-gray-500 mb-1">City</label>
-                        <input 
-                          type="text" 
-                          value={city} 
-                          onChange={(e) => setCity(e.target.value)} 
-                          required 
-                          className="w-full px-4 py-3 border border-gray-300 rounded-sm text-sm font-medium focus:outline-none focus:border-[#2874f0] transition-colors" 
-                        />
-                      </div>
-                      
-                      <div>
-                        <label className="block text-xs font-bold text-gray-500 mb-1">Postal Code</label>
-                        <input 
-                          type="text" 
-                          value={postalCode} 
-                          onChange={(e) => setPostalCode(e.target.value)} 
-                          required 
-                          className="w-full px-4 py-3 border border-gray-300 rounded-sm text-sm font-medium focus:outline-none focus:border-[#2874f0] transition-colors" 
-                        />
                       </div>
                     </div>
+                    {activeStep > 3 && <button type="button" className="text-[#2874f0] text-sm font-bold uppercase border border-gray-200 px-4 py-1 rounded-sm hidden sm:block group-hover:bg-blue-50 transition-colors">Change</button>}
                   </div>
                 )}
-              </section>
+              </div>
 
-              {/* Payment Section */}
-              <section className="bg-white p-6 shadow-sm rounded-sm">
-                <div className="flex items-center justify-between mb-6">
-                  <div className="flex items-center gap-4">
-                    <span className="w-8 h-8 rounded-sm bg-[#2874f0] text-white flex items-center justify-center text-sm font-bold">2</span>
-                    <h2 className="text-base font-bold uppercase text-gray-900">Payment Options</h2>
-                  </div>
-                  <div className="bg-red-50 px-3 py-1.5 rounded-sm border border-red-200 flex items-center gap-2">
-                    <div className="w-2 h-2 rounded-full bg-red-600 animate-pulse"></div>
-                    <span className="text-sm font-bold text-red-700 font-mono">
-                      {Math.floor(timeLeft / 60).toString().padStart(2, '0')}:{(timeLeft % 60).toString().padStart(2, '0')}
-                    </span>
-                  </div>
-                </div>
-                
-                <div className="pl-0 sm:pl-12">
-                  <div className="border border-[#2874f0] bg-blue-50/10 rounded-sm overflow-hidden">
-                    <div className="p-4 flex items-center gap-3 border-b border-blue-100 bg-blue-50/50">
-                      <input 
-                        type="radio" 
-                        checked={true}
-                        readOnly
-                        className="w-4 h-4 accent-[#2874f0]" 
-                      />
-                      <span className="text-sm font-bold text-black flex items-center gap-2">
-                        <Smartphone size={18} className="text-[#2874f0]" /> UPI QR Payment
-                      </span>
-                    </div>
-
-                    <div className="p-6 flex flex-col items-center text-center">
-                      <div className="bg-yellow-50 border border-yellow-200 p-3 mb-4 rounded-sm w-full max-w-sm">
-                        <p className="text-xs text-yellow-800 font-bold mb-1">IMPORTANT:</p>
-                        <p className="text-xs text-yellow-800">Ensure this code appears in your UPI payment note:</p>
-                        <p className="text-xl font-black font-mono text-black tracking-wider mt-1">{paymentRefCode}</p>
+              {/* Step 4: PAYMENT OPTIONS */}
+              <div className="bg-white shadow-sm sm:rounded-sm overflow-hidden mb-4">
+                {activeStep === 4 ? (
+                  <>
+                    <div className="bg-[#2874f0] p-4 flex items-center justify-between text-white">
+                      <div className="flex items-center gap-4">
+                        <span className="w-6 h-6 rounded-sm bg-white text-[#2874f0] flex items-center justify-center text-xs font-bold">4</span>
+                        <h2 className="text-base font-bold uppercase">Payment Options</h2>
                       </div>
-
-                      <div className="bg-white p-3 border border-gray-200 shadow-sm mb-4 rounded-xl">
-                        <img src={`https://api.qrserver.com/v1/create-qr-code/?size=200x200&data=upi://pay?pa=zen-g@upi&pn=ZenG&am=${Math.round(totalPrice)}&cu=INR&tn=Payment for ${paymentRefCode}`} alt="UPI QR Code" className="mx-auto w-40 h-40 border-4 border-white shadow-sm rounded-lg" />
-                        <p className="mt-4 text-sm font-bold text-gray-900">Scan to Pay ₹{Math.round(totalPrice).toLocaleString('en-IN')}</p>
-                      </div>
-                      <p className="text-xs text-gray-500 mb-4">Open any UPI app (GPay, PhonePe, Paytm) and scan the QR code to confirm your order.</p>
-                      
-                      <div className="w-full max-w-xs mb-6 text-left">
-                        <label className="block text-xs font-bold text-gray-900 mb-2 uppercase tracking-widest">
-                          Enter 12-Digit UTR Number *
-                        </label>
-                        <input 
-                          type="text" 
-                          required
-                          value={utrNumber}
-                          onChange={(e) => setUtrNumber(e.target.value.replace(/\D/g, '').slice(0, 12))}
-                          placeholder="e.g., 312345678901"
-                          minLength={12}
-                          maxLength={12}
-                          className="w-full px-4 py-3 border-2 border-gray-300 rounded-sm text-sm font-bold text-center tracking-[0.2em] focus:outline-none focus:border-[#2874f0] transition-colors" 
-                        />
-                        <p className="text-[10px] text-gray-500 mt-2 leading-relaxed">
-                          After paying, check your bank/UPI app for the 12-digit UPI Reference Number (UTR). We need this to verify your payment.
-                        </p>
-                      </div>
-
-                      <div className="bg-green-50 border border-green-200 px-4 py-2 flex items-center gap-2 rounded-sm w-full max-w-xs justify-center">
-                        <ShieldCheck size={16} className="text-green-600" />
-                        <span className="text-xs font-bold text-green-700">100% Safe and Secure Payments</span>
+                      <div className="bg-white/20 px-3 py-1 rounded-sm flex items-center gap-2 text-xs font-mono">
+                        <div className="w-1.5 h-1.5 rounded-full bg-white animate-pulse"></div>
+                        {Math.floor(timeLeft / 60).toString().padStart(2, '0')}:{(timeLeft % 60).toString().padStart(2, '0')}
                       </div>
                     </div>
+                    
+                    <div className="p-4 sm:p-6 sm:pl-14">
+                      <div className="border-b border-gray-200 pb-4 mb-4 flex items-center gap-3">
+                        <input type="radio" checked readOnly className="w-4 h-4 accent-[#2874f0]" />
+                        <span className="text-sm font-bold text-black flex items-center gap-2">
+                          <Smartphone size={18} className="text-[#2874f0]" /> UPI QR Payment
+                        </span>
+                      </div>
+
+                      <div className="flex flex-col items-center text-center">
+                        <div className="bg-yellow-50 border border-yellow-200 p-3 mb-4 rounded-sm w-full max-w-sm">
+                          <p className="text-xs text-yellow-800 font-bold mb-1">IMPORTANT:</p>
+                          <p className="text-xs text-yellow-800">Ensure this code appears in your UPI payment note:</p>
+                          <p className="text-xl font-black font-mono text-black tracking-wider mt-1">{paymentRefCode}</p>
+                        </div>
+
+                        <div className="bg-white p-3 border border-gray-200 shadow-sm mb-4 rounded-xl">
+                          <img src={`https://api.qrserver.com/v1/create-qr-code/?size=200x200&data=upi://pay?pa=zen-g@upi&pn=ZenG&am=${Math.round(totalPrice)}&cu=INR&tn=Payment for ${paymentRefCode}`} alt="UPI QR Code" className="mx-auto w-40 h-40 border-4 border-white shadow-sm rounded-lg" />
+                          <p className="mt-4 text-sm font-bold text-gray-900">Scan to Pay ₹{Math.round(totalPrice).toLocaleString('en-IN')}</p>
+                        </div>
+                        <p className="text-xs text-gray-500 mb-4">Open any UPI app (GPay, PhonePe, Paytm) and scan the QR code to confirm your order.</p>
+                        
+                        <div className="w-full max-w-xs mb-6 text-left">
+                          <label className="block text-xs font-bold text-gray-900 mb-2 uppercase tracking-widest">
+                            Enter 12-Digit UTR Number *
+                          </label>
+                          <input 
+                            type="text" 
+                            required
+                            value={utrNumber}
+                            onChange={(e) => setUtrNumber(e.target.value.replace(/\D/g, '').slice(0, 12))}
+                            placeholder="e.g., 312345678901"
+                            minLength={12}
+                            maxLength={12}
+                            className="w-full px-4 py-3 border-2 border-gray-300 rounded-sm text-sm font-bold text-center tracking-[0.2em] focus:outline-none focus:border-[#2874f0]" 
+                          />
+                        </div>
+                        
+                        {/* HONEYPOT FIELD */}
+                        <div className="absolute left-[-9999px] top-[-9999px]" aria-hidden="true">
+                          <input type="text" name="website_url" value={websiteUrl} onChange={(e) => setWebsiteUrl(e.target.value)} tabIndex="-1" autoComplete="off" />
+                        </div>
+                        
+                        {/* Submit Button */}
+                        <button 
+                          type="submit" 
+                          disabled={loadingPay || utrNumber.length !== 12} 
+                          className="w-full max-w-xs bg-[#fb641b] py-4 px-8 text-sm font-bold uppercase text-white hover:bg-[#f05a11] transition-colors rounded-sm shadow-sm disabled:opacity-50"
+                        >
+                          {loadingPay ? 'Processing...' : `PAY ₹${Math.round(totalPrice).toLocaleString('en-IN')}`}
+                        </button>
+                      </div>
+                    </div>
+                  </>
+                ) : (
+                  <div className="p-4 flex items-center gap-4 text-gray-500 cursor-pointer" onClick={() => { if(activeStep > 3) setActiveStep(4) }}>
+                    <span className="w-6 h-6 rounded-sm bg-gray-100 text-gray-500 flex items-center justify-center text-xs font-bold">4</span>
+                    <h2 className="text-base font-bold uppercase">Payment Options</h2>
                   </div>
-                </div>
-              </section>
-              
-              {/* HONEYPOT FIELD - Visually hidden to catch bots */}
-              <div className="absolute left-[-9999px] top-[-9999px]" aria-hidden="true">
-                <label htmlFor="website_url">Leave this field empty if you are human</label>
-                <input 
-                  type="text" 
-                  id="website_url"
-                  name="website_url" 
-                  value={websiteUrl}
-                  onChange={(e) => setWebsiteUrl(e.target.value)}
-                  tabIndex="-1" 
-                  autoComplete="off" 
-                />
+                )}
               </div>
 
             </form>
           </div>
 
-          {/* Right Column - Order Summary */}
-          <div className="lg:col-span-4 mt-8 lg:mt-0">
-            <div className="bg-white shadow-sm rounded-sm sticky top-20">
-              <div className="p-4 border-b border-gray-200">
-                <h2 className="text-sm font-bold text-gray-500 uppercase">Price Details</h2>
+          {/* Right Column - Price Details (Sticky) */}
+          <div className="lg:col-span-4 mt-0">
+            <div className="bg-white shadow-sm sm:rounded-sm sticky top-24">
+              <div className="p-4 border-b border-gray-100">
+                <h2 className="text-sm font-bold text-gray-500 uppercase tracking-wider">Price Details</h2>
               </div>
               
-              <div className="p-4 space-y-4 text-sm font-medium text-gray-700">
+              <div className="p-4 space-y-4 text-sm font-medium text-gray-800">
                 <div className="flex justify-between">
-                  <span>Price ({cartItems.length} items)</span>
-                  <span>Rs {itemsPrice.toLocaleString('en-IN')}</span>
+                  <span>Price ({cartItems.length} item{cartItems.length > 1 ? 's' : ''})</span>
+                  <span>₹{itemsPrice.toLocaleString('en-IN')}</span>
                 </div>
                 {coupon && (
                   <div className="flex justify-between text-green-600">
                     <span>Discount</span>
-                    <span>-Rs {discountAmount.toLocaleString('en-IN')}</span>
+                    <span>-₹{discountAmount.toLocaleString('en-IN')}</span>
                   </div>
                 )}
                 <div className="flex justify-between">
                   <span>Delivery Charges</span>
-                  <span className="text-green-600">{shippingPrice === 0 ? 'FREE' : `Rs ${shippingPrice.toLocaleString('en-IN')}`}</span>
+                  <span className="text-green-600">{shippingPrice === 0 ? 'FREE Delivery' : `₹${shippingPrice.toLocaleString('en-IN')}`}</span>
                 </div>
                 <div className="flex justify-between">
-                  <span>Estimated Tax (18%)</span>
-                  <span>Rs {taxPrice.toFixed(0).toLocaleString('en-IN')}</span>
+                  <span>Secured Packaging Fee</span>
+                  <span>₹{taxPrice.toFixed(0).toLocaleString('en-IN')}</span>
                 </div>
               </div>
               
-              <div className="px-4 py-4 border-t border-gray-200 border-dashed">
+              <div className="px-4 py-4 border-t border-gray-200 border-dashed m-2">
                 <div className="flex justify-between items-center">
-                  <span className="font-bold text-black text-lg">Total Payable</span>
-                  <span className="font-bold text-black text-lg">Rs {totalPrice.toFixed(0).toLocaleString('en-IN')}</span>
+                  <span className="font-bold text-black text-lg">Total Amount</span>
+                  <span className="font-bold text-black text-lg">₹{Math.round(totalPrice).toLocaleString('en-IN')}</span>
                 </div>
               </div>
               
-              <div className="p-4 bg-gray-50 border-t border-gray-200 text-center">
-                <motion.button 
-                  whileTap={{ scale: 0.98 }} 
-                  form="checkout-form"
-                  type="submit" 
-                  disabled={loadingPay} 
-                  className="w-full bg-[#fb641b] py-3.5 px-8 text-sm font-bold uppercase text-white hover:bg-[#f05a11] transition-colors rounded-sm shadow-sm disabled:opacity-50"
-                >
-                  {loadingPay ? 'Processing...' : 'CONFIRM ORDER'}
-                </motion.button>
-                <p className="text-[10px] text-gray-500 mt-3">By placing order you confirm you have scanned and paid via the QR Code above and provided a valid UTR.</p>
+              <div className="p-4 flex items-center gap-2 text-xs text-gray-500 font-bold justify-center bg-gray-50 border-t border-gray-100">
+                <ShieldCheck size={16} className="text-green-600" />
+                Safe and Secure Payments. Easy returns.
               </div>
             </div>
           </div>
