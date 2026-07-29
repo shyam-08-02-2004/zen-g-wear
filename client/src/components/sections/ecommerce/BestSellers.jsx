@@ -79,18 +79,41 @@ const BestSellerItem = ({ product }) => {
   );
 };
 
+const BestSellerSkeleton = () => (
+  <div className="w-full bg-[#f1f3f6] sm:bg-transparent mb-2 sm:mb-4 font-sans animate-pulse">
+    <div className="bg-white sm:rounded-sm shadow-sm overflow-hidden">
+      <div className="flex justify-between items-center px-4 py-3 sm:px-6 sm:py-5 border-b border-gray-100">
+        <h2 className="text-lg sm:text-2xl font-bold text-gray-800">Best Sellers</h2>
+      </div>
+      <div className="flex overflow-hidden p-3 sm:p-6 gap-3 sm:gap-6">
+        {[...Array(5)].map((_, i) => (
+          <div key={i} className="flex flex-col items-center flex-shrink-0 w-[130px] sm:w-[200px] p-2 sm:p-4">
+            <div className="w-full h-[120px] sm:h-[180px] mb-2 sm:mb-4 bg-gray-200 rounded-sm"></div>
+            <div className="w-full h-4 bg-gray-200 mb-2 rounded-sm"></div>
+            <div className="w-1/2 h-4 bg-gray-200 rounded-sm mx-auto"></div>
+          </div>
+        ))}
+      </div>
+    </div>
+  </div>
+);
+
 const BestSellers = () => {
   const [products, setProducts] = useState([]);
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
+    setLoading(true);
     productsService.getProducts('?sort=-salesCount&limit=8')
       .then(res => {
         setProducts(res.data?.data || []);
       })
-      .catch(err => console.error(err));
+      .catch(err => console.error(err))
+      .finally(() => setLoading(false));
   }, []);
 
-  if (products.length === 0) return null;
+  if (loading) return <BestSellerSkeleton />;
+  if (!loading && products.length === 0) return null;
 
   return (
     <div className="w-full bg-[#f1f3f6] sm:bg-transparent mb-2 sm:mb-4 font-sans">
