@@ -320,7 +320,7 @@ const ProductListing = () => {
           <h1 className="text-xl lg:text-3xl font-display font-black uppercase tracking-tight text-black">
             {categoryFilter ? `${categoryFilter.charAt(0).toUpperCase() + categoryFilter.slice(1)}'s ${subcategoryFilter || 'Collection'}` : keyword ? `Search: "${keyword}"` : 'All Products'}
           </h1>
-          <p className="text-xs text-gray-500 mt-0.5">{totalProducts} Items Found</p>
+          
         </div>
 
         {/* Horizontal Chips (Flipkart Style) */}
