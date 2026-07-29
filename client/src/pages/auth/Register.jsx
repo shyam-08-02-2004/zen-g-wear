@@ -34,122 +34,126 @@ function Register() {
   };
 
   return (
-    <div className="flex min-h-screen bg-[#2874f0] lg:bg-white font-sans">
-      {/* Left side - Image (Desktop only) */}
-      <div className="hidden lg:flex lg:w-1/2 relative bg-gray-100">
-        <img 
-          src="https://images.unsplash.com/photo-1483985988355-763728e1935b?auto=format&fit=crop&w=1200&q=80" 
-          alt="Fashion Lifestyle" 
-          className="absolute inset-0 w-full h-full object-cover grayscale hover:grayscale-0 transition-all duration-1000"
-        />
-        <div className="absolute inset-0 bg-black/30" />
-        <div className="absolute bottom-16 left-16 text-white max-w-md">
-          <h2 className="font-display text-4xl font-black uppercase tracking-widest mb-4 leading-tight">Join The <br />Club</h2>
-          <p className="text-sm font-bold text-white/90 uppercase tracking-widest leading-relaxed">Become a member for exclusive access to new drops.</p>
-        </div>
-      </div>
-
-      {/* Right side - Form */}
-      <div className="flex-1 flex flex-col justify-end lg:justify-center">
-        {/* Mobile Header (Flipkart style) */}
-        <div className="lg:hidden flex flex-col items-center justify-center py-10 px-4 text-white">
-          <Link to="/" className="font-bold text-3xl italic tracking-tight mb-2">
-            ZEN-G WEAR
-          </Link>
-          <p className="text-white/80 text-sm font-medium">Create your account</p>
-        </div>
-
-        <div className="w-full bg-white rounded-t-3xl lg:rounded-none px-6 pt-12 pb-8 sm:px-10 lg:px-20 xl:px-24 h-auto min-h-[75vh] lg:min-h-0 flex flex-col lg:justify-center">
-          <div className="mx-auto w-full max-w-sm lg:w-96">
-            <Link to="/" className="hidden lg:block font-bold text-3xl italic text-[#2874f0] mb-8">
-              ZEN-G WEAR
+    <div className="flex min-h-screen bg-[#f1f3f6] lg:p-8 font-sans items-center justify-center">
+      <div className="w-full max-w-[850px] bg-white lg:rounded-md lg:shadow-[0_2px_4px_0_rgba(0,0,0,.1)] flex overflow-hidden min-h-screen lg:min-h-[600px] flex-col lg:flex-row">
+        
+        {/* Left side - Blue Panel */}
+        <div className="lg:w-2/5 bg-[#2874f0] p-8 lg:p-10 flex flex-col justify-between text-white relative overflow-hidden">
+          {/* Header Mobile / Desktop */}
+          <div className="relative z-10">
+            <Link to="/" className="inline-block mb-8 lg:mb-10">
+              <h1 className="text-3xl font-bold italic tracking-tight flex items-center gap-2">
+                ZEN-G <span className="text-yellow-400">WEAR</span>
+              </h1>
             </Link>
-            
-            <h2 className="text-xl font-bold text-gray-900 mb-2">Create Account</h2>
-            <p className="text-xs font-bold text-gray-500 uppercase tracking-widest mb-8">Fill in your details to get started.</p>
+            <h2 className="text-3xl font-semibold mb-4">Looks like you're new here!</h2>
+            <p className="text-[17px] text-white/90 font-medium leading-relaxed">
+              Sign up with your email to get started
+            </p>
+          </div>
+          
+          <img 
+            src="https://static-assets-web.flixcart.com/fk-p-linchpin-web/fk-cp-zion/img/login_img_c4a81e.png" 
+            alt="Shopping" 
+            className="hidden lg:block w-full max-w-[200px] mx-auto mt-12 mix-blend-multiply relative z-10"
+          />
+          {/* Decorative elements */}
+          <div className="absolute top-0 right-0 w-64 h-64 bg-white/5 rounded-full -translate-y-1/2 translate-x-1/3"></div>
+          <div className="absolute bottom-0 left-0 w-48 h-48 bg-black/5 rounded-full translate-y-1/3 -translate-x-1/3"></div>
+        </div>
 
-            {error && (
-            <motion.div initial={{ opacity: 0, y: -10 }} animate={{ opacity: 1, y: 0 }} className="mb-6 p-4 bg-red-50 border border-red-200 text-red-600 text-xs font-bold uppercase tracking-widest">
+        {/* Right side - Form */}
+        <div className="lg:w-3/5 p-8 lg:p-14 flex flex-col bg-white relative flex-1">
+          
+          {error && (
+            <motion.div initial={{ opacity: 0, y: -10 }} animate={{ opacity: 1, y: 0 }} className="mb-6 p-4 bg-red-50 border-l-4 border-red-500 text-red-600 text-sm font-medium">
               {error}
             </motion.div>
           )}
 
-          <form className="space-y-6" onSubmit={handleSubmit}>
-            <div>
-              <label className="block text-xs font-bold text-gray-900 uppercase tracking-widest mb-2" htmlFor="name">
-                Full Name
-              </label>
+          <form className="space-y-6 mt-4 lg:mt-0" onSubmit={handleSubmit}>
+            <div className="relative group">
               <input
                 id="name"
                 type="text"
                 required
-                className="block w-full rounded-none border border-gray-200 px-4 py-3 placeholder-gray-400 text-gray-900 focus:border-black focus:outline-none transition-colors bg-gray-50 focus:bg-white text-sm"
-                placeholder="JOHN DOE"
+                className="block w-full border-b-[1.5px] border-gray-300 px-0 py-2.5 text-gray-900 focus:border-[#2874f0] focus:outline-none transition-colors bg-transparent text-[16px] peer"
+                placeholder=" "
                 value={name}
                 onChange={(e) => setName(e.target.value)}
               />
+              <label 
+                htmlFor="name"
+                className="absolute left-0 top-3 text-gray-500 text-[15px] transition-all peer-focus:-top-4 peer-focus:text-xs peer-focus:text-[#2874f0] peer-valid:-top-4 peer-valid:text-xs"
+              >
+                Enter Full Name
+              </label>
             </div>
 
-            <div>
-              <label className="block text-xs font-bold text-gray-900 uppercase tracking-widest mb-2" htmlFor="email">
-                Email Address
-              </label>
+            <div className="relative group">
               <input
                 id="email"
                 type="email"
                 required
-                className="block w-full rounded-none border border-gray-200 px-4 py-3 placeholder-gray-400 text-gray-900 focus:border-black focus:outline-none transition-colors bg-gray-50 focus:bg-white text-sm"
-                placeholder="EMAIL@EXAMPLE.COM"
+                className="block w-full border-b-[1.5px] border-gray-300 px-0 py-2.5 text-gray-900 focus:border-[#2874f0] focus:outline-none transition-colors bg-transparent text-[16px] peer"
+                placeholder=" "
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
               />
+              <label 
+                htmlFor="email"
+                className="absolute left-0 top-3 text-gray-500 text-[15px] transition-all peer-focus:-top-4 peer-focus:text-xs peer-focus:text-[#2874f0] peer-valid:-top-4 peer-valid:text-xs"
+              >
+                Enter Email Address
+              </label>
             </div>
 
-            <div>
-              <label className="block text-xs font-bold text-gray-900 uppercase tracking-widest mb-2" htmlFor="password">
-                Password
+            <div className="relative group">
+              <input
+                id="password"
+                type={showPassword ? "text" : "password"}
+                required
+                className="block w-full border-b-[1.5px] border-gray-300 px-0 py-2.5 pr-12 text-gray-900 focus:border-[#2874f0] focus:outline-none transition-colors bg-transparent text-[16px] peer"
+                placeholder=" "
+                value={password}
+                onChange={(e) => setPassword(e.target.value)}
+              />
+              <label 
+                htmlFor="password"
+                className="absolute left-0 top-3 text-gray-500 text-[15px] transition-all peer-focus:-top-4 peer-focus:text-xs peer-focus:text-[#2874f0] peer-valid:-top-4 peer-valid:text-xs"
+              >
+                Create Password
               </label>
-              <div className="relative">
-                <input
-                  id="password"
-                  type={showPassword ? "text" : "password"}
-                  required
-                  className="block w-full rounded-none border border-gray-200 px-4 py-3 pr-12 placeholder-gray-400 text-gray-900 focus:border-black focus:outline-none transition-colors bg-gray-50 focus:bg-white text-sm"
-                  placeholder="••••••••"
-                  value={password}
-                  onChange={(e) => setPassword(e.target.value)}
-                />
-                <button
-                  type="button"
-                  onClick={() => setShowPassword(!showPassword)}
-                  className="absolute inset-y-0 right-0 px-4 flex items-center text-gray-400 hover:text-gray-600 transition-colors"
-                >
-                  {showPassword ? <EyeOff size={18} /> : <Eye size={18} />}
-                </button>
-              </div>
-              <p className="mt-2 text-[10px] text-gray-500 uppercase tracking-widest">Must be at least 8 characters long.</p>
+              <button
+                type="button"
+                onClick={() => setShowPassword(!showPassword)}
+                className="absolute right-0 top-2.5 text-[#2874f0] font-semibold text-sm hover:text-blue-700 transition-colors bg-white px-1"
+              >
+                {showPassword ? 'Hide' : 'Show'}
+              </button>
             </div>
 
             <button
               type="submit"
               disabled={loading}
-              className="w-full flex justify-center items-center py-4 px-4 border border-transparent text-xs font-bold text-white bg-black hover:bg-gray-900 focus:outline-none disabled:opacity-50 transition-colors uppercase tracking-widest mt-8"
+              className="w-full flex justify-center items-center py-3.5 px-4 rounded-[2px] shadow bg-[#fb641b] hover:bg-[#f3570b] text-white font-bold text-[15px] transition-all disabled:opacity-70 disabled:cursor-not-allowed mt-8"
             >
               {loading ? (
                 <span className="flex items-center gap-2">
                   <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
-                  Creating Account...
+                  Registering...
                 </span>
-              ) : 'Create Account'}
+              ) : 'Continue'}
             </button>
           </form>
 
-          <div className="mt-12 pt-8 border-t border-gray-200 text-center">
-            <p className="text-xs font-bold text-gray-500 uppercase tracking-widest mb-4">Already have an account?</p>
-            <Link to="/login" className="inline-block border border-black px-8 py-3 text-xs font-bold text-black uppercase tracking-widest hover:bg-gray-50 transition-colors w-full">
-              Sign In
+          <div className="mt-auto pt-10">
+            <Link 
+              to="/login" 
+              className="block w-full text-center py-3.5 px-4 bg-white text-[#2874f0] font-bold text-[15px] shadow-[0_2px_4px_0_rgba(0,0,0,.2)] hover:shadow-[0_2px_8px_0_rgba(0,0,0,.3)] rounded-[2px] transition-all"
+            >
+              Existing User? Log in
             </Link>
-          </div>
           </div>
         </div>
       </div>
