@@ -498,20 +498,8 @@ const ProductDetails = () => {
     </>
   )}
 </div>
-                <span className="text-[28px] font-bold text-[#212121] leading-none">
-                  ₹{(product.discountPrice || product.price).toLocaleString('en-IN')}
-                </span>
-                {product.discountPrice && (
-                  <>
-                    <span className="text-[16px] text-[#878787] line-through mb-1">
-                      ₹{product.price.toLocaleString('en-IN')}
-                    </span>
-                    <span className="text-[16px] font-bold text-[#388e3c] mb-1">
-                      {product.discountPercentage}% off
-                    </span>
-                  </>
-                )}
-              </div>
+
+
 
               <div className="w-full h-px bg-gray-200 mb-6"></div>
 
@@ -807,6 +795,7 @@ const ProductDetails = () => {
 
 
           </div>
+        </div>
         </div>
 
         {/* Frequently Bought Together */}
