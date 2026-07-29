@@ -1,7 +1,7 @@
 import { useState, useEffect, useCallback } from 'react';
 import { Link, useSearchParams } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Heart, SlidersHorizontal, ChevronDown, ShoppingBag, X } from 'lucide-react';
+import { Heart, SlidersHorizontal, ChevronDown, ShoppingBag, X, ShoppingCart } from 'lucide-react';
 import Navbar from '../../components/layout/Navbar';
 import CategoryNav from '../../components/layout/CategoryNav';
 import Footer from '../../components/layout/Footer';
@@ -105,7 +105,7 @@ const ProductCard = ({ product }) => {
       animate={{ opacity: 1, y: 0 }}
       exit={{ opacity: 0, y: 20 }}
       transition={{ duration: 0.4 }}
-      className="group relative flex flex-col font-sans"
+      className="group relative flex flex-col font-sans bg-white rounded-2xl shadow-sm border border-gray-100 hover:shadow-xl transition-all duration-300 overflow-hidden"
       onMouseEnter={() => setIsHovered(true)}
       onMouseLeave={() => setIsHovered(false)}
     >
@@ -172,46 +172,58 @@ const ProductCard = ({ product }) => {
         )}
       </Link>
 
-      {/* Product Info - Flipkart Style */}
-      <div className="pt-3 px-2 flex flex-col gap-1 bg-white hover:shadow-lg transition-shadow duration-300 pb-3">
+      {/* Product Info - Premium Style */}
+      <div className="pt-4 px-3 pb-4 flex flex-col gap-1.5 flex-grow justify-between bg-white">
         <div className="flex flex-col">
           <Link to={`/product/${product._id}`}>
-            <h3 className="text-xs font-bold text-gray-500 uppercase tracking-wide mb-1">
+            <h3 className="text-[10px] font-bold text-gray-400 uppercase tracking-widest mb-0.5">
               {product.brand || 'Brand'}
             </h3>
-            <p className="text-sm text-gray-700 truncate hover:text-blue-600 transition-colors">
+            <p className="text-sm font-semibold text-gray-800 line-clamp-1 hover:text-blue-600 transition-colors">
               {product.name}
             </p>
           </Link>
           
-          <div className="flex items-center gap-2 mt-1">
+          <div className="flex items-center gap-2 mt-1.5">
             {product.rating > 0 ? (
-              <span className="bg-green-600 text-white text-[10px] font-bold px-1.5 py-0.5 rounded-sm flex items-center">
+              <span className="bg-green-600 text-white text-[10px] font-bold px-1.5 py-0.5 rounded flex items-center">
                 {product.rating} <span className="ml-0.5 text-[8px]">★</span>
               </span>
             ) : (
-              <span className="bg-green-600 text-white text-[10px] font-bold px-1.5 py-0.5 rounded-sm flex items-center">
+              <span className="bg-green-600 text-white text-[10px] font-bold px-1.5 py-0.5 rounded flex items-center">
                 4.2 <span className="ml-0.5 text-[8px]">★</span>
               </span>
             )}
-            <span className="text-xs text-gray-400">({product.numReviews})</span>
+            <span className="text-xs text-gray-400 font-medium">({product.numReviews})</span>
             <img src="https://static-assets-web.flixcart.com/fk-p-linchpin-web/fk-cp-zion/img/fa_62673a.png" alt="Assured" className="h-4 ml-auto" />
           </div>
         </div>
 
-        <div className="flex flex-wrap items-center gap-2 mt-1">
-          <span className="text-base font-bold text-black">
-            ₹{(product.discountPrice || product.price).toLocaleString('en-IN')}
-          </span>
-          {product.discountPrice && (
-            <>
-              <span className="text-xs text-gray-500 line-through">
-                ₹{product.price.toLocaleString('en-IN')}
-              </span>
-              <span className="text-xs font-bold text-green-600">
-                {product.discountPercentage}% off
-              </span>
-            </>
+        <div className="flex items-center justify-between mt-2 pt-2 border-t border-gray-50">
+          <div className="flex flex-wrap items-baseline gap-1.5">
+            <span className="text-base font-black text-black">
+              ₹{(product.discountPrice || product.price).toLocaleString('en-IN')}
+            </span>
+            {product.discountPrice && (
+              <>
+                <span className="text-[10px] text-gray-400 line-through">
+                  ₹{product.price.toLocaleString('en-IN')}
+                </span>
+                <span className="text-[10px] font-bold text-green-600 bg-green-50 px-1.5 py-0.5 rounded">
+                  {product.discountPercentage}% OFF
+                </span>
+              </>
+            )}
+          </div>
+          
+          {/* Mobile Add to Cart Button */}
+          {!isAdmin && (
+            <button
+              onClick={handleQuickAdd}
+              className="lg:hidden flex-shrink-0 bg-black text-white p-2 rounded-full shadow-md active:scale-95 transition-transform hover:bg-gray-800"
+            >
+              <ShoppingCart size={16} />
+            </button>
           )}
         </div>
       </div>
