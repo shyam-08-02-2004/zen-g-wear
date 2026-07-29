@@ -46,6 +46,9 @@ const orderSchema = new mongoose.Schema(
     utrNumber: {
       type: String,
     },
+    paymentRefCode: {
+      type: String,
+    },
     status: {
       type: String,
       required: true,

@@ -15,7 +15,15 @@ export const addOrderItems = asyncHandler(async (req, res) => {
     shippingPrice,
     totalPrice,
     utrNumber,
+    paymentRefCode,
+    website_url, // Honeypot field
   } = req.body;
+
+  // 0. Honeypot Bot Trap
+  if (website_url) {
+    // If a bot fills this hidden field, return fake success immediately
+    return res.status(200).json({ success: true, data: { orderNumber: `ORD-${Date.now()}` } });
+  }
 
   if (orderItems && orderItems.length === 0) {
     res.status(400);
@@ -33,6 +41,18 @@ export const addOrderItems = asyncHandler(async (req, res) => {
       if (user) {
         user.isActive = false;
         await user.save({ validateBeforeSave: false });
+        
+        // Notify Admins
+        const admins = await User.find({ role: 'admin' });
+        for (const admin of admins) {
+          await Notification.create({
+            user: admin._id,
+            type: 'system',
+            title: 'User Banned (Fake UTR)',
+            message: `User ${user.email} was automatically permanently banned for attempting to use a fake UTR (${utrNumber}).`,
+            link: '/admin/users',
+          });
+        }
       }
       res.status(403);
       throw new Error('FAKE_UTR_BANNED');
@@ -73,6 +93,7 @@ export const addOrderItems = asyncHandler(async (req, res) => {
       shippingPrice,
       totalPrice,
       utrNumber,
+      paymentRefCode,
     });
 
     const createdOrder = await order.save();

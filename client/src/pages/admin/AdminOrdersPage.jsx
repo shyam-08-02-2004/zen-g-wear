@@ -360,6 +360,12 @@ const AdminOrdersPage = () => {
                                     <span className="font-mono font-bold text-xs text-blue-700">{order.utrNumber}</span>
                                   </div>
                                 )}
+                                {order.paymentRefCode && (
+                                  <div className="flex justify-between text-sm">
+                                    <span className="text-gray-500">QR Bank Note</span>
+                                    <span className="font-mono font-black text-xs text-red-600 bg-red-50 px-1 rounded">{order.paymentRefCode}</span>
+                                  </div>
+                                )}
                               </div>
                               {order.user && (
                                 <button 

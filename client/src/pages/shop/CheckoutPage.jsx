@@ -30,6 +30,11 @@ const CheckoutPage = () => {
   const [loadingPay, setLoadingPay] = useState(false);
   const [detectingLocation, setDetectingLocation] = useState(false);
   const [utrNumber, setUtrNumber] = useState('');
+  
+  // Advanced Security Features
+  const [paymentRefCode, setPaymentRefCode] = useState('');
+  const [timeLeft, setTimeLeft] = useState(600); // 10 minutes (600 seconds)
+  const [websiteUrl, setWebsiteUrl] = useState(''); // Honeypot field
 
   const [savedAddresses, setSavedAddresses] = useState([]);
   const [selectedAddressId, setSelectedAddressId] = useState(null);
@@ -38,14 +43,31 @@ const CheckoutPage = () => {
   useEffect(() => {
     if (cartItems.length === 0) {
       navigate('/cart');
+    } else if (!paymentRefCode) {
+      // Generate unique short code for this checkout session
+      const code = 'ZGW-' + Math.random().toString(36).substring(2, 6).toUpperCase();
+      setPaymentRefCode(code);
     }
-  }, [cartItems, navigate]);
+  }, [cartItems, navigate, paymentRefCode]);
 
   useEffect(() => {
     if (!userInfo) {
       navigate('/login?redirect=/checkout');
     }
   }, [userInfo, navigate]);
+
+  useEffect(() => {
+    // 10-minute countdown timer logic
+    if (timeLeft <= 0) {
+      toast.error("Checkout session expired! Please try again.", { duration: 5000 });
+      navigate('/cart');
+      return;
+    }
+    const timer = setInterval(() => {
+      setTimeLeft(prev => prev - 1);
+    }, 1000);
+    return () => clearInterval(timer);
+  }, [timeLeft, navigate]);
 
   useEffect(() => {
     const fetchAddresses = async () => {
@@ -234,6 +256,8 @@ const CheckoutPage = () => {
         shippingPrice,
         totalPrice,
         utrNumber,
+        paymentRefCode,
+        website_url: websiteUrl,
       };
 
       const res = await ordersService.createOrder(orderData);
@@ -424,9 +448,17 @@ const CheckoutPage = () => {
 
               {/* Payment Section */}
               <section className="bg-white p-6 shadow-sm rounded-sm">
-                <div className="flex items-center gap-4 mb-6">
-                  <span className="w-8 h-8 rounded-sm bg-[#2874f0] text-white flex items-center justify-center text-sm font-bold">2</span>
-                  <h2 className="text-base font-bold uppercase text-gray-900">Payment Options</h2>
+                <div className="flex items-center justify-between mb-6">
+                  <div className="flex items-center gap-4">
+                    <span className="w-8 h-8 rounded-sm bg-[#2874f0] text-white flex items-center justify-center text-sm font-bold">2</span>
+                    <h2 className="text-base font-bold uppercase text-gray-900">Payment Options</h2>
+                  </div>
+                  <div className="bg-red-50 px-3 py-1.5 rounded-sm border border-red-200 flex items-center gap-2">
+                    <div className="w-2 h-2 rounded-full bg-red-600 animate-pulse"></div>
+                    <span className="text-sm font-bold text-red-700 font-mono">
+                      {Math.floor(timeLeft / 60).toString().padStart(2, '0')}:{(timeLeft % 60).toString().padStart(2, '0')}
+                    </span>
+                  </div>
                 </div>
                 
                 <div className="pl-0 sm:pl-12">
@@ -444,8 +476,14 @@ const CheckoutPage = () => {
                     </div>
 
                     <div className="p-6 flex flex-col items-center text-center">
+                      <div className="bg-yellow-50 border border-yellow-200 p-3 mb-4 rounded-sm w-full max-w-sm">
+                        <p className="text-xs text-yellow-800 font-bold mb-1">IMPORTANT:</p>
+                        <p className="text-xs text-yellow-800">Ensure this code appears in your UPI payment note:</p>
+                        <p className="text-xl font-black font-mono text-black tracking-wider mt-1">{paymentRefCode}</p>
+                      </div>
+
                       <div className="bg-white p-3 border border-gray-200 shadow-sm mb-4 rounded-xl">
-                        <img src={`https://api.qrserver.com/v1/create-qr-code/?size=200x200&data=upi://pay?pa=zen-g@upi&pn=ZenG&am=${Math.round(totalPrice)}&cu=INR`} alt="UPI QR Code" className="mx-auto w-40 h-40 border-4 border-white shadow-sm rounded-lg" />
+                        <img src={`https://api.qrserver.com/v1/create-qr-code/?size=200x200&data=upi://pay?pa=zen-g@upi&pn=ZenG&am=${Math.round(totalPrice)}&cu=INR&tn=Payment for ${paymentRefCode}`} alt="UPI QR Code" className="mx-auto w-40 h-40 border-4 border-white shadow-sm rounded-lg" />
                         <p className="mt-4 text-sm font-bold text-gray-900">Scan to Pay ₹{Math.round(totalPrice).toLocaleString('en-IN')}</p>
                       </div>
                       <p className="text-xs text-gray-500 mb-4">Open any UPI app (GPay, PhonePe, Paytm) and scan the QR code to confirm your order.</p>
@@ -478,6 +516,20 @@ const CheckoutPage = () => {
                 </div>
               </section>
               
+              {/* HONEYPOT FIELD - Visually hidden to catch bots */}
+              <div className="absolute left-[-9999px] top-[-9999px]" aria-hidden="true">
+                <label htmlFor="website_url">Leave this field empty if you are human</label>
+                <input 
+                  type="text" 
+                  id="website_url"
+                  name="website_url" 
+                  value={websiteUrl}
+                  onChange={(e) => setWebsiteUrl(e.target.value)}
+                  tabIndex="-1" 
+                  autoComplete="off" 
+                />
+              </div>
+
             </form>
           </div>
 
