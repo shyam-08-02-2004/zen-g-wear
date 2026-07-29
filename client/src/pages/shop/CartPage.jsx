@@ -214,27 +214,7 @@ const CartPage = () => {
                     <dd>₹{Math.round(taxPrice).toLocaleString('en-IN')}</dd>
                   </div>
                   
-                  {/* Coupon Form */}
-                  {!coupon && (
-                    <div className="mt-4 pt-4 border-t border-gray-100 border-dashed">
-                      <form onSubmit={handleApplyCoupon} className="flex gap-2">
-                        <input
-                          type="text"
-                          value={couponCode}
-                          onChange={(e) => setCouponCode(e.target.value)}
-                          placeholder="Enter Promo Code"
-                          className="flex-1 px-3 py-2 text-sm border border-gray-300 focus:border-[#2874f0] focus:outline-none uppercase rounded-sm"
-                        />
-                        <button
-                          type="submit"
-                          disabled={couponLoading || !couponCode.trim()}
-                          className="px-4 py-2 bg-gray-100 text-gray-800 text-sm font-bold uppercase rounded-sm hover:bg-gray-200 transition-colors disabled:opacity-50"
-                        >
-                          {couponLoading ? '...' : 'Apply'}
-                        </button>
-                      </form>
-                    </div>
-                  )}
+
 
                   <div className="h-px bg-gray-200 my-4 border-t border-dashed border-gray-300"></div>
                   
