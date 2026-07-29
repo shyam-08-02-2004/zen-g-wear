@@ -197,7 +197,7 @@ const CheckoutPage = () => {
     );
   };
 
-  const placeOrderHandler = async (e) => {
+  const placeOrderHandler = async (e, redirectUrl = null) => {
     if (e && e.preventDefault) e.preventDefault();
 
     if (showAddressForm) {
@@ -294,17 +294,32 @@ const CheckoutPage = () => {
 
       const res = await ordersService.createOrder(orderData);
       
-      toast.success(`QR Payment Verified! Order Sent to Admin for Dispatch.`);
+      toast.success(redirectUrl ? `Order Placed! Complete payment in app.` : `Order Placed Successfully!`);
       
       dispatch(clearCartItems());
-      navigate('/order-success', { 
-        state: { 
-          orderId: res.data.data.orderNumber,
-          totalPrice,
-          paymentMethod,
-          itemsCount: cartItems.length
-        } 
-      });
+
+      if (redirectUrl) {
+        window.location.href = redirectUrl;
+        setTimeout(() => {
+          navigate('/order-success', { 
+            state: { 
+              orderId: res.data.data.orderNumber,
+              totalPrice,
+              paymentMethod,
+              itemsCount: cartItems.length
+            } 
+          });
+        }, 1500);
+      } else {
+        navigate('/order-success', { 
+          state: { 
+            orderId: res.data.data.orderNumber,
+            totalPrice,
+            paymentMethod,
+            itemsCount: cartItems.length
+          } 
+        });
+      }
     } catch (err) {
       console.error(err);
       const errorMessage = err?.response?.data?.message || 'Failed to place order';
@@ -581,20 +596,20 @@ const CheckoutPage = () => {
                             
                             {/* Deep link buttons (Mobile view mostly) */}
                             <div className="flex gap-4 mb-6 lg:hidden">
-                               <a href={`upi://pay?pa=babu66655@ibl&pn=ZenG&am=${Math.round(totalPrice)}&cu=INR&tn=Payment for ${paymentRefCode}`} className="flex-1 flex flex-col items-center justify-center bg-white border border-gray-200 p-3 rounded-lg shadow-sm hover:border-[#2874f0] transition-colors">
+                               <button type="button" onClick={(e) => placeOrderHandler(e, `upi://pay?pa=babu66655@ibl&pn=ZenG&am=${Math.round(totalPrice)}&cu=INR&tn=Payment for ${paymentRefCode}`)} className="flex-1 flex flex-col items-center justify-center bg-white border border-gray-200 p-3 rounded-lg shadow-sm hover:border-[#2874f0] transition-colors">
                                   <img src="https://upload.wikimedia.org/wikipedia/commons/f/f2/Google_Pay_Logo.svg" alt="GPay" className="h-6 object-contain mb-2" />
-                                  <span className="text-[10px] font-bold text-gray-700">GPay</span>
-                               </a>
-                               <a href={`upi://pay?pa=babu66655@ibl&pn=ZenG&am=${Math.round(totalPrice)}&cu=INR&tn=Payment for ${paymentRefCode}`} className="flex-1 flex flex-col items-center justify-center bg-white border border-gray-200 p-3 rounded-lg shadow-sm hover:border-[#2874f0] transition-colors">
+                                  <span className="text-[10px] font-bold text-gray-700">Pay with GPay</span>
+                               </button>
+                               <button type="button" onClick={(e) => placeOrderHandler(e, `upi://pay?pa=babu66655@ibl&pn=ZenG&am=${Math.round(totalPrice)}&cu=INR&tn=Payment for ${paymentRefCode}`)} className="flex-1 flex flex-col items-center justify-center bg-white border border-gray-200 p-3 rounded-lg shadow-sm hover:border-[#2874f0] transition-colors">
                                   <img src="https://upload.wikimedia.org/wikipedia/commons/7/71/PhonePe_Logo.svg" alt="PhonePe" className="h-6 object-contain mb-2" />
-                                  <span className="text-[10px] font-bold text-gray-700">PhonePe</span>
-                               </a>
+                                  <span className="text-[10px] font-bold text-gray-700">Pay with PhonePe</span>
+                               </button>
                             </div>
 
                             {/* Desktop QR Fallback */}
                             <div className="hidden lg:flex flex-col items-center justify-center bg-white p-4 border border-gray-200 shadow-sm rounded-lg mb-6 max-w-sm">
                                <p className="text-xs font-bold text-gray-800 mb-2">Scan QR Code</p>
-                               <img src={`https://api.qrserver.com/v1/create-qr-code/?size=150x150&data=upi://pay?pa=babu66655@ibl&pn=ZenG&am=${Math.round(totalPrice)}&cu=INR&tn=Payment for ${paymentRefCode}`} alt="UPI QR" className="w-32 h-32" />
+                               <img src={`https://api.qrserver.com/v1/create-qr-code/?size=150x150&data=${encodeURIComponent(`upi://pay?pa=babu66655@ibl&pn=ZenG&am=${Math.round(totalPrice)}&cu=INR&tn=Payment for ${paymentRefCode}`)}`} alt="UPI QR" className="w-32 h-32" />
                             </div>
 
                             <button 
