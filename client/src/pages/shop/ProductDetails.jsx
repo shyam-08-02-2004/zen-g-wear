@@ -689,10 +689,6 @@ const ProductDetails = () => {
                     <img src="https://static-assets-web.flixcart.com/fk-p-linchpin-web/fk-cp-zion/img/delivery_3b36ab.png" alt="delivery" className="w-5 object-contain" />
                     Delivery by {new Date(Date.now() + 4 * 24 * 60 * 60 * 1000).toLocaleDateString('en-US', { weekday: 'short', day: 'numeric', month: 'short' })}
                   </li>
-                  <li className="flex items-start gap-3">
-                    <span className="text-[#388e3c] font-bold text-lg leading-none">₹</span>
-                    Pay on Delivery available
-                  </li>
                 </ul>
               </div>
 
