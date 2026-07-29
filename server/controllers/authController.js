@@ -345,6 +345,7 @@ export const updateDetails = asyncHandler(async (req, res) => {
   const fieldsToUpdate = {};
   if (req.body.name) fieldsToUpdate.name = req.body.name;
   if (req.body.email) fieldsToUpdate.email = req.body.email;
+  if (req.body.phone !== undefined) fieldsToUpdate.phone = req.body.phone;
 
   if (fieldsToUpdate.email) {
     const existing = await User.findOne({

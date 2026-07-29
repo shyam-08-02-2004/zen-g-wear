@@ -46,7 +46,7 @@ const ProfilePage = () => {
     e.preventDefault();
     setSavingEmail(true);
     try {
-      const res = await authService.updateDetails({ name: userInfo?.name, email });
+      const res = await authService.updateDetails({ email });
       const updatedUser = res.data.data.user;
       dispatch(setCredentials({ ...userInfo, ...updatedUser, token }));
       notify.success('Email updated successfully');
@@ -55,6 +55,22 @@ const ProfilePage = () => {
       notify.error('Failed to update email');
     } finally {
       setSavingEmail(false);
+    }
+  };
+
+  const handleMobileSubmit = async (e) => {
+    e.preventDefault();
+    setSavingMobile(true);
+    try {
+      const res = await authService.updateDetails({ phone: mobile });
+      const updatedUser = res.data.data.user;
+      dispatch(setCredentials({ ...userInfo, ...updatedUser, token }));
+      notify.success('Mobile number updated successfully');
+      setEditMobile(false);
+    } catch (err) {
+      notify.error('Failed to update mobile number');
+    } finally {
+      setSavingMobile(false);
     }
   };
 
@@ -200,7 +216,7 @@ const ProfilePage = () => {
             )}
           </div>
 
-          <div className="max-w-[270px]">
+          <form onSubmit={handleMobileSubmit} className="max-w-[270px]">
             <input 
               type="text" 
               value={mobile}
@@ -213,13 +229,14 @@ const ProfilePage = () => {
             />
             {editMobile && (
               <button 
-                disabled={true} // Mock feature
+                type="submit"
+                disabled={savingMobile}
                 className="bg-[#2874f0] text-white px-8 py-3 rounded-sm font-bold text-[15px] hover:bg-blue-600 transition-colors shadow-sm disabled:opacity-50"
               >
-                SAVE
+                {savingMobile ? 'SAVING...' : 'SAVE'}
               </button>
             )}
-          </div>
+          </form>
         </div>
       </div>
 

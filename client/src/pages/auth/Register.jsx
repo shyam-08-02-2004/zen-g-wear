@@ -34,20 +34,20 @@ function Register() {
   };
 
   return (
-    <div className="flex min-h-screen bg-[#f1f3f6] lg:p-8 font-sans items-center justify-center">
-      <div className="w-full max-w-[850px] bg-white lg:rounded-md lg:shadow-[0_2px_4px_0_rgba(0,0,0,.1)] flex overflow-hidden min-h-screen lg:min-h-[600px] flex-col lg:flex-row">
+    <div className="flex h-[100dvh] lg:min-h-screen bg-[#f1f3f6] lg:p-8 font-sans items-center justify-center">
+      <div className="w-full max-w-[850px] bg-white lg:rounded-md lg:shadow-[0_2px_4px_0_rgba(0,0,0,.1)] flex overflow-hidden h-full lg:h-auto lg:min-h-[600px] flex-col lg:flex-row">
         
         {/* Left side - Blue Panel */}
-        <div className="lg:w-2/5 bg-[#2874f0] p-8 lg:p-10 flex flex-col justify-between text-white relative overflow-hidden">
+        <div className="lg:w-2/5 bg-[#2874f0] p-6 lg:p-10 flex flex-col justify-center lg:justify-between text-white relative overflow-hidden shrink-0">
           {/* Header Mobile / Desktop */}
           <div className="relative z-10">
-            <Link to="/" className="inline-block mb-8 lg:mb-10">
-              <h1 className="text-3xl font-bold italic tracking-tight flex items-center gap-2">
+            <Link to="/" className="inline-block mb-3 lg:mb-10">
+              <h1 className="text-2xl lg:text-3xl font-bold italic tracking-tight flex items-center gap-2">
                 ZEN-G <span className="text-yellow-400">WEAR</span>
               </h1>
             </Link>
-            <h2 className="text-3xl font-semibold mb-4">Looks like you're new here!</h2>
-            <p className="text-[17px] text-white/90 font-medium leading-relaxed">
+            <h2 className="text-2xl lg:text-3xl font-semibold mb-2 lg:mb-4">Looks like you're new here!</h2>
+            <p className="text-[15px] lg:text-[17px] text-white/90 font-medium leading-snug lg:leading-relaxed">
               Sign up with your email to get started
             </p>
           </div>
@@ -63,7 +63,7 @@ function Register() {
         </div>
 
         {/* Right side - Form */}
-        <div className="lg:w-3/5 p-8 lg:p-14 flex flex-col bg-white relative flex-1">
+        <div className="lg:w-3/5 p-6 lg:p-14 flex flex-col justify-center bg-white relative flex-1">
           
           {error && (
             <motion.div initial={{ opacity: 0, y: -10 }} animate={{ opacity: 1, y: 0 }} className="mb-6 p-4 bg-red-50 border-l-4 border-red-500 text-red-600 text-sm font-medium">
@@ -71,7 +71,7 @@ function Register() {
             </motion.div>
           )}
 
-          <form className="space-y-6 mt-4 lg:mt-0" onSubmit={handleSubmit}>
+          <form className="space-y-4 lg:space-y-6 mt-4 lg:mt-0" onSubmit={handleSubmit}>
             <div className="group">
               <label 
                 htmlFor="name"
