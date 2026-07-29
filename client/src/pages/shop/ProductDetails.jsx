@@ -987,59 +987,58 @@ const ProductDetails = () => {
         {/* Similar Products */}
 
         {similarProducts.length > 0 && (
-          <div className="mt-24 border-t border-gray-200 pt-16">
-            <div className="flex items-center justify-between mb-8">
-              <h2 className="text-2xl font-display font-black uppercase tracking-widest text-black">Related Products</h2>
-              <Link to={`/search?relatedTo=${product._id}`} className="text-sm text-[#0a2885] font-semibold hover:underline">View All</Link>
+          <div className="mt-8 border-t-8 border-gray-100 bg-white pt-4 pb-6 px-4 sm:px-0">
+            <div className="flex items-center justify-between mb-4">
+              <h2 className="text-[18px] font-medium text-gray-800">Similar Products</h2>
+              <Link to={`/search?relatedTo=${product._id}`} className="text-[14px] text-[#2874f0] font-medium bg-[#2874f0]/10 px-3 py-1 rounded-sm">View All</Link>
             </div>
-            <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-6">
+            
+            {/* Horizontal Swipeable Carousel */}
+            <div className="flex overflow-x-auto gap-4 snap-x snap-mandatory hide-scrollbar pb-4 -mx-4 px-4 sm:mx-0 sm:px-0">
               {similarProducts.map((p) => (
                 <div
                   key={p._id}
-                  className="group bg-white rounded-lg shadow-sm premium-shadow-hover overflow-hidden cursor-pointer hover:scale-105 transition-transform"
+                  className="w-[140px] sm:w-[180px] lg:w-[200px] flex-shrink-0 snap-start border border-gray-200 rounded-sm overflow-hidden cursor-pointer bg-white group hover:shadow-md transition-shadow"
                   onClick={() => { navigate(`/product/${p._id}`); window.scrollTo(0, 0); }}
                 >
-                  <div className="relative aspect-[3/4] bg-gray-100">
+                  <div className="relative aspect-[3/4] bg-gray-50 flex items-center justify-center p-2">
                     <img
                       src={p.images?.[0]?.url}
                       alt={p.name}
-                      className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105"
+                      className="w-full h-full object-contain mix-blend-multiply group-hover:scale-105 transition-transform duration-300"
                     />
+                    <div className="absolute top-1 right-1">
+                       <button className="w-7 h-7 bg-white rounded-full shadow-sm flex items-center justify-center text-gray-400 hover:text-red-500 transition-colors">
+                         <Heart size={14} />
+                       </button>
+                    </div>
                   </div>
-                  <div className="p-3 flex flex-col">
-                    <h3 className="text-xs font-bold text-gray-500 uppercase tracking-widest mb-1">
-                      {p.brand || 'ZEN-G WEAR'}
-                    </h3>
-                    <p className="text-sm font-bold text-black mb-1 line-clamp-1">{p.name}</p>
-                    <div className="flex items-center justify-between mt-2">
-                      <span className="text-sm font-bold text-black">
-                        Rs {(p.discountPrice || p.price).toLocaleString('en-IN')}
+                  <div className="p-3">
+                    <h3 className="text-[13px] text-gray-500 font-medium mb-1 truncate">{p.brand || 'ZEN-G WEAR'}</h3>
+                    <p className="text-[14px] text-gray-800 mb-1 truncate group-hover:text-[#2874f0] transition-colors">{p.name}</p>
+                    <div className="flex items-center gap-1.5 mt-1">
+                      <span className="bg-[#388e3c] text-white text-[10px] font-bold px-1.5 py-0.5 rounded-sm flex items-center">
+                        {p.rating ? p.rating.toFixed(1) : '4.2'} <Star size={8} className="ml-0.5 fill-white" />
+                      </span>
+                      <span className="text-[11px] text-gray-500">({p.numReviews || 8})</span>
+                      <img src="https://static-assets-web.flixcart.com/fk-p-linchpin-web/fk-cp-zion/img/fa_62673a.png" alt="Assured" className="h-3 ml-auto" />
+                    </div>
+                    <div className="flex items-center gap-2 mt-2">
+                      <span className="text-[15px] font-bold text-gray-900">
+                        ₹{(p.discountPrice || p.price).toLocaleString('en-IN')}
                       </span>
                       {p.discountPrice && (
-                        <span className="text-xs text-gray-400 line-through ml-1">
-                          Rs {p.price.toLocaleString('en-IN')}
+                        <span className="text-[11px] text-[#878787] line-through">
+                          ₹{p.price.toLocaleString('en-IN')}
                         </span>
                       )}
                     </div>
-                    <button
-                      onClick={(e) => {
-                        e.stopPropagation();
-                        dispatch(
-                          addToCart({
-                            product: p._id,
-                            name: p.name,
-                            image: p.images?.[0]?.url,
-                            price: p.discountPrice || p.price,
-                            size: p.sizes?.[0] || 'M',
-                            quantity: 1,
-                          })
-                        );
-                        toast.success('Added to cart');
-                      }}
-                      className="mt-2 w-full bg-[#0a2885] text-white text-xs font-bold py-2 rounded hover:bg-[#0a2885]/90 transition-colors"
-                    >
-                      Add to Cart
-                    </button>
+                    {p.discountPrice && (
+                      <div className="text-[12px] font-bold text-[#388e3c] mt-0.5">
+                        {Math.round(((p.price - p.discountPrice) / p.price) * 100)}% off
+                      </div>
+                    )}
+                    <div className="text-[11px] text-gray-800 mt-1">Free delivery</div>
                   </div>
                 </div>
               ))}
