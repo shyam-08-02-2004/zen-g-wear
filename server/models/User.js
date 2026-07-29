@@ -14,8 +14,8 @@ const userSchema = new mongoose.Schema(
     },
     email: {
       type: String,
-      required: [true, 'Email is required'],
       unique: true,
+      sparse: true,
       lowercase: true,
       trim: true,
       match: [
@@ -25,7 +25,6 @@ const userSchema = new mongoose.Schema(
     },
     password: {
       type: String,
-      required: [true, 'Password is required'],
       minlength: [8, 'Password must be at least 8 characters'],
       select: false,
     },
@@ -51,6 +50,8 @@ const userSchema = new mongoose.Schema(
       trim: true,
       match: [/^\+?[0-9\s\-()]{7,20}$/, 'Please provide a valid phone number'],
       default: null,
+      unique: true,
+      sparse: true,
     },
     addresses: [
       {
