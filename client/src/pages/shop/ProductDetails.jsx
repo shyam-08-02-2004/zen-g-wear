@@ -880,67 +880,16 @@ const ProductDetails = () => {
         )}
 
         {/* Similar Products */}
-        {/* Similar Products */}
-{similarProducts.length > 0 && (
-  <div className="mt-24 border-t border-gray-200 pt-16">
-    <div className="flex items-center justify-between mb-8">
-      <h2 className="text-2xl font-display font-black uppercase tracking-widest text-black">Related Products</h2>
-      <Link to={`/search?relatedTo=${product._id}`} className="text-sm text-[#0a2885] font-semibold hover:underline">View All</Link>
-    </div>
-    <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-6">
-      {similarProducts.map((p) => (
-        <div
-          key={p._id}
-          className="group bg-white rounded-lg shadow-sm premium-shadow-hover overflow-hidden cursor-pointer hover:scale-105 transition-transform"
-          onClick={() => { navigate(`/product/${p._id}`); window.scrollTo(0, 0); }}
-        >
-          <div className="relative aspect-[3/4] bg-gray-100">
-            <img
-              src={p.images?.[0]?.url}
-              alt={p.name}
-              className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105"
-            />
-          </div>
-          <div className="p-3 flex flex-col">
-            <h3 className="text-xs font-bold text-gray-500 uppercase tracking-widest mb-1">
-              {p.brand || 'ZEN-G WEAR'}
-            </h3>
-            <p className="text-sm font-bold text-black mb-1 line-clamp-1">{p.name}</p>
-            <div className="flex items-center justify-between mt-2">
-              <span className="text-sm font-bold text-black">
-                Rs {(p.discountPrice || p.price).toLocaleString('en-IN')}
-              </span>
-              {p.discountPrice && (
-                <span className="text-xs text-gray-400 line-through ml-1">
-                  Rs {p.price.toLocaleString('en-IN')}
-                </span>
-              )}
+
+        {similarProducts.length > 0 && (
+          <div className="mt-24 border-t border-gray-200 pt-16">
+            <div className="flex items-center justify-between mb-8">
+              <h2 className="text-2xl font-display font-black uppercase tracking-widest text-black">Related Products</h2>
+              <Link to={`/search?relatedTo=${product._id}`} className="text-sm text-[#0a2885] font-semibold hover:underline">View All</Link>
             </div>
-            <button
-              onClick={(e) => {
-                e.stopPropagation();
-                dispatch(
-                  addToCart({
-                    product: p._id,
-                    name: p.name,
-                    image: p.images?.[0]?.url,
-                    price: p.discountPrice || p.price,
-                    size: p.sizes?.[0] || 'M',
-                    quantity: 1,
-                  })
-                );
-                toast.success('Added to cart');
-              }}
-              className="mt-2 w-full bg-[#0a2885] text-white text-xs font-bold py-2 rounded hover:bg-[#0a2885]/90 transition-colors"
-            >
-              Add to Cart
-            </button>
-          </div>
-        </div>
-      ))}
-    </div>
-  </div>
-)}
+            <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-6">
+              {similarProducts.map((p) => (
+                <div
                   key={p._id}
                   className="group bg-white rounded-lg shadow-sm premium-shadow-hover overflow-hidden cursor-pointer hover:scale-105 transition-transform"
                   onClick={() => { navigate(`/product/${p._id}`); window.scrollTo(0, 0); }}
