@@ -289,7 +289,7 @@ const Navbar = ({ onMenuClick }) => {
 
       {/* Mobile Menu Drawer */}
       {mobileMenuOpen && (
-        <div className="md:hidden fixed inset-0 z-40" onClick={() => setMobileMenuOpen(false)}>
+        <div className="md:hidden fixed inset-0 z-[60]" onClick={() => setMobileMenuOpen(false)}>
           <div className="absolute inset-0 bg-black/50" />
           <div
             className="absolute top-0 right-0 h-[100dvh] w-72 bg-white shadow-2xl flex flex-col pb-6"
