@@ -49,7 +49,7 @@ const DashboardShell = () => {
       items: [
         { label: 'Gift Cards', to: '/dashboard/giftcards' },
         { label: 'Saved UPI', to: '/dashboard/upi' },
-        { label: 'Saved Cards', to: '/dashboard/cards' }
+        { label: 'My Cart', to: '/cart' }
       ]
     },
     {

@@ -1,6 +1,6 @@
 import { Link } from 'react-router-dom';
 import { useSelector } from 'react-redux';
-import { Package, Heart, CreditCard, User, Bell, HeadphonesIcon, Settings, ChevronRight } from 'lucide-react';
+import { Package, Heart, CreditCard, User, Bell, HeadphonesIcon, Settings, ChevronRight, ShoppingCart } from 'lucide-react';
 
 const DashboardOverview = () => {
   const { userInfo } = useSelector((state) => state.auth);
@@ -9,7 +9,7 @@ const DashboardOverview = () => {
     { icon: <Package size={24} className="text-[#2874f0]" />, label: 'Orders', to: '/dashboard/orders', subtext: 'Check your order status' },
     { icon: <Heart size={24} className="text-[#2874f0]" />, label: 'Wishlist', to: '/dashboard/wishlist', subtext: 'Your saved items' },
     { icon: <User size={24} className="text-[#2874f0]" />, label: 'Profile', to: '/dashboard/profile', subtext: 'Edit personal info' },
-    { icon: <CreditCard size={24} className="text-[#2874f0]" />, label: 'Saved Cards', to: '/dashboard/cards', subtext: 'Manage payments' },
+    { icon: <ShoppingCart size={24} className="text-[#2874f0]" />, label: 'My Cart', to: '/cart', subtext: 'View your items' },
     { icon: <Bell size={24} className="text-[#2874f0]" />, label: 'Notifications', to: '/dashboard/notifications', subtext: 'Offers & Updates' },
     { icon: <HeadphonesIcon size={24} className="text-[#2874f0]" />, label: 'Help Center', to: '/dashboard/tickets', subtext: 'Need assistance?' },
   ];
