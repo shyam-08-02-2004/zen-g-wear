@@ -11,7 +11,8 @@ import {
   TrendingUp,
   LogOut,
   Bell,
-  Menu
+  Menu,
+  Settings
 } from 'lucide-react';
 import { useState } from 'react';
 import { logout as logoutAction } from '../../redux/slices/authSlice';
@@ -21,11 +22,13 @@ const SIDEBAR_ITEMS = [
   { label: 'Dashboard', to: '/admin', icon: <LayoutDashboard size={20} />, exact: true },
   { label: 'Listings / Products', to: '/admin/products', icon: <Package size={20} /> },
   { label: 'Orders', to: '/admin/orders', icon: <ShoppingCart size={20} /> },
+  { label: 'Abandoned Carts', to: '/admin/abandoned-carts', icon: <ShoppingCart size={20} className="text-red-400" /> },
   { label: 'Payments', to: '/admin/payments', icon: <CreditCard size={20} /> },
   { label: 'Users', to: '/admin/users', icon: <Users size={20} /> },
   { label: 'Analytics', to: '/admin/analytics', icon: <BarChart3 size={20} /> },
   { label: 'Revenue', to: '/admin/revenue', icon: <TrendingUp size={20} /> },
   { label: 'Seller Support', to: '/admin/support', icon: <LifeBuoy size={20} /> },
+  { label: 'Settings', to: '/admin/settings', icon: <Settings size={20} /> },
 ];
 
 const AdminShell = () => {

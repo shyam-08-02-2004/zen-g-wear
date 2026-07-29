@@ -21,8 +21,16 @@ const ProductDetails = () => {
   const [product, setProduct] = useState(null);
   const [loading, setLoading] = useState(true);
   const [qty, setQty] = useState(1);
-  const [selectedSize, setSelectedSize] = useState('');
+  const [selectedSize, setSelectedSize] = useState(null);
+  const [showSizeGuide, setShowSizeGuide] = useState(false);
   const [similarProducts, setSimilarProducts] = useState([]);
+
+  // Review states
+  const [reviewTitle, setReviewTitle] = useState('');
+  const [reviewComment, setReviewComment] = useState('');
+  const [reviewRating, setReviewRating] = useState(5);
+  const [reviewImages, setReviewImages] = useState([]);
+  const [reviewSubmitLoading, setReviewSubmitLoading] = useState(false);
   
   const [wishlisted, setWishlisted] = useState(false);
   const [wishlistLoading, setWishlistLoading] = useState(false);
@@ -153,27 +161,47 @@ const ProductDetails = () => {
 
   const submitReview = async (e) => {
     e.preventDefault();
-    if (reviewRating === 0) {
-      toast.error('Please select a rating');
-      return;
-    }
+    if (!userInfo) return toast.error('Please login to write a review');
+    if (!reviewTitle.trim() || !reviewComment.trim()) return toast.error('Title and comment are required');
+    
     setReviewSubmitLoading(true);
     try {
-      await reviewsService.createReview({
-        productId: product._id,
-        rating: reviewRating,
-        title: reviewTitle,
-        comment: reviewComment
+      const formData = new FormData();
+      formData.append('productId', id);
+      formData.append('rating', reviewRating);
+      formData.append('title', reviewTitle);
+      formData.append('comment', reviewComment);
+      
+      // Append files
+      if (reviewImages) {
+        Array.from(reviewImages).forEach((file) => {
+          formData.append('images', file);
+        });
+      }
+
+      const token = localStorage.getItem('token');
+      const response = await fetch(`${import.meta.env.VITE_API_URL || 'http://localhost:5000'}/api/reviews`, {
+        method: 'POST',
+        headers: {
+          'Authorization': `Bearer ${token}`
+        },
+        body: formData
       });
-      toast.success('Review submitted successfully');
-      setReviewRating(0);
+
+      const result = await response.json();
+      if (!response.ok) throw new Error(result.message || 'Failed to submit review');
+
+      toast.success('Review submitted successfully!');
       setReviewTitle('');
       setReviewComment('');
-      // refetch reviews
-      const { data } = await reviewsService.getProductReviews(product._id);
+      setReviewRating(5);
+      setReviewImages([]);
+      
+      // Refresh reviews
+      const { data } = await productsService.getProductReviews(id);
       setReviews(data?.data?.reviews || []);
     } catch (error) {
-      toast.error(error?.response?.data?.message || 'Failed to submit review');
+      toast.error(error.message);
     } finally {
       setReviewSubmitLoading(false);
     }
@@ -470,7 +498,11 @@ const ProductDetails = () => {
                   <div className="mb-8">
                     <div className="flex justify-between items-center mb-4">
                       <h3 className="text-xs font-bold uppercase tracking-widest text-black">Select Size</h3>
-                      <button type="button" className="text-xs font-bold uppercase tracking-widest text-gray-500 underline underline-offset-4 hover:text-black">
+                      <button 
+                        type="button" 
+                        onClick={() => setShowSizeGuide(true)}
+                        className="text-xs font-bold uppercase tracking-widest text-gray-500 underline underline-offset-4 hover:text-black"
+                      >
                         Size Guide
                       </button>
                     </div>
@@ -578,6 +610,13 @@ const ProductDetails = () => {
                             <span className="text-sm font-bold text-gray-900">{rv.title}</span>
                           </div>
                           <p className="text-sm text-gray-600 mb-2">{rv.comment}</p>
+                          {rv.images && rv.images.length > 0 && (
+                            <div className="flex gap-2 mb-3 mt-2 overflow-x-auto">
+                              {rv.images.map((img, idx) => (
+                                <img key={idx} src={img.url} alt="Review" className="w-16 h-16 object-cover border border-gray-200 rounded-sm" />
+                              ))}
+                            </div>
+                          )}
                           <div className="text-xs text-gray-400 flex items-center gap-2">
                             <span className="font-medium text-gray-500">{rv.user?.name}</span>
                             <span>•</span>
@@ -588,8 +627,74 @@ const ProductDetails = () => {
                     )}
                   </div>
                   
-                  {/* Write Review Form (Disabled by Admin) */}
-                  {/* Reviews can now only be viewed, not submitted */}
+                  {/* Write Review Form */}
+                  {userInfo && !isAdmin && (
+                    <div className="mt-8 bg-gray-50 p-6 border border-gray-100">
+                      <h5 className="text-sm font-bold text-black uppercase tracking-widest mb-4">Write a Review</h5>
+                      <form onSubmit={submitReview} className="space-y-4">
+                        <div>
+                          <label className="block text-xs font-bold text-gray-500 uppercase tracking-widest mb-2">Rating</label>
+                          <select 
+                            value={reviewRating} 
+                            onChange={(e) => setReviewRating(Number(e.target.value))}
+                            className="w-full px-4 py-2 border border-gray-300 focus:border-black focus:outline-none text-sm bg-white"
+                          >
+                            <option value="5">5 - Excellent</option>
+                            <option value="4">4 - Good</option>
+                            <option value="3">3 - Average</option>
+                            <option value="2">2 - Poor</option>
+                            <option value="1">1 - Terrible</option>
+                          </select>
+                        </div>
+                        <div>
+                          <label className="block text-xs font-bold text-gray-500 uppercase tracking-widest mb-2">Review Title</label>
+                          <input 
+                            type="text" 
+                            value={reviewTitle}
+                            onChange={(e) => setReviewTitle(e.target.value)}
+                            placeholder="Sum up your experience"
+                            className="w-full px-4 py-2 border border-gray-300 focus:border-black focus:outline-none text-sm bg-white"
+                            required
+                          />
+                        </div>
+                        <div>
+                          <label className="block text-xs font-bold text-gray-500 uppercase tracking-widest mb-2">Review Details</label>
+                          <textarea 
+                            value={reviewComment}
+                            onChange={(e) => setReviewComment(e.target.value)}
+                            placeholder="What did you like or dislike?"
+                            rows="3"
+                            className="w-full px-4 py-2 border border-gray-300 focus:border-black focus:outline-none text-sm bg-white custom-scrollbar"
+                            required
+                          />
+                        </div>
+                        <div>
+                          <label className="block text-xs font-bold text-gray-500 uppercase tracking-widest mb-2">Upload Photos (Max 3)</label>
+                          <input 
+                            type="file" 
+                            accept="image/*"
+                            multiple
+                            onChange={(e) => {
+                              if (e.target.files.length > 3) {
+                                alert("You can only upload up to 3 images.");
+                                e.target.value = "";
+                              } else {
+                                setReviewImages(e.target.files);
+                              }
+                            }}
+                            className="w-full text-sm text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded-none file:border-0 file:text-xs file:font-bold file:uppercase file:tracking-widest file:bg-gray-200 file:text-black hover:file:bg-gray-300 transition-colors"
+                          />
+                        </div>
+                        <button 
+                          type="submit" 
+                          disabled={reviewSubmitLoading}
+                          className="px-6 py-3 bg-black text-white text-xs font-bold uppercase tracking-widest hover:bg-gray-900 transition-colors disabled:opacity-50"
+                        >
+                          {reviewSubmitLoading ? 'Submitting...' : 'Submit Review'}
+                        </button>
+                      </form>
+                    </div>
+                  )}
                 </div>
 
                 <div className="h-px bg-gray-200 w-full"></div>
@@ -925,6 +1030,49 @@ const ProductDetails = () => {
           </div>
         )}
       </AnimatePresence>
+
+      {/* Size Guide Modal */}
+      {showSizeGuide && (
+        <div className="fixed inset-0 z-[100] flex items-center justify-center bg-black/60 p-4">
+          <div className="bg-white w-full max-w-lg relative animate-in fade-in zoom-in duration-200">
+            <button onClick={() => setShowSizeGuide(false)} className="absolute top-4 right-4 text-gray-400 hover:text-black">
+              <X size={24} />
+            </button>
+            <div className="p-6">
+              <h2 className="text-xl font-bold uppercase text-black mb-6 tracking-widest text-center border-b border-gray-100 pb-4">Size Guide</h2>
+              <div className="overflow-x-auto">
+                <table className="w-full text-left border-collapse">
+                  <thead>
+                    <tr className="bg-gray-50">
+                      <th className="p-3 text-xs font-bold uppercase tracking-widest border border-gray-200">Size</th>
+                      <th className="p-3 text-xs font-bold uppercase tracking-widest border border-gray-200">Chest (in)</th>
+                      <th className="p-3 text-xs font-bold uppercase tracking-widest border border-gray-200">Length (in)</th>
+                      <th className="p-3 text-xs font-bold uppercase tracking-widest border border-gray-200">Shoulder (in)</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {[
+                      { size: 'S', chest: '38', length: '27', shoulder: '16.5' },
+                      { size: 'M', chest: '40', length: '28', shoulder: '17' },
+                      { size: 'L', chest: '42', length: '29', shoulder: '17.5' },
+                      { size: 'XL', chest: '44', length: '30', shoulder: '18' },
+                      { size: 'XXL', chest: '46', length: '30.5', shoulder: '18.5' },
+                    ].map((row) => (
+                      <tr key={row.size} className="hover:bg-gray-50 transition-colors">
+                        <td className="p-3 text-sm font-bold border border-gray-200">{row.size}</td>
+                        <td className="p-3 text-sm text-gray-600 border border-gray-200">{row.chest}</td>
+                        <td className="p-3 text-sm text-gray-600 border border-gray-200">{row.length}</td>
+                        <td className="p-3 text-sm text-gray-600 border border-gray-200">{row.shoulder}</td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </div>
+              <p className="text-xs text-gray-400 mt-4 text-center">Measurements may vary slightly (± 0.5 inches) due to manufacturing processes.</p>
+            </div>
+          </div>
+        </div>
+      )}
 
       <style dangerouslySetInnerHTML={{__html: `
         .custom-scrollbar::-webkit-scrollbar { width: 6px; }

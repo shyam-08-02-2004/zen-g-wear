@@ -1,3 +1,5 @@
+import { useEffect, useRef } from 'react';
+import { useSelector } from 'react-redux';
 import AppRoutes from './routes/AppRoutes.jsx';
 
 // One-time migration: clear old malformed auth storage so refresh works correctly
@@ -16,6 +18,43 @@ try {
 }
 
 function App() {
+  const { cartItems, totalPrice } = useSelector(state => state.cart);
+  const { userInfo } = useSelector(state => state.auth);
+  
+  const initialRender = useRef(true);
+
+  // Sync cart with backend when it changes
+  useEffect(() => {
+    if (initialRender.current) {
+      initialRender.current = false;
+      return;
+    }
+    
+    if (userInfo && userInfo.token) {
+      const syncCart = async () => {
+        try {
+          await fetch(`${import.meta.env.VITE_API_URL || 'http://localhost:5000'}/api/cart/sync`, {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json',
+              'Authorization': `Bearer ${userInfo.token}`
+            },
+            body: JSON.stringify({ cartItems, totalPrice })
+          });
+        } catch (error) {
+          console.error('Failed to sync cart', error);
+        }
+      };
+      
+      // Debounce slightly to avoid too many requests
+      const timeoutId = setTimeout(() => {
+        syncCart();
+      }, 1000);
+      
+      return () => clearTimeout(timeoutId);
+    }
+  }, [cartItems, totalPrice, userInfo]);
+
   return <AppRoutes />;
 }
 

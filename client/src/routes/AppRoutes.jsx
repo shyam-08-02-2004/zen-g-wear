@@ -33,6 +33,8 @@ import AdminSupportPage from '../pages/admin/AdminSupportPage.jsx';
 import AdminTicketDetailPage from '../pages/admin/AdminTicketDetailPage.jsx';
 import AdminAnalyticsPage from '../pages/admin/AdminAnalyticsPage.jsx';
 import AdminRevenuePage from '../pages/admin/AdminRevenuePage.jsx';
+import AdminAbandonedCartsPage from '../pages/admin/AdminAbandonedCartsPage.jsx';
+import AdminSettingsPage from '../pages/admin/AdminSettingsPage.jsx';
 
 function AppRoutes() {
   return (
@@ -41,19 +43,24 @@ function AppRoutes() {
       <Route path="/login" element={<Login />} />
       <Route path="/register" element={<Register />} />
 
-      <Route element={<ProtectedRoute />}>
-        {/* Protected Storefront with StoreLayout */}
-        <Route element={<StoreLayout />}>
-          <Route path="/" element={<Home />} />
-          <Route path="/shop" element={<ProductListing />} />
-          <Route path="/products" element={<Navigate to="/shop" replace />} />
-          <Route path="/product/:id" element={<ProductDetails />} />
+      {/* Public Storefront with StoreLayout */}
+      <Route element={<StoreLayout />}>
+        <Route path="/" element={<Home />} />
+        <Route path="/shop" element={<ProductListing />} />
+        <Route path="/products" element={<Navigate to="/shop" replace />} />
+        <Route path="/product/:id" element={<ProductDetails />} />
+        <Route path="/brands" element={<Navigate to="/shop" replace />} />
+        
+        {/* Protected Storefront Routes */}
+        <Route element={<ProtectedRoute />}>
           <Route path="/cart" element={<CartPage />} />
-          <Route path="/brands" element={<Navigate to="/shop" replace />} />
           <Route path="/checkout" element={<CheckoutPage />} />
           <Route path="/order-success" element={<OrderSuccessPage />} />
         </Route>
-        
+      </Route>
+
+      {/* Protected Dashboard Routes */}
+      <Route element={<ProtectedRoute />}>
         <Route path="/dashboard" element={<DashboardShell />}>
           <Route index element={<DashboardOverview />} />
           <Route path="profile" element={<ProfilePage />} />
@@ -79,6 +86,8 @@ function AppRoutes() {
           <Route path="support/:id" element={<AdminTicketDetailPage />} />
           <Route path="analytics" element={<AdminAnalyticsPage />} />
           <Route path="revenue" element={<AdminRevenuePage />} />
+          <Route path="abandoned-carts" element={<AdminAbandonedCartsPage />} />
+          <Route path="settings" element={<AdminSettingsPage />} />
         </Route>
       </Route>
     </Routes>

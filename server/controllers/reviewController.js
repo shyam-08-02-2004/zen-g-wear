@@ -2,6 +2,7 @@ import asyncHandler from 'express-async-handler';
 import Review from '../models/Review.js';
 import Product from '../models/Product.js';
 import { sendResponse } from '../utils/apiResponse.js';
+import { uploadToCloudinary } from '../utils/cloudinaryUpload.js';
 
 // @desc    Create new review
 // @route   POST /api/reviews
@@ -25,12 +26,25 @@ export const createReview = asyncHandler(async (req, res) => {
     throw new Error('Product already reviewed');
   }
 
+  let images = [];
+  if (req.files && req.files.length > 0) {
+    for (const file of req.files) {
+      try {
+        const result = await uploadToCloudinary(file.path, 'zen-g-wear/reviews');
+        images.push({ url: result.secure_url, publicId: result.public_id });
+      } catch (err) {
+        console.error('Cloudinary upload error:', err);
+      }
+    }
+  }
+
   const review = await Review.create({
     product: productId,
     user: req.user._id,
     rating: Number(rating),
     title,
     comment,
+    images,
     isApproved: true, // auto approve for now to make it easy to see
   });
 

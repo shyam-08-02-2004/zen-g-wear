@@ -3,6 +3,7 @@ import Navbar from './Navbar';
 import CategoryNav from './CategoryNav';
 import Footer from './Footer';
 import MobileBottomNav from './MobileBottomNav';
+import GlobalPopup from '../ui/GlobalPopup';
 
 const StoreLayout = () => {
   return (
@@ -14,6 +15,7 @@ const StoreLayout = () => {
       </main>
       <Footer />
       <MobileBottomNav />
+      <GlobalPopup />
     </div>
   );
 };

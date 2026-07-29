@@ -100,6 +100,75 @@ const AdminOrdersPage = () => {
     }
   };
 
+  const handlePrintLabel = (order) => {
+    const printWindow = window.open('', '_blank');
+    
+    // HTML content for shipping label
+    const html = `
+      <html>
+        <head>
+          <title>Shipping Label - ${order.orderNumber || order._id}</title>
+          <style>
+            body { font-family: Arial, sans-serif; margin: 0; padding: 20px; color: #000; }
+            .label-box { border: 2px solid #000; width: 4in; height: 6in; padding: 20px; box-sizing: border-box; }
+            .header { border-bottom: 2px solid #000; padding-bottom: 10px; margin-bottom: 20px; }
+            .logo { font-size: 24px; font-weight: 900; letter-spacing: 2px; }
+            .to-section { margin-bottom: 20px; }
+            .to-title { font-weight: bold; font-size: 14px; margin-bottom: 5px; }
+            .address { font-size: 16px; line-height: 1.5; font-weight: bold; }
+            .from-section { margin-top: 40px; font-size: 12px; }
+            .footer { margin-top: auto; border-top: 1px solid #ccc; padding-top: 10px; font-size: 12px; text-align: center; }
+            .order-details { margin-top: 20px; font-size: 12px; }
+            .item { display: flex; justify-content: space-between; margin-bottom: 5px; }
+            @media print {
+              @page { size: 4in 6in; margin: 0; }
+              body { padding: 0; margin: 0; }
+              .label-box { border: none; width: 100%; height: 100%; }
+            }
+          </style>
+        </head>
+        <body>
+          <div class="label-box">
+            <div class="header">
+              <div class="logo">ZEN-G WEAR</div>
+              <div style="font-size: 12px; margin-top: 5px;">Order #${order.orderNumber || order._id.slice(-8).toUpperCase()}</div>
+            </div>
+            
+            <div class="to-section">
+              <div class="to-title">SHIP TO:</div>
+              <div class="address">
+                ${order.shippingAddress?.fullName}<br/>
+                ${order.shippingAddress?.streetAddress}<br/>
+                ${order.shippingAddress?.city}, ${order.shippingAddress?.postalCode}<br/>
+                ${order.shippingAddress?.country}<br/>
+                Ph: ${order.shippingAddress?.phone || order.user?.phone || 'N/A'}
+              </div>
+            </div>
+
+            <div class="order-details">
+              <strong>Order Items:</strong>
+              ${order.orderItems.map(item => `
+                <div class="item">
+                  <span>${item.quantity}x ${item.name} ${item.size ? `(Size: ${item.size})` : ''}</span>
+                </div>
+              `).join('')}
+            </div>
+
+            <div class="from-section">
+              <div class="to-title">FROM:</div>
+              <div>Zen-G Wear Hub<br/>Delhi, India - 110001<br/>support@zengwear.com</div>
+            </div>
+          </div>
+          <script>
+            window.onload = function() { window.print(); window.close(); }
+          </script>
+        </body>
+      </html>
+    `;
+    printWindow.document.write(html);
+    printWindow.document.close();
+  };
+
   const filteredOrders = orders.filter(o => {
     const matchesSearch =
       o._id?.toLowerCase().includes(searchQuery.toLowerCase()) ||
@@ -488,6 +557,13 @@ const AdminOrdersPage = () => {
                                   {order.shippingAddress?.city} - {order.shippingAddress?.postalCode}
                                 </p>
                               </div>
+
+                              <button
+                                onClick={() => handlePrintLabel(order)}
+                                className="mt-4 w-full bg-black hover:bg-gray-900 text-white font-bold text-xs py-2 px-3 rounded-sm flex justify-center items-center gap-2 transition-colors uppercase tracking-widest"
+                              >
+                                🖨️ Print Shipping Label
+                              </button>
                             </div>
                           </div>
                         </div>
