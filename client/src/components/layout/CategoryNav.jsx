@@ -6,13 +6,13 @@ const categories = [
   { 
     name: 'Top Offers', 
     link: '/shop?offers=true', 
-    image: 'https://images.unsplash.com/photo-1607083206968-13611e3d76db?auto=format&fit=crop&w=256&q=80&v=2', // Sale tags/bags
+    image: 'https://images.unsplash.com/photo-1607083206325-caf1edba7a0f?auto=format&fit=crop&w=256&q=80&v=3', // New vibrant offer bag
     dropdown: null
   },
   { 
     name: 'Men', 
     link: '/shop?category=men', 
-    image: 'https://images.unsplash.com/photo-1516826957135-73ff61a242fa?auto=format&fit=crop&w=256&q=80&v=2', // Cool men fashion
+    image: 'https://images.unsplash.com/photo-1550246140-5119ae4790b8?auto=format&fit=crop&w=256&q=80&v=3', // New stylish man
     dropdown: [
       {
         title: 'Topwear',
@@ -49,7 +49,7 @@ const categories = [
   { 
     name: 'Women', 
     link: '/shop?category=women', 
-    image: 'https://images.unsplash.com/photo-1515886657613-9f3515b0c78f?auto=format&fit=crop&w=256&q=80&v=2', // Elegant women fashion
+    image: 'https://images.unsplash.com/photo-1485230895905-ef10ce5e7773?auto=format&fit=crop&w=256&q=80&v=3', // New elegant woman
     dropdown: [
       {
         title: 'Western Wear',
@@ -85,7 +85,7 @@ const categories = [
   { 
     name: 'Kids', 
     link: '/shop?category=kids', 
-    image: 'https://images.unsplash.com/photo-1519689680058-324335c77eba?auto=format&fit=crop&w=256&q=80&v=2', // Cute kid fashion
+    image: 'https://images.unsplash.com/photo-1514090458221-65bb69cf63e6?auto=format&fit=crop&w=256&q=80&v=3', // New cute kid
     dropdown: [
       {
         title: 'Boys Clothing',
@@ -127,13 +127,12 @@ const CategoryNav = () => {
                 to={cat.link}
                 className="flex flex-col items-center gap-2"
               >
-                <div className="w-[64px] h-[64px] rounded-full overflow-hidden bg-gray-50 flex-shrink-0 shadow-sm group-hover:shadow-md transition-shadow">
+                <div className="w-[64px] h-[64px] rounded-full overflow-hidden bg-gray-50 flex-shrink-0 shadow-sm group-hover:shadow-lg transition-all animate-float border-2 border-transparent group-hover:border-[#2874f0]">
                   <img 
                     src={cat.image} 
                     alt={cat.name} 
-                    className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500 ease-out" 
+                    className="w-full h-full object-cover group-hover:scale-125 transition-transform duration-500 ease-out" 
                   />
-                  <div className="absolute inset-0 rounded-full border-2 border-transparent group-hover:border-[#2874f0] transition-colors duration-300 pointer-events-none"></div>
                 </div>
                 <div className="flex items-center gap-1 group-hover:-translate-y-1 transition-transform duration-300">
                   <span className="text-sm font-bold text-gray-800 group-hover:text-[#2874f0] transition-colors whitespace-nowrap">

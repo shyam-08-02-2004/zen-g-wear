@@ -67,8 +67,28 @@ h1, h2, h3, h4, h5, h6 {
 .premium-shadow-hover:hover {
   box-shadow: 0 20px 40px -10px rgba(0,0,0,0.12);
   transform: translateY(-2px);
-  transition: all 0.3s ease;
+  transition: transform 0.2s, color 0.2s;
 }
+
+@keyframes float {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-5px); }
+}
+
+.animate-float {
+  animation: float 3s ease-in-out infinite;
+}
+
+@keyframes slow-zoom {
+  0% { transform: scale(1); }
+  50% { transform: scale(1.05); }
+  100% { transform: scale(1); }
+}
+
+.animate-slow-zoom {
+  animation: slow-zoom 15s ease-in-out infinite;
+}
+
 .hover-gold {
   @apply transition-colors duration-300 hover:text-accent-500;
 }

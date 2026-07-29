@@ -5,17 +5,17 @@ import { ChevronLeft, ChevronRight } from 'lucide-react';
 const banners = [
   {
     id: 1,
-    image: '/images/banners/mens_banner.jpg?v=2',
+    image: 'https://images.unsplash.com/photo-1490578474895-699cd4e2cf59?auto=format&fit=crop&w=1600&q=80&v=3',
     link: '/shop?category=men'
   },
   {
     id: 2,
-    image: '/images/banners/sale_banner.jpg?v=2',
+    image: 'https://images.unsplash.com/photo-1607082348824-0a96f2a4b9da?auto=format&fit=crop&w=1600&q=80&v=3',
     link: '/shop?offers=true'
   },
   {
     id: 3,
-    image: '/images/banners/womens_banner.jpg?v=2',
+    image: 'https://images.unsplash.com/photo-1469334031218-e382a71b716b?auto=format&fit=crop&w=1600&q=80&v=3',
     link: '/shop?category=women'
   }
 ];
@@ -44,11 +44,11 @@ const HeroSection = () => {
             style={{ transform: `translateX(-${currentSlide * 100}%)` }}
           >
             {banners.map((banner) => (
-              <Link key={banner.id} to={banner.link} className="w-full h-full flex-shrink-0 relative">
+              <Link key={banner.id} to={banner.link} className="w-full h-full flex-shrink-0 relative overflow-hidden">
                 <img 
                   src={banner.image} 
                   alt="Promotional Banner" 
-                  className="w-full h-full object-cover"
+                  className="w-full h-full object-cover animate-slow-zoom"
                 />
               </Link>
             ))}
