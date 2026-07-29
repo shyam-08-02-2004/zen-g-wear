@@ -127,7 +127,7 @@ const ProductCard = ({ product }) => {
       <button
         onClick={toggleWishlist}
         disabled={wishlistLoading}
-        className="absolute top-3 right-3 z-10 p-2 bg-white/0 group-hover:bg-white/90 rounded-full transition-all duration-300 opacity-0 group-hover:opacity-100 disabled:opacity-50"
+        className="absolute top-3 right-3 z-10 p-2 bg-white/80 lg:bg-white/0 lg:group-hover:bg-white/90 rounded-full transition-all duration-300 opacity-100 lg:opacity-0 lg:group-hover:opacity-100 disabled:opacity-50 hover:bg-white shadow-sm lg:shadow-none lg:group-hover:shadow-md"
       >
         <Heart size={18} className={wishlisted ? 'fill-red-500 text-red-500' : 'text-gray-600'} />
       </button>
