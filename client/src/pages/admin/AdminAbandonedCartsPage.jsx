@@ -10,7 +10,7 @@ const AdminAbandonedCartsPage = () => {
     const fetchCarts = async () => {
       try {
         const token = localStorage.getItem('token');
-        const res = await fetch(`${import.meta.env.VITE_API_URL || 'http://localhost:5000'}/api/cart/abandoned`, {
+        const res = await fetch(`${import.meta.env.VITE_API_URL || (import.meta.env.PROD ? 'https://server-sage-chi.vercel.app' : 'http://localhost:5000')}/api/cart/abandoned`, {
           headers: { 'Authorization': `Bearer ${token}` }
         });
         const data = await res.json();

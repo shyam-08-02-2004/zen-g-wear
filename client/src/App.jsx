@@ -34,7 +34,7 @@ function App() {
     if (userInfo && userInfo.token) {
       const syncCart = async () => {
         try {
-          await fetch(`${import.meta.env.VITE_API_URL || 'http://localhost:5000'}/api/cart/sync`, {
+          await fetch(`${import.meta.env.VITE_API_URL || (import.meta.env.PROD ? 'https://server-sage-chi.vercel.app' : 'http://localhost:5000')}/api/cart/sync`, {
             method: 'POST',
             headers: {
               'Content-Type': 'application/json',

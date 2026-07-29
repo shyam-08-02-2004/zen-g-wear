@@ -191,7 +191,7 @@ const ProductDetails = () => {
       }
 
       const token = localStorage.getItem('token');
-      const response = await fetch(`${import.meta.env.VITE_API_URL || 'http://localhost:5000'}/api/reviews`, {
+      const response = await fetch(`${import.meta.env.VITE_API_URL || (import.meta.env.PROD ? 'https://server-sage-chi.vercel.app' : 'http://localhost:5000')}/api/reviews`, {
         method: 'POST',
         headers: {
           'Authorization': `Bearer ${token}`

@@ -16,7 +16,7 @@ const AdminSettingsPage = () => {
   useEffect(() => {
     const fetchSettings = async () => {
       try {
-        const res = await fetch(`${import.meta.env.VITE_API_URL || 'http://localhost:5000'}/api/settings`);
+        const res = await fetch(`${import.meta.env.VITE_API_URL || (import.meta.env.PROD ? 'https://server-sage-chi.vercel.app' : 'http://localhost:5000')}/api/settings`);
         const data = await res.json();
         if (data?.data?.settings) {
           setSettings(data.data.settings);
@@ -43,7 +43,7 @@ const AdminSettingsPage = () => {
     setSaving(true);
     try {
       const token = localStorage.getItem('token');
-      const res = await fetch(`${import.meta.env.VITE_API_URL || 'http://localhost:5000'}/api/settings`, {
+      const res = await fetch(`${import.meta.env.VITE_API_URL || (import.meta.env.PROD ? 'https://server-sage-chi.vercel.app' : 'http://localhost:5000')}/api/settings`, {
         method: 'PUT',
         headers: {
           'Content-Type': 'application/json',

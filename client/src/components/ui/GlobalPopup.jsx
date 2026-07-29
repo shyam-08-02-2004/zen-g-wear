@@ -12,7 +12,7 @@ const GlobalPopup = () => {
 
     const fetchSettings = async () => {
       try {
-        const res = await fetch(`${import.meta.env.VITE_API_URL || 'http://localhost:5000'}/api/settings`);
+        const res = await fetch(`${import.meta.env.VITE_API_URL || (import.meta.env.PROD ? 'https://server-sage-chi.vercel.app' : 'http://localhost:5000')}/api/settings`);
         const data = await res.json();
         const siteSettings = data?.data?.settings;
         
