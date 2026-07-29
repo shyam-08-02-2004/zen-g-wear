@@ -20,6 +20,11 @@ export const addOrderItems = asyncHandler(async (req, res) => {
   if (orderItems && orderItems.length === 0) {
     res.status(400);
     throw new Error('No order items');
+  } 
+  
+  if (!utrNumber || utrNumber.trim().length !== 12) {
+    res.status(400);
+    throw new Error('A valid 12-digit UTR number is strictly required.');
   } else {
     // 1. Fake UTR Trap
     const fakePatterns = [/^(\d)\1{11}$/, /^123456789012$/, /^012345678912$/];
