@@ -6,7 +6,7 @@ const categories = [
   { 
     name: 'Top Offers', 
     link: '/shop?offers=true', 
-    image: '/assets/custom_1.png', 
+    image: '/assets/top_offers_hd.png', 
     dropdown: null
   },
   { 
