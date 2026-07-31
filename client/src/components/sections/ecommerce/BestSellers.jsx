@@ -60,11 +60,14 @@ const BestSellerItem = ({ product }) => {
           }}
         />
       </div>
-      <div className="w-full text-center mt-auto">
-        <h3 className="text-xs sm:text-sm text-gray-700 font-medium line-clamp-1 group-hover:text-blue-600 transition-colors">
-          {product.name}
+      <div className="w-full text-left mt-auto px-1">
+        <h3 className="text-[10px] sm:text-xs font-bold text-gray-900 uppercase tracking-wide mb-0.5">
+          {product.brand || 'ZEN-G WEAR'}
         </h3>
-        <div className="mt-1 sm:mt-2 flex items-center justify-center gap-1 sm:gap-2">
+        <p className="text-xs sm:text-sm text-gray-500 font-normal line-clamp-1 group-hover:text-blue-600 transition-colors">
+          {product.name}
+        </p>
+        <div className="mt-1 sm:mt-1.5 flex items-center gap-1 sm:gap-2">
           <span className="text-sm sm:text-base font-bold text-gray-900">
             ₹{product.discountPrice || product.price}
           </span>

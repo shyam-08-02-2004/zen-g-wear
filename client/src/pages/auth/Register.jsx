@@ -2,7 +2,7 @@ import { useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { useNavigate, Link } from 'react-router-dom';
 import { motion } from 'framer-motion';
-import { Eye, EyeOff } from 'lucide-react';
+import { Eye, EyeOff, ShoppingBag } from 'lucide-react';
 import { setCredentials, setLoading, setError } from '../../redux/slices/authSlice';
 import authService from '../../services/authService';
 import toast from 'react-hot-toast';
@@ -52,11 +52,7 @@ function Register() {
             </p>
           </div>
           
-          <img 
-            src="https://static-assets-web.flixcart.com/fk-p-linchpin-web/fk-cp-zion/img/login_img_c4a81e.png" 
-            alt="Shopping" 
-            className="hidden lg:block w-full max-w-[200px] mx-auto mt-12 mix-blend-multiply relative z-10"
-          />
+          <ShoppingBag size={120} className="hidden lg:block mx-auto mt-12 text-white/50 relative z-10" strokeWidth={1} />
           {/* Decorative elements */}
           <div className="absolute top-0 right-0 w-64 h-64 bg-white/5 rounded-full -translate-y-1/2 translate-x-1/3"></div>
           <div className="absolute bottom-0 left-0 w-48 h-48 bg-black/5 rounded-full translate-y-1/3 -translate-x-1/3"></div>

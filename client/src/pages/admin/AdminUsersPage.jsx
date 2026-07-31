@@ -70,7 +70,7 @@ const AdminUsersPage = () => {
   });
 
   return (
-    <div className="p-6 sm:p-8 max-w-7xl mx-auto font-sans">
+    <div className="p-4 sm:p-6 lg:p-8 max-w-7xl mx-auto font-sans">
       {/* Header */}
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-8">
         <div>
@@ -83,7 +83,7 @@ const AdminUsersPage = () => {
       </div>
 
       {/* Toolbar */}
-      <div className="bg-white rounded-xl shadow-sm border border-gray-100 p-4 mb-6 flex flex-col sm:flex-row gap-4 justify-between items-center">
+      <div className="bg-white rounded-xl shadow-sm border border-gray-100 p-4 mb-6 flex flex-col xl:flex-row gap-4 justify-between items-center">
         <div className="relative w-full sm:max-w-md">
           <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400" size={18} />
           <input 

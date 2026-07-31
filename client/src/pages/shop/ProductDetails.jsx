@@ -2,13 +2,14 @@ import { useState, useEffect } from 'react';
 import { useParams, useNavigate, Link } from 'react-router-dom';
 import { useDispatch, useSelector } from 'react-redux';
 import { motion, AnimatePresence } from 'framer-motion';
-import { ShoppingBag, ShoppingCart, ChevronRight, Star, Heart, MapPin, CheckCircle2, XCircle, Edit2, Trash2, Image as ImageIcon, X, Share2 } from 'lucide-react';
+import { ShoppingBag, ShoppingCart, ChevronRight, Star, Heart, MapPin, CheckCircle2, XCircle, Edit2, Trash2, Image as ImageIcon, X, Share2, ArrowLeft } from 'lucide-react';
 import productsService from '../../services/productsService';
 import wishlistService from '../../services/wishlistService';
 import reviewsService from '../../services/reviewsService';
 import questionsService from '../../services/questionsService';
 import { addToCart, toggleCart } from '../../redux/slices/cartSlice';
 import toast from 'react-hot-toast';
+import RecentlyViewed from '../../components/sections/ecommerce/RecentlyViewed';
 
 const ProductDetails = () => {
   const { id } = useParams();
@@ -17,6 +18,14 @@ const ProductDetails = () => {
   
   const { userInfo } = useSelector((state) => state.auth);
   const isAdmin = userInfo?.role === 'admin';
+
+  const handleGoBack = () => {
+    if (window.history.length > 1) {
+      navigate(-1);
+    } else {
+      navigate('/shop');
+    }
+  };
 
   const [product, setProduct] = useState(null);
   const [loading, setLoading] = useState(true);
@@ -268,8 +277,9 @@ const ProductDetails = () => {
 
         // Fetch similar products
         if (data?.data?.category) {
-          const similarRes = await productsService.getProducts({ categoryName: data.data.category, limit: 5 });
-          const filtered = (similarRes?.data?.data || []).filter(p => p._id !== id).slice(0, 4);
+          const catId = typeof data.data.category === 'object' ? data.data.category._id || data.data.category.id : data.data.category;
+          const similarRes = await productsService.getProducts(`?category=${catId}&pageSize=5`);
+          const filtered = (similarRes.data?.data || []).filter(p => p._id !== id).slice(0, 4);
           setSimilarProducts(filtered);
         }
 
@@ -278,13 +288,12 @@ const ProductDetails = () => {
           try {
             const p = data.data;
             const viewedItem = { _id: p._id, name: p.name, image: p.images?.[0]?.url, price: p.price, discountPrice: p.discountPrice, brand: p.brand };
-            let recent = JSON.parse(localStorage.getItem('recentlyViewed') || '[]');
-            recent = recent.filter(item => item._id !== p._id);
-            recent.unshift(viewedItem);
-            if (recent.length > 5) recent.pop();
-            localStorage.setItem('recentlyViewed', JSON.stringify(recent));
+            const recent = getRecentlyViewedItems(userInfo);
+            const updatedRecent = [viewedItem, ...recent.filter(item => item._id !== p._id)].slice(0, 5);
+            saveRecentlyViewedItems(userInfo, updatedRecent);
+            window.dispatchEvent(new Event('recentlyViewedUpdated'));
           } catch (e) {
-            console.error('Failed to save recently viewed', e);
+            console.error('Failed to update recently viewed', e);
           }
         }
       } catch (error) {
@@ -384,6 +393,18 @@ const ProductDetails = () => {
           <span className="text-black">{product.name}</span>
         </nav>
 
+        <div className="flex flex-col gap-4 mb-6 md:mb-8">
+          {isAdmin && (
+            <button
+              type="button"
+              onClick={handleGoBack}
+              className="inline-flex items-center gap-2 text-sm font-bold text-[#0a2885] hover:text-black transition-colors"
+            >
+              <ArrowLeft size={18} /> Back to previous page
+            </button>
+          )}
+        </div>
+
         <div className="lg:grid lg:grid-cols-12 lg:gap-x-8 xl:gap-x-12">
           
           {/* Image Gallery & Actions (Left Column) */}
@@ -398,6 +419,8 @@ const ProductDetails = () => {
                     <img 
                       src={img.url} 
                       alt={`${product.name} - ${idx + 1}`} 
+                      loading="lazy"
+                      decoding="async"
                       className="w-full h-full object-contain object-center mix-blend-multiply"
                       onError={(e) => {
                         e.target.onerror = null;
@@ -413,6 +436,8 @@ const ProductDetails = () => {
                 <img 
                   src={product.images?.[activeImageIndex]?.url} 
                   alt={product.name} 
+                  loading="eager"
+                  decoding="async"
                   className="w-full h-full object-contain object-center mix-blend-multiply"
                   onError={(e) => {
                     e.target.onerror = null;
@@ -437,7 +462,7 @@ const ProductDetails = () => {
                     className={`aspect-[3/4] bg-gray-50 cursor-pointer overflow-hidden border transition-colors ${activeImageIndex === idx ? 'border-[#2874f0] shadow-sm' : 'border-gray-200 hover:border-black'}`}
                     onClick={() => setActiveImageIndex(idx)}
                   >
-                    <img src={img.url} alt="" className="w-full h-full object-cover mix-blend-multiply p-1" />
+                    <img src={img.url} alt="" loading="lazy" decoding="async" className="w-full h-full object-cover mix-blend-multiply p-1" />
                   </div>
                 ))}
               </div>
@@ -523,7 +548,10 @@ const ProductDetails = () => {
                   {product.rating ? product.rating.toFixed(1) : '4.2'} <Star size={10} className="ml-1 fill-white" />
                 </span>
                 <span className="text-[#878787] text-[14px] font-medium">{product.numReviews || 8} Ratings & Reviews</span>
-                <img src="https://static-assets-web.flixcart.com/fk-p-linchpin-web/fk-cp-zion/img/fa_62673a.png" alt="Assured" className="h-5 ml-auto sm:ml-4" />
+                <span className="ml-auto sm:ml-4 inline-flex items-center bg-[#2874f0] rounded-[2px] px-1.5 h-[16px] sm:h-[18px] select-none shadow-sm">
+                  <span className="text-[#f7e02b] italic font-bold text-[9px] sm:text-[10px] mr-[2px]">g</span>
+                  <span className="text-white italic font-bold text-[9px] sm:text-[10px] tracking-wide">Assured</span>
+                </span>
               </div>
               {/* Viewing Badge */}
               <div className="flex items-center gap-2 mb-4">
@@ -587,7 +615,7 @@ const ProductDetails = () => {
                 <ul className="space-y-2 text-[14px]">
                   <li className="flex items-start gap-2">
                     <img src="https://rukminim2.flixcart.com/www/36/36/promos/06/09/2016/c22c9fc4-0555-4460-8401-bf5c28d7ba29.png" alt="tag" className="w-4 h-4 mt-0.5" />
-                    <span><span className="font-bold text-gray-900">Bank Offer:</span> 5% Cashback on Flipkart Axis Bank Card <a href="#" className="text-[#2874f0] font-medium text-xs">T&C</a></span>
+                    <span><span className="font-bold text-gray-900">Bank Offer:</span> 5% Cashback on Zen-G Wear Axis Bank Card <a href="#" className="text-[#2874f0] font-medium text-xs">T&C</a></span>
                   </li>
                   <li className="flex items-start gap-2">
                     <img src="https://rukminim2.flixcart.com/www/36/36/promos/06/09/2016/c22c9fc4-0555-4460-8401-bf5c28d7ba29.png" alt="tag" className="w-4 h-4 mt-0.5" />
@@ -900,151 +928,80 @@ const ProductDetails = () => {
         </div>
         </div>
 
-        {/* Frequently Bought Together */}
-        {similarProducts.length >= 2 && (
-          <div className="mt-24 border-t border-gray-200 pt-16">
-            <h2 className="text-2xl font-display font-black uppercase tracking-widest text-black mb-8">Frequently Bought Together</h2>
-            <div className="bg-gray-50 border border-gray-200 p-8 flex flex-col lg:flex-row items-center gap-8">
-              
-              {/* Bundle Items */}
-              <div className="flex-1 flex items-center justify-center gap-4 flex-wrap w-full">
-                {/* Main Product */}
-                <div className="text-center w-32 relative">
-                  <input type="checkbox" checked={selectedBundleItems[0]} onChange={(e) => {
-                    const newItems = [...selectedBundleItems]; newItems[0] = e.target.checked; setSelectedBundleItems(newItems);
-                  }} className="absolute top-2 left-2 z-10 w-4 h-4 accent-black" />
-                  <div className={`aspect-[3/4] bg-white border p-2 mb-2 ${selectedBundleItems[0] ? 'border-black' : 'border-gray-200 opacity-50'}`}>
-                    <img src={product.images?.[0]?.url} alt="" className="w-full h-full object-cover" />
-                  </div>
-                  <p className="text-[10px] font-bold truncate">This Item</p>
-                  <p className="text-xs font-bold mt-1">Rs {(product.discountPrice || product.price).toLocaleString('en-IN')}</p>
-                </div>
-                
-                <span className="text-2xl font-light text-gray-400">+</span>
-
-                {/* Bundle Item 1 */}
-                <div className="text-center w-32 relative">
-                  <input type="checkbox" checked={selectedBundleItems[1]} onChange={(e) => {
-                    const newItems = [...selectedBundleItems]; newItems[1] = e.target.checked; setSelectedBundleItems(newItems);
-                  }} className="absolute top-2 left-2 z-10 w-4 h-4 accent-black" />
-                  <div className={`aspect-[3/4] bg-white border p-2 mb-2 cursor-pointer ${selectedBundleItems[1] ? 'border-black' : 'border-gray-200 opacity-50'}`} onClick={() => { navigate(`/product/${similarProducts[0]._id}`); window.scrollTo(0,0); }}>
-                    <img src={similarProducts[0].images?.[0]?.url} alt="" className="w-full h-full object-cover" />
-                  </div>
-                  <p className="text-[10px] text-gray-500 truncate">{similarProducts[0].name}</p>
-                  <p className="text-xs font-bold mt-1">Rs {(similarProducts[0].discountPrice || similarProducts[0].price).toLocaleString('en-IN')}</p>
-                </div>
-
-                <span className="text-2xl font-light text-gray-400">+</span>
-
-                {/* Bundle Item 2 */}
-                <div className="text-center w-32 relative">
-                  <input type="checkbox" checked={selectedBundleItems[2]} onChange={(e) => {
-                    const newItems = [...selectedBundleItems]; newItems[2] = e.target.checked; setSelectedBundleItems(newItems);
-                  }} className="absolute top-2 left-2 z-10 w-4 h-4 accent-black" />
-                  <div className={`aspect-[3/4] bg-white border p-2 mb-2 cursor-pointer ${selectedBundleItems[2] ? 'border-black' : 'border-gray-200 opacity-50'}`} onClick={() => { navigate(`/product/${similarProducts[1]._id}`); window.scrollTo(0,0); }}>
-                    <img src={similarProducts[1].images?.[0]?.url} alt="" className="w-full h-full object-cover" />
-                  </div>
-                  <p className="text-[10px] text-gray-500 truncate">{similarProducts[1].name}</p>
-                  <p className="text-xs font-bold mt-1">Rs {(similarProducts[1].discountPrice || similarProducts[1].price).toLocaleString('en-IN')}</p>
-                </div>
-              </div>
-
-              {/* Bundle Action */}
-              <div className="lg:border-l lg:border-gray-300 lg:pl-8 flex flex-col items-center lg:items-start text-center lg:text-left min-w-[200px]">
-                <p className="text-xs text-gray-500 uppercase tracking-widest mb-1">Total Price</p>
-                <p className="text-2xl font-bold text-black mb-4">
-                  Rs {((selectedBundleItems[0] ? (product.discountPrice || product.price) : 0) + 
-                       (selectedBundleItems[1] ? (similarProducts[0].discountPrice || similarProducts[0].price) : 0) + 
-                       (selectedBundleItems[2] ? (similarProducts[1].discountPrice || similarProducts[1].price) : 0)).toLocaleString('en-IN')}
-                </p>
-                <button 
-                  onClick={() => {
-                    if(selectedBundleItems[0]) handleAddToCart();
-                    if(selectedBundleItems[1]) {
-                      dispatch(addToCart({
-                        product: similarProducts[0]._id, name: similarProducts[0].name, image: similarProducts[0].images?.[0]?.url, price: similarProducts[0].discountPrice || similarProducts[0].price, size: similarProducts[0].sizes?.[0] || 'M', quantity: 1
-                      }));
-                    }
-                    if(selectedBundleItems[2]) {
-                      dispatch(addToCart({
-                        product: similarProducts[1]._id, name: similarProducts[1].name, image: similarProducts[1].images?.[0]?.url, price: similarProducts[1].discountPrice || similarProducts[1].price, size: similarProducts[1].sizes?.[0] || 'M', quantity: 1
-                      }));
-                    }
-                    toast.success('Bundle added to cart!');
-                    dispatch(toggleCart(true));
-                  }}
-                  disabled={isAdmin || !selectedBundleItems.some(item => item)}
-                  className="px-6 py-3 bg-black text-white text-xs font-bold uppercase tracking-widest hover:bg-gray-900 transition-colors w-full disabled:opacity-50"
-                >
-                  Add selected to Cart
-                </button>
-              </div>
-
-            </div>
-          </div>
-        )}
 
         {/* Similar Products */}
-
-        {similarProducts.length > 0 && (
-          <div className="mt-8 border-t-8 border-gray-100 bg-white pt-4 pb-6 px-4 sm:px-0">
-            <div className="flex items-center justify-between mb-4">
-              <h2 className="text-[18px] font-medium text-gray-800">Similar Products</h2>
-              <Link to={`/search?relatedTo=${product._id}`} className="text-[14px] text-[#2874f0] font-medium bg-[#2874f0]/10 px-3 py-1 rounded-sm">View All</Link>
+        <div className="w-full bg-[#f1f3f6] sm:bg-transparent mb-2 sm:mb-4 font-sans mt-4">
+          <div className="bg-white sm:rounded-sm shadow-sm overflow-hidden">
+            <div className="flex items-center justify-between px-4 py-3 sm:px-6 sm:py-5 border-b border-gray-100">
+              <h2 className="text-[16px] sm:text-2xl font-bold text-gray-800">Similar Products</h2>
+              {similarProducts.length > 0 && (
+                <Link to={`/shop?category=${typeof product.category === 'object' ? product.category.slug || product.category.name : product.category}`} className="text-[12px] sm:text-[14px] text-[#2874f0] font-medium bg-[#2874f0]/10 px-3 py-1 rounded-sm hover:bg-[#2874f0]/20 transition-colors">View All</Link>
+              )}
             </div>
             
-            {/* Horizontal Swipeable Carousel */}
-            <div className="flex overflow-x-auto gap-4 snap-x snap-mandatory hide-scrollbar pb-4 -mx-4 px-4 sm:mx-0 sm:px-0">
-              {similarProducts.map((p) => (
-                <div
-                  key={p._id}
-                  className="w-[140px] sm:w-[180px] lg:w-[200px] flex-shrink-0 snap-start border border-gray-200 rounded-sm overflow-hidden cursor-pointer bg-white group hover:shadow-md transition-shadow"
-                  onClick={() => { navigate(`/product/${p._id}`); window.scrollTo(0, 0); }}
-                >
-                  <div className="relative aspect-[3/4] bg-gray-50 flex items-center justify-center p-2">
-                    <img
-                      src={p.images?.[0]?.url}
-                      alt={p.name}
-                      className="w-full h-full object-contain mix-blend-multiply group-hover:scale-105 transition-transform duration-300"
-                    />
-                    <div className="absolute top-1 right-1">
-                       <button className="w-7 h-7 bg-white rounded-full shadow-sm flex items-center justify-center text-gray-400 hover:text-red-500 transition-colors">
-                         <Heart size={14} />
-                       </button>
-                    </div>
-                  </div>
-                  <div className="p-3">
-                    <h3 className="text-[13px] text-gray-500 font-medium mb-1 truncate">{p.brand || 'ZEN-G WEAR'}</h3>
-                    <p className="text-[14px] text-gray-800 mb-1 truncate group-hover:text-[#2874f0] transition-colors">{p.name}</p>
-                    <div className="flex items-center gap-1.5 mt-1">
-                      <span className="bg-[#388e3c] text-white text-[10px] font-bold px-1.5 py-0.5 rounded-sm flex items-center">
-                        {p.rating ? p.rating.toFixed(1) : '4.2'} <Star size={8} className="ml-0.5 fill-white" />
-                      </span>
-                      <span className="text-[11px] text-gray-500">({p.numReviews || 8})</span>
-                      <img src="https://static-assets-web.flixcart.com/fk-p-linchpin-web/fk-cp-zion/img/fa_62673a.png" alt="Assured" className="h-3 ml-auto" />
-                    </div>
-                    <div className="flex items-center gap-2 mt-2">
-                      <span className="text-[15px] font-bold text-gray-900">
-                        ₹{(p.discountPrice || p.price).toLocaleString('en-IN')}
-                      </span>
-                      {p.discountPrice && (
-                        <span className="text-[11px] text-[#878787] line-through">
-                          ₹{p.price.toLocaleString('en-IN')}
-                        </span>
-                      )}
-                    </div>
-                    {p.discountPrice && (
-                      <div className="text-[12px] font-bold text-[#388e3c] mt-0.5">
-                        {Math.round(((p.price - p.discountPrice) / p.price) * 100)}% off
+            {similarProducts.length > 0 ? (
+              <div className="flex overflow-x-auto hide-scrollbar p-3 sm:p-6 gap-3 sm:gap-6 snap-x snap-mandatory">
+                {similarProducts.map((p) => (
+                  <div
+                    key={p._id}
+                    className="w-[140px] sm:w-[180px] lg:w-[200px] flex-shrink-0 snap-start border border-gray-200 rounded-sm overflow-hidden cursor-pointer bg-white group hover:shadow-md transition-shadow"
+                    onClick={() => { navigate(`/product/${p._id}`); window.scrollTo(0, 0); }}
+                  >
+                    <div className="relative aspect-[3/4] bg-gray-50 flex items-center justify-center p-2">
+                      <img
+                        src={p.images?.[0]?.url}
+                        alt={p.name}
+                        className="w-full h-full object-contain mix-blend-multiply group-hover:scale-105 transition-transform duration-300"
+                      />
+                      <div className="absolute top-1 right-1">
+                         <button className="w-7 h-7 bg-white rounded-full shadow-sm flex items-center justify-center text-gray-400 hover:text-red-500 transition-colors">
+                           <Heart size={14} />
+                         </button>
                       </div>
-                    )}
-                    <div className="text-[11px] text-gray-800 mt-1">Free delivery</div>
+                    </div>
+                    <div className="p-3">
+                      <h3 className="text-[11px] sm:text-[13px] text-gray-500 font-medium mb-1 truncate">{p.brand || 'ZEN-G WEAR'}</h3>
+                      <p className="text-[12px] sm:text-[14px] text-gray-800 mb-1 truncate group-hover:text-[#2874f0] transition-colors">{p.name}</p>
+                      <div className="flex items-center gap-1.5 mt-1">
+                        <span className="bg-[#388e3c] text-white text-[9px] sm:text-[10px] font-bold px-1.5 py-0.5 rounded-sm flex items-center">
+                          {p.rating ? p.rating.toFixed(1) : '4.2'} <Star size={8} className="ml-0.5 fill-white" />
+                        </span>
+                        <span className="text-[10px] sm:text-[11px] text-gray-500">({p.numReviews || 8})</span>
+                        <span className="ml-auto inline-flex items-center bg-[#2874f0] rounded-[2px] px-1 h-[14px] sm:h-[16px] select-none shadow-sm">
+                          <span className="text-[#f7e02b] italic font-bold text-[8px] sm:text-[9px] mr-[2px]">g</span>
+                          <span className="text-white italic font-bold text-[8px] sm:text-[9px] tracking-wide">Assured</span>
+                        </span>
+                      </div>
+                      <div className="flex items-center gap-2 mt-2">
+                        <span className="text-[14px] sm:text-[15px] font-bold text-gray-900">
+                          ₹{(p.discountPrice || p.price).toLocaleString('en-IN')}
+                        </span>
+                        {p.discountPrice && (
+                          <span className="text-[10px] sm:text-[11px] text-[#878787] line-through">
+                            ₹{p.price.toLocaleString('en-IN')}
+                          </span>
+                        )}
+                      </div>
+                      {p.discountPrice && (
+                        <div className="text-[11px] sm:text-[12px] font-bold text-[#388e3c] mt-0.5">
+                          {Math.round(((p.price - p.discountPrice) / p.price) * 100)}% off
+                        </div>
+                      )}
+                      <div className="text-[10px] sm:text-[11px] text-gray-800 mt-1">Free delivery</div>
+                    </div>
                   </div>
-                </div>
-              ))}
-            </div>
+                ))}
+              </div>
+            ) : (
+              <div className="text-[14px] text-gray-500 py-6 px-4 sm:px-6">No similar products found yet.</div>
+            )}
           </div>
-        )}
+        </div>
+
+        {/* Recently Viewed */}
+        <div className="mt-4">
+          <RecentlyViewed />
+        </div>
 
       </main>
 

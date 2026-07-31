@@ -110,7 +110,7 @@ const Navbar = ({ onMenuClick }) => {
                 </span>
                 <span className="text-white text-[9px] italic hover:underline mt-0.5 flex items-center">
                   Explore <span className="text-[#ffe500] font-bold ml-1">Plus</span>
-                  <img src="https://static-assets-web.flixcart.com/fk-p-linchpin-web/fk-cp-zion/img/plus_aef861.png" alt="plus" className="h-[10px] ml-0.5" />
+                  <span className="text-[#ffe500] font-bold ml-0.5 text-[10px]">+</span>
                 </span>
               </Link>
             </div>

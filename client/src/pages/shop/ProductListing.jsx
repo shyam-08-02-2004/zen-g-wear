@@ -2,6 +2,102 @@ import { useState, useEffect, useCallback } from 'react';
 import { Link, useSearchParams } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Heart, SlidersHorizontal, ChevronDown, ShoppingBag, X, ShoppingCart } from 'lucide-react';
+const getSubcategoryImage = (label, category) => {
+  const l = label.toLowerCase();
+  
+  if (category === 'women') {
+    if (l.includes('dress')) return '/images/category-women-dress.png';
+    if (l.includes('skirt')) return '/images/category-women-skirt.jpg';
+    if (l.includes('top')) return '/images/category-women-top.png';
+    if (l.includes('t-shirt') || l.includes('tshirt')) return '/images/category-women-tshirt.jpg';
+    if (l.includes('shirt')) return '/images/category-women-shirt.png';
+    if (l.includes('hoodie')) return '/images/category-women-hoodie.png';
+    if (l.includes('sweatshirt')) return '/images/category-women-sweatshirt.png';
+    if (l.includes('jacket')) return '/images/category-women-jacket.png';
+    if (l.includes('jeans')) return '/images/category-women-jeans.jpg';
+    if (l.includes('legging')) return '/images/category-women-legging.png';
+    if (l.includes('palazzo')) return '/images/category-women-palazzo.png';
+    if (l.includes('panty') || l.includes('panties')) return '/images/category-women-panties-v2.png';
+    if (l.includes('trouser') || l.includes('pant')) return '/images/category-women-trouser.png';
+    if (l.includes('kurti')) return '/images/category-women-kurti.png';
+    if (l.includes('kurta')) return '/images/category-women-kurta.png';
+    if (l.includes('saree')) return '/images/category-women-saree.jpg';
+    if (l.includes('lehenga')) return '/images/category-women-lehenga.png';
+    if (l.includes('ethnic')) return '/images/category-women-ethnic.jpg';
+    if (l.includes('sports bra') || l.includes('sport bra')) return '/images/category-women-sportsbra.png';
+    if (l.includes('bra')) return '/images/category-women-bra.png';
+    if (l.includes('lingerie') || l.includes('lingie')) return '/images/category-women-lingerie.png';
+    if (l.includes('shapewear')) return '/images/category-women-shapewear.png';
+    if (l.includes('nightwear') || l.includes('nightwera')) return '/images/category-women-nightwear.png';
+    if (l.includes('heel')) return '/images/category-women-heels.png';
+    if (l.includes('flat')) return '/images/category-women-flats.jpg';
+    if (l.includes('sneaker') || l.includes('shoe')) return '/images/category-women-sneakers.jpg';
+    if (l.includes('sandal')) return '/images/category-women-sandals.png';
+    if (l.includes('bag') || l.includes('handbag')) return '/images/category-women-handbag.png';
+    if (l.includes('wallet')) return '/images/category-women-wallet.png';
+    if (l.includes('jewellery') || l.includes('necklace') || l.includes('ring')) return '/images/category-women-jewellery.png';
+    if (l.includes('watch')) return '/images/category-women-watch.png';
+    if (l.includes('beauty')) return '/images/category-women-beauty.png';
+    if (l.includes('accessori')) return '/images/category-women-accessories.jpg';
+    return 'https://images.unsplash.com/photo-1515372039744-b8f02a3ae446?w=150&h=150&fit=crop';
+  }
+
+  if (category === 'kids') {
+    if (l.includes('care') || l.includes('bath') || l.includes('lotion')) return '/images/category-kids-babycare-v2.png';
+    if (l.includes('baby') || l.includes('infant') || l.includes('toddler')) return '/images/category-kids-baby.png';
+    if (l.includes('boy')) return '/images/category-kids-boys.png';
+    if (l.includes('girl')) return '/images/category-kids-girls.png';
+    if (l.includes('t-shirt') || l.includes('tshirt')) return '/images/category-kids-tshirt.png';
+    if (l.includes('shirt')) return '/images/category-kids-shirt.png';
+    if (l.includes('jeans')) return '/images/category-kids-jeans.png';
+    if (l.includes('short')) return '/images/category-kids-shorts.png';
+    if (l.includes('frock')) return '/images/category-kids-frock.png';
+    if (l.includes('dress')) return '/images/category-kids-dress.png';
+    if (l.includes('bag') || l.includes('backpack')) return '/images/category-kids-schoolbag-v2.png';
+    if (l.includes('school') || l.includes('uniform')) return '/images/category-kids-school.png';
+    if (l.includes('winter') || l.includes('jacket') || l.includes('sweater')) return '/images/category-kids-winterwear.png';
+    if (l.includes('shoe') || l.includes('footwear') || l.includes('sneaker')) return '/images/category-kids-shoes.png';
+    if (l.includes('toy') || l.includes('game')) return '/images/category-kids-toys.png';
+    if (l.includes('watch')) return '/images/category-kids-watch.png';
+    if (l.includes('accessori') || l.includes('lunch') || l.includes('bottle')) return '/images/category-kids-accessories.png';
+  }
+
+  // Original defaults (Men & Generic)
+  if (l.includes('t-shirt') || l.includes('tshirt') || l.includes('polo')) return '/images/category-men-tshirt.png';
+  if (l.includes('shirt')) return '/images/category-shirt.png';
+  if (l.includes('hoodie')) return '/images/category-hoodie.jpg';
+  if (l.includes('sweatshirt')) return '/images/category-men-sweatshirt.png';
+  if (l.includes('jacket')) return '/images/category-jacket.png';
+  if (l.includes('blazer') || l.includes('winter')) return '/images/category-blazer.png';
+  if (l.includes('jeans')) return '/images/category-jeans.png';
+  if (l.includes('cargo')) return '/images/category-cargo.jpg';
+  if (l.includes('trouser') || l.includes('pant')) return '/images/category-men-trouser.jpg';
+  if (l.includes('track')) return '/images/category-track.png';
+  if (l.includes('jogger')) return '/images/category-jogger.png';
+  if (l.includes('short')) return '/images/category-short.png';
+  if (l.includes('sock')) return '/images/category-sock.png';
+  if (l.includes('sport') || l.includes('sneaker') || l.includes('running')) return '/images/category-sports-shoe.png';
+  if (l.includes('formal') || l.includes('oxford') || l.includes('derby')) return '/images/category-formal-shoe.png';
+  if (l.includes('casual') || l.includes('loafer') || l.includes('shoe')) return '/images/category-casual-shoe.png';
+  if (l.includes('sandal') || l.includes('flat') || l.includes('heel') || l.includes('float')) return '/images/category-sandal.png';
+  if (l.includes('slipper') || l.includes('slider') || l.includes('slide')) return '/images/category-slipper.png';
+  if (l.includes('watch')) return '/images/category-watch.jpg';
+  if (l.includes('glass') || l.includes('sunglass')) return '/images/category-glass.jpg';
+  if (l.includes('wallet')) return '/images/category-wallet.png';
+  if (l.includes('bag')) return 'https://images.unsplash.com/photo-1584916201218-f4242ceb4809?w=150&h=150&fit=crop';
+  if (l.includes('belt')) return '/images/category-belt.png';
+  if (l.includes('cap') || l.includes('hat')) return '/images/category-cap.png';
+  if (l.includes('vest') || l.includes('top')) return '/images/category-top.png';
+  if (l.includes('dress') || l.includes('skirt')) return 'https://images.unsplash.com/photo-1515372039744-b8f02a3ae446?w=150&h=150&fit=crop';
+  if (l.includes('ethnic') || l.includes('saree') || l.includes('kurti') || l.includes('lehenga') || l.includes('kurta') || l.includes('sherwani')) return '/images/category-ethnic.jpg';
+  if (l.includes('brief')) return '/images/category-brief.png';
+  if (l.includes('boxer')) return '/images/category-boxer.png';
+  if (l.includes('trunk')) return '/images/category-trunk.png';
+  if (l.includes('innerwear') || l.includes('bra') || l.includes('panty') || l.includes('lingerie') || l.includes('sleepwear')) return '/images/category-innerwear.png';
+
+  if (l.includes('kid') || l.includes('boy') || l.includes('girl') || l.includes('baby') || l.includes('school') || l.includes('toy')) return '/images/category-kids-boys.png';
+  return 'https://images.unsplash.com/photo-1445205170230-053b83016050?w=150&h=150&fit=crop';
+};
 import Navbar from '../../components/layout/Navbar';
 import CategoryNav from '../../components/layout/CategoryNav';
 import Footer from '../../components/layout/Footer';
@@ -11,6 +107,7 @@ import { useDispatch, useSelector } from 'react-redux';
 import { addToCart, toggleCart } from '../../redux/slices/cartSlice';
 import toast from 'react-hot-toast';
 import SkeletonProductCard from '../../components/SkeletonProductCard';
+import CountdownTimer from '../../components/ui/CountdownTimer';
 
 const SORT_OPTIONS = [
   { label: 'Popularity (Rating)', value: '-rating' },
@@ -43,7 +140,7 @@ const SUBCATEGORY_MAP = {
     { group: 'Accessories', items: [{l:'Watches',v:'watches'},{l:'Caps',v:'cap'},{l:'Toys',v:'toys'},{l:'Baby Care',v:'babycare'},{l:'Accessories',v:'accessories'}]},
   ],
 };
-const DEFAULT_SUBS = [{l:'T-Shirts',v:'tshirt'},{l:'Shirts',v:'shirt'},{l:'Jeans',v:'jeans'},{l:'Dresses',v:'dress'},{l:'Shorts',v:'shorts'},{l:'Watches',v:'watches'},{l:'Shoes',v:'shoes'},{l:'Jackets',v:'jacket'}];
+const DEFAULT_SUBS = [{l:'T-Shirts',v:'tshirt'},{l:'Shirts',v:'shirt'},{l:'Jeans',v:'jeans'},{l:'Dresses',v:'dress'},{l:'Tops',v:'top'},{l:'Shorts',v:'shorts'},{l:'Watches',v:'watches'},{l:'Shoes',v:'shoes'},{l:'Jackets',v:'jacket'}];
 
 
 const ProductCard = ({ product }) => {
@@ -135,11 +232,16 @@ const ProductCard = ({ product }) => {
 
       {/* Image Container */}
       <Link to={`/product/${product._id}`} className="block relative aspect-[3/4] bg-gray-100 overflow-hidden">
+        {discount >= 40 && (
+          <CountdownTimer className="absolute bottom-2 left-2 z-10 shadow-md" />
+        )}
         {primaryImage ? (
           <>
             <img
               src={primaryImage}
               alt={product.name}
+              loading="lazy"
+              decoding="async"
               className={`absolute inset-0 w-full h-full object-cover transition-opacity duration-500 ${isHovered && secondaryImage !== primaryImage ? 'opacity-0' : 'opacity-100'}`}
               onError={(e) => {
                 e.target.onerror = null;
@@ -150,6 +252,8 @@ const ProductCard = ({ product }) => {
               <img
                 src={secondaryImage}
                 alt={product.name}
+                loading="lazy"
+                decoding="async"
                 className={`absolute inset-0 w-full h-full object-cover transition-opacity duration-500 ${isHovered ? 'opacity-100' : 'opacity-0'}`}
               />
             )}
@@ -175,12 +279,12 @@ const ProductCard = ({ product }) => {
 
       {/* Product Info - Premium Style */}
       <div className="pt-4 px-3 pb-4 flex flex-col gap-1.5 flex-grow justify-between bg-white dark:bg-gray-800">
-        <div className="flex flex-col">
+        <div className="flex flex-col text-left">
           <Link to={`/product/${product._id}`}>
-            <h3 className="text-[10px] font-bold text-gray-400 dark:text-gray-400 uppercase tracking-widest mb-0.5">
-              {product.brand || 'Brand'}
+            <h3 className="text-xs sm:text-sm font-bold text-gray-900 dark:text-gray-100 uppercase tracking-wide mb-0.5">
+              {product.brand || 'ZEN-G WEAR'}
             </h3>
-            <p className="text-sm font-semibold text-gray-800 dark:text-gray-100 line-clamp-1 hover:text-blue-600 transition-colors">
+            <p className="text-xs sm:text-sm text-gray-500 dark:text-gray-400 font-normal line-clamp-1 hover:text-blue-600 transition-colors">
               {product.name}
             </p>
           </Link>
@@ -196,13 +300,16 @@ const ProductCard = ({ product }) => {
               </span>
             )}
             <span className="text-xs text-gray-400 font-medium">({product.numReviews})</span>
-            <img src="https://static-assets-web.flixcart.com/fk-p-linchpin-web/fk-cp-zion/img/fa_62673a.png" alt="Assured" className="h-4 ml-auto" />
+            <span className="ml-auto inline-flex items-center bg-[#2874f0] rounded-[2px] px-1 h-[14px] sm:h-[16px] select-none shadow-sm">
+              <span className="text-[#f7e02b] italic font-bold text-[8px] sm:text-[9px] mr-[2px]">g</span>
+              <span className="text-white italic font-bold text-[8px] sm:text-[9px] tracking-wide">Assured</span>
+            </span>
           </div>
         </div>
 
-        <div className="flex items-center justify-between mt-2 pt-2 border-t border-gray-50 dark:border-gray-700">
-          <div className="flex flex-wrap items-baseline gap-1.5">
-            <span className="text-base font-black text-black dark:text-white">
+        <div className="flex flex-col mt-2 pt-2 border-t border-gray-50 dark:border-gray-700">
+          <div className="flex flex-wrap items-baseline gap-1.5 mb-2">
+            <span className="text-[15px] font-black text-black dark:text-white leading-none">
               ₹{(product.discountPrice || product.price).toLocaleString('en-IN')}
             </span>
             {product.discountPrice && (
@@ -210,20 +317,20 @@ const ProductCard = ({ product }) => {
                 <span className="text-[10px] text-gray-400 line-through">
                   ₹{product.price.toLocaleString('en-IN')}
                 </span>
-                <span className="text-[10px] font-bold text-green-600 bg-green-50 px-1.5 py-0.5 rounded">
+                <span className="text-[10px] font-bold text-green-600 bg-green-50 px-1 rounded">
                   {product.discountPercentage}% OFF
                 </span>
               </>
             )}
           </div>
           
-          {/* Mobile Add to Cart Button */}
+          {/* Mobile Add to Cart Button - Flipkart style */}
           {!isAdmin && (
             <button
               onClick={handleQuickAdd}
-              className="lg:hidden flex-shrink-0 bg-black text-white p-2 rounded-full shadow-md active:scale-95 transition-transform hover:bg-gray-800"
+              className="lg:hidden w-full flex items-center justify-center gap-1.5 bg-white border border-[#2874f0] text-[#2874f0] text-[12px] font-bold py-1.5 rounded-sm active:scale-95 transition-colors"
             >
-              <ShoppingCart size={16} />
+              <ShoppingCart size={14} /> Add to Cart
             </button>
           )}
         </div>
@@ -337,29 +444,41 @@ const ProductListing = () => {
         </div>
 
         {/* Horizontal Chips (Flipkart Style) */}
-        <div className="flex overflow-x-auto hide-scrollbar gap-3 pb-3 mt-4 px-4 sm:px-0 lg:hidden">
+        <div className="flex overflow-x-auto hide-scrollbar gap-4 pb-4 mt-2 px-4 sm:px-0 lg:hidden snap-x">
           {(categoryFilter && SUBCATEGORY_MAP[categoryFilter]
             ? SUBCATEGORY_MAP[categoryFilter].flatMap(g => g.items)
             : DEFAULT_SUBS
-          ).map((sub, idx) => (
-            <button
-              key={idx}
-              onClick={() => {
-                setSearchParams(prev => {
-                  prev.set('subcategory', sub.v);
-                  return prev;
-                });
-                setCurrentPage(1);
-              }}
-              className={`flex-shrink-0 px-4 py-1.5 rounded-full border text-[13px] font-medium whitespace-nowrap transition-colors ${
-                subcategoryFilter === sub.v
-                  ? 'bg-[#2874f0] text-white border-[#2874f0]'
-                  : 'bg-white text-gray-700 border-gray-200 hover:border-gray-300'
-              }`}
-            >
-              {sub.l}
-            </button>
-          ))}
+          ).map((sub, idx) => {
+            const isActive = subcategoryFilter === sub.v;
+            return (
+              <button
+                key={idx}
+                onClick={() => {
+                  setSearchParams(prev => {
+                    prev.set('subcategory', sub.v);
+                    return prev;
+                  });
+                  setCurrentPage(1);
+                }}
+                className="flex flex-col items-center gap-1.5 snap-start shrink-0 group focus:outline-none"
+              >
+                <div className={`w-[60px] h-[60px] rounded-full flex items-center justify-center transition-all duration-300 ${
+                  isActive 
+                    ? 'border-[2px] border-[#2874f0] shadow-sm scale-105' 
+                    : 'border border-transparent hover:scale-105'
+                }`}>
+                  <div className="w-[54px] h-[54px] rounded-full overflow-hidden border border-gray-200">
+                    <img src={getSubcategoryImage(sub.l, categoryFilter)} alt={sub.l} loading="lazy" decoding="async" className="w-full h-full object-cover bg-gray-50" />
+                  </div>
+                </div>
+                <span className={`text-[11px] whitespace-nowrap text-center max-w-[68px] truncate transition-colors ${
+                  isActive ? 'font-bold text-[#2874f0]' : 'font-medium text-gray-700 group-hover:text-black'
+                }`}>
+                  {sub.l}
+                </span>
+              </button>
+            );
+          })}
         </div>
 
         {/* Desktop Toolbar */}

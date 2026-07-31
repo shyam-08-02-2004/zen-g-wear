@@ -199,7 +199,7 @@ const AdminOrdersPage = () => {
       </div>
 
       {/* Filters Toolbar */}
-      <div className="bg-gray-50 border border-gray-200 p-4 mb-6 flex flex-col sm:flex-row gap-3">
+      <div className="bg-gray-50 border border-gray-200 p-4 mb-6 flex flex-col lg:flex-row gap-3">
         <div className="relative flex-1">
           <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400" size={15} />
           <input
@@ -229,11 +229,11 @@ const AdminOrdersPage = () => {
 
       {/* Bulk Actions Toolbar */}
       {selectedOrders.length > 0 && (
-        <div className="bg-[#2874f0] text-white p-3 mb-4 rounded-sm flex items-center justify-between sticky top-[60px] z-10 shadow-md">
+        <div className="bg-[#2874f0] text-white p-3 mb-4 rounded-sm flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 sticky top-[60px] z-10 shadow-md">
           <div className="text-sm font-bold">
             {selectedOrders.length} orders selected
           </div>
-          <div className="flex items-center gap-2">
+          <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-2 w-full sm:w-auto">
             <select
               value={bulkAction}
               onChange={(e) => setBulkAction(e.target.value)}
@@ -416,7 +416,7 @@ const AdminOrdersPage = () => {
                     {/* View Details Button */}
                     <button
                       onClick={() => setExpandedOrderId(isExpanded ? null : order._id)}
-                      className="ml-auto flex items-center gap-2 px-4 py-2 border border-gray-300 text-xs font-bold uppercase tracking-wider text-gray-800 hover:border-black hover:bg-gray-50 transition-colors"
+                      className="w-full sm:w-auto sm:ml-auto flex items-center justify-center gap-2 px-4 py-2 border border-gray-300 text-xs font-bold uppercase tracking-wider text-gray-800 hover:border-black hover:bg-gray-50 transition-colors"
                     >
                       <Eye size={13} />
                       {isExpanded ? 'Hide' : 'View Items'}

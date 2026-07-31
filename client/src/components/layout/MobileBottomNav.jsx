@@ -1,4 +1,4 @@
-﻿import { Link, useLocation, useNavigate } from 'react-router-dom';
+import { Link, useLocation, useNavigate } from 'react-router-dom';
 import { useSelector } from 'react-redux';
 import { Home, Search, ShoppingCart, User, LayoutGrid } from 'lucide-react';
 import { useState } from 'react';
@@ -7,7 +7,9 @@ const MobileBottomNav = () => {
   const location = useLocation();
   const navigate = useNavigate();
   const { cartItems } = useSelector((state) => state.cart);
+  const { userInfo } = useSelector((state) => state.auth);
   const cartCount = cartItems?.reduce((acc, item) => acc + item.quantity, 0) || 0;
+  const isAdmin = userInfo?.role === 'admin';
   const [showSearch, setShowSearch] = useState(false);
   const [searchQuery, setSearchQuery] = useState('');
 
@@ -15,7 +17,7 @@ const MobileBottomNav = () => {
     { icon: Home, label: 'Home', path: '/' },
     { icon: LayoutGrid, label: 'Categories', path: '/shop' },
     { icon: ShoppingCart, label: 'Cart', path: '/cart', count: cartCount },
-    { icon: User, label: 'Account', path: '/dashboard' }
+    { icon: User, label: isAdmin ? 'Admin' : 'Account', path: isAdmin ? '/admin' : '/dashboard' }
   ];
 
   const isActive = (path) => {

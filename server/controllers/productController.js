@@ -1,5 +1,6 @@
 import asyncHandler from 'express-async-handler';
 import Product from '../models/Product.js';
+import Category from '../models/Category.js';
 
 export const getProducts = asyncHandler(async (req, res) => {
   const pageSize = Number(req.query.pageSize) || 12;
@@ -22,7 +23,6 @@ export const getProducts = asyncHandler(async (req, res) => {
 
   // Category search by name
   if (req.query.categoryName) {
-    const Category = (await import('../models/Category.js')).default;
     const categoryDoc = await Category.findOne({ slug: req.query.categoryName.toLowerCase() });
     if (categoryDoc) {
       filter.category = categoryDoc._id;

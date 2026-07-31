@@ -43,15 +43,15 @@ const AdminDashboardOverview = () => {
 
   return (
     <div className="space-y-6">
-      <div className="flex justify-between items-end">
+      <div className="flex flex-col gap-2 sm:flex-row sm:items-end sm:justify-between">
         <div>
           <h1 className="text-2xl font-bold text-gray-800">Seller Dashboard</h1>
-          <p className="text-sm text-gray-500 mt-1">Welcome to your Flipkart Seller Hub</p>
+          <p className="text-sm text-gray-500 mt-1">Welcome to your Zen-G Wear Seller Hub</p>
         </div>
       </div>
 
       {/* Top Stat Cards */}
-      <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4">
+      <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 xl:grid-cols-4">
         <div className="bg-white p-5 rounded-sm shadow-sm border-l-4 border-[#0a2885]">
           <div className="flex justify-between items-start">
             <div>
@@ -101,7 +101,7 @@ const AdminDashboardOverview = () => {
             <h2 className="font-bold text-gray-800">Sales Analytics (Last 6 Months)</h2>
             <Link to="/admin/revenue" className="text-sm text-[#0a2885] font-semibold hover:underline">View Report</Link>
           </div>
-          <div className="p-4 h-[300px]">
+          <div className="p-4 h-[280px] sm:h-[320px]">
             <ResponsiveContainer width="100%" height="100%">
               <AreaChart data={revenueSeries} margin={{ top: 10, right: 10, left: 0, bottom: 0 }}>
                 <defs>
@@ -168,7 +168,7 @@ const AdminDashboardOverview = () => {
           </div>
           <div className="p-0 overflow-x-auto">
             {recentOrdersList.length > 0 ? (
-              <table className="w-full text-left text-sm min-w-[500px]">
+              <table className="w-full text-left text-sm min-w-[520px]">
                 <thead className="bg-gray-50 text-gray-500 uppercase text-[11px] font-bold">
                   <tr>
                     <th className="px-4 py-3">Order ID</th>

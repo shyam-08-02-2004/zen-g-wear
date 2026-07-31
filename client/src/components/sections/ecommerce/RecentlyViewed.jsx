@@ -5,6 +5,7 @@ import { useSelector } from 'react-redux';
 import toast from 'react-hot-toast';
 import productsService from '../../../services/productsService';
 import wishlistService from '../../../services/wishlistService';
+import { getRecentlyViewedItems } from '../../../utils/recentlyViewed';
 
 const RecentlyViewedItem = ({ product }) => {
   const { userInfo } = useSelector((state) => state.auth);
@@ -60,11 +61,14 @@ const RecentlyViewedItem = ({ product }) => {
           }}
         />
       </div>
-      <div className="w-full text-center mt-auto">
-        <h3 className="text-xs sm:text-sm text-gray-700 font-medium line-clamp-1 group-hover:text-blue-600 transition-colors">
-          {product.name}
+      <div className="w-full text-left mt-auto px-1">
+        <h3 className="text-[10px] sm:text-xs font-bold text-gray-900 uppercase tracking-wide mb-0.5">
+          {product.brand || 'ZEN-G WEAR'}
         </h3>
-        <div className="mt-1 sm:mt-2 flex items-center justify-center gap-1 sm:gap-2">
+        <p className="text-xs sm:text-sm text-gray-500 font-normal line-clamp-1 group-hover:text-blue-600 transition-colors">
+          {product.name}
+        </p>
+        <div className="mt-1 sm:mt-1.5 flex items-center gap-1 sm:gap-2">
           <span className="text-sm sm:text-base font-bold text-gray-900">
             ₹{product.discountPrice || product.price}
           </span>
@@ -101,27 +105,31 @@ const RecentlyViewedSkeleton = () => (
 const RecentlyViewed = () => {
   const [products, setProducts] = useState([]);
   const [loading, setLoading] = useState(true);
+  const { userInfo } = useSelector((state) => state.auth);
 
   useEffect(() => {
-    try {
-      const storedItems = JSON.parse(localStorage.getItem('recentlyViewed')) || [];
-      // To match the existing structure, we map 'image' to 'images[0].url' if needed
-      // because the ProductDetails page stores it as { image: '...' }
-      // The RecentlyViewedItem expects { images: [{ url: '...' }] }
-      const formattedItems = storedItems.map(item => ({
-        ...item,
-        images: [{ url: item.image || (item.images && item.images[0]?.url) }]
-      }));
-      setProducts(formattedItems);
-    } catch (error) {
-      console.error('Error reading recently viewed products:', error);
-    } finally {
-      setLoading(false);
-    }
-  }, []);
+    const loadItems = () => {
+      try {
+        const storedItems = getRecentlyViewedItems(userInfo);
+        const formattedItems = storedItems.map(item => ({
+          ...item,
+          images: [{ url: item.image || (item.images && item.images[0]?.url) }]
+        }));
+        setProducts(formattedItems);
+      } catch (error) {
+        console.error('Error reading recently viewed products:', error);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    loadItems();
+    
+    window.addEventListener('recentlyViewedUpdated', loadItems);
+    return () => window.removeEventListener('recentlyViewedUpdated', loadItems);
+  }, [userInfo]);
 
   if (loading) return <RecentlyViewedSkeleton />;
-  if (!loading && products.length === 0) return null;
 
   return (
     <div className="w-full bg-[#f1f3f6] sm:bg-transparent mb-2 sm:mb-4 font-sans">
@@ -129,11 +137,15 @@ const RecentlyViewed = () => {
         <div className="flex justify-between items-center px-4 py-3 sm:px-6 sm:py-5 border-b border-gray-100">
           <h2 className="text-lg sm:text-2xl font-bold text-gray-800">Recently Viewed</h2>
         </div>
-        <div className="flex overflow-x-auto hide-scrollbar p-3 sm:p-6 gap-3 sm:gap-6">
-          {products.map((product) => (
-            <RecentlyViewedItem key={product._id} product={product} />
-          ))}
-        </div>
+        {products.length > 0 ? (
+          <div className="flex overflow-x-auto hide-scrollbar p-3 sm:p-6 gap-3 sm:gap-6">
+            {products.map((product) => (
+              <RecentlyViewedItem key={product._id} product={product} />
+            ))}
+          </div>
+        ) : (
+          <div className="text-[14px] text-gray-500 py-6 px-4 sm:px-6">No recently viewed products.</div>
+        )}
       </div>
     </div>
   );

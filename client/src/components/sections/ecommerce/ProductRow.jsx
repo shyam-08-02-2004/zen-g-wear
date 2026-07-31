@@ -5,11 +5,17 @@ import { useSelector } from 'react-redux';
 import toast from 'react-hot-toast';
 import productsService from '../../../services/productsService';
 import wishlistService from '../../../services/wishlistService';
+import { motion } from 'framer-motion';
+import CountdownTimer from '../../ui/CountdownTimer';
 
 const ProductRowItem = ({ product }) => {
   const { userInfo } = useSelector((state) => state.auth);
   const [wishlisted, setWishlisted] = useState(false);
   
+  const discountPercent = product.discountPrice 
+    ? Math.round(((product.price - product.discountPrice) / product.price) * 100) 
+    : 0;
+
   useEffect(() => {
     if (userInfo?.wishlist?.some(id => id === product._id || id?._id === product._id)) {
       setWishlisted(true);
@@ -38,10 +44,15 @@ const ProductRowItem = ({ product }) => {
   };
 
   return (
-    <Link 
-      to={`/product/${product._id}`}
-      className="relative flex flex-col items-center flex-shrink-0 w-[130px] sm:w-[200px] group p-2 sm:p-4 hover:shadow-md transition-all duration-300 rounded-sm bg-white border border-gray-50 sm:border-transparent hover:border-gray-100"
+    <motion.div
+      whileHover={{ y: -5, scale: 1.02 }}
+      transition={{ type: 'spring', stiffness: 300, damping: 20 }}
+      className="h-full"
     >
+      <Link 
+        to={`/product/${product._id}`}
+        className="relative flex flex-col items-center flex-shrink-0 w-[130px] sm:w-[200px] h-full group p-2 sm:p-4 hover:shadow-lg transition-all duration-300 rounded-lg bg-white border border-gray-50 sm:border-transparent hover:border-gray-100"
+      >
       <button
         onClick={toggleWishlist}
         className="absolute top-2 right-2 z-10 p-1.5 bg-white/80 lg:bg-white/0 lg:group-hover:bg-white/90 rounded-full transition-all duration-300 opacity-100 lg:opacity-0 lg:group-hover:opacity-100 hover:bg-white shadow-sm lg:shadow-none lg:group-hover:shadow-md"
@@ -49,7 +60,10 @@ const ProductRowItem = ({ product }) => {
         <Heart size={16} className={wishlisted ? 'fill-red-500 text-red-500' : 'text-gray-400'} />
       </button>
 
-      <div className="w-full h-[120px] sm:h-[180px] mb-2 sm:mb-4 overflow-hidden flex items-center justify-center">
+      <div className="w-full h-[120px] sm:h-[180px] mb-2 sm:mb-4 overflow-hidden flex items-center justify-center relative">
+        {discountPercent >= 40 && (
+          <CountdownTimer className="absolute bottom-1 left-1 sm:bottom-2 sm:left-2 z-10" />
+        )}
         <img 
           src={product.images[0]?.url} 
           alt={product.name} 
@@ -60,11 +74,14 @@ const ProductRowItem = ({ product }) => {
           }}
         />
       </div>
-      <div className="w-full text-center mt-auto">
-        <h3 className="text-xs sm:text-sm text-gray-700 font-medium line-clamp-1 group-hover:text-blue-600 transition-colors">
-          {product.name}
+      <div className="w-full text-left mt-auto px-1">
+        <h3 className="text-[10px] sm:text-xs font-bold text-gray-900 uppercase tracking-wide mb-0.5">
+          {product.brand || 'ZEN-G WEAR'}
         </h3>
-        <div className="mt-1 sm:mt-2 flex items-center justify-center gap-1 sm:gap-2">
+        <p className="text-xs sm:text-sm text-gray-500 font-normal line-clamp-1 group-hover:text-blue-600 transition-colors">
+          {product.name}
+        </p>
+        <div className="mt-1 sm:mt-1.5 flex items-center gap-1 sm:gap-2">
           <span className="text-sm sm:text-base font-bold text-gray-900">
             ₹{product.discountPrice || product.price}
           </span>
@@ -76,6 +93,7 @@ const ProductRowItem = ({ product }) => {
         </div>
       </div>
     </Link>
+    </motion.div>
   );
 };
 
@@ -117,7 +135,13 @@ const ProductRow = ({ title, query, linkTo }) => {
   if (!loading && products.length === 0) return null;
 
   return (
-    <div className="w-full bg-[#f1f3f6] sm:bg-transparent mb-2 sm:mb-4 font-sans">
+    <motion.div 
+      initial={{ opacity: 0, y: 50 }}
+      whileInView={{ opacity: 1, y: 0 }}
+      viewport={{ once: true, margin: "-50px" }}
+      transition={{ duration: 0.6, ease: "easeOut" }}
+      className="w-full bg-[#f1f3f6] sm:bg-transparent mb-2 sm:mb-4 font-sans"
+    >
       <div className="bg-white sm:rounded-sm shadow-sm overflow-hidden">
         {/* Header section */}
         <div className="flex justify-between items-center px-4 py-3 sm:px-6 sm:py-5 border-b border-gray-100">
@@ -138,7 +162,7 @@ const ProductRow = ({ title, query, linkTo }) => {
           ))}
         </div>
       </div>
-    </div>
+    </motion.div>
   );
 };
 

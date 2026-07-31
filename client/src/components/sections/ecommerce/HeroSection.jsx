@@ -1,33 +1,43 @@
 import { useState, useEffect } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { ChevronLeft, ChevronRight, Eye } from 'lucide-react';
-import { motion, AnimatePresence } from 'framer-motion';
+import { motion, AnimatePresence, useScroll, useTransform } from 'framer-motion';
 
 const banners = [
   {
     id: 1,
-    image: '/assets/banner_mens_fashion_1785317224477.jpg',
-    link: '/shop?category=men',
+    image: '/assets/banner_new_collection.jpg',
+    link: '/shop?category=women',
     hotspots: [
-      { id: 101, x: 30, y: 40, productTitle: "Classic Blue Shirt", price: "₹1,499", link: "/shop?keyword=shirt" },
-      { id: 102, x: 75, y: 65, productTitle: "Denim Jeans", price: "₹2,199", link: "/shop?keyword=jeans" }
+      { id: 101, x: 25, y: 55, productTitle: "Pink Crop Top", price: "₹899", link: "/shop?keyword=top" },
+      { id: 102, x: 75, y: 55, productTitle: "White Oversized Shirt", price: "₹1,299", link: "/shop?keyword=shirt" }
     ]
   },
   {
     id: 2,
-    image: '/assets/banner_summer_sale_1785317235107.jpg',
-    link: '/shop?offers=true',
+    image: '/assets/banner_new_season.jpg',
+    link: '/shop?category=men',
     hotspots: [
-      { id: 201, x: 50, y: 50, productTitle: "Summer Mega Sale", price: "Upto 50% Off", link: "/shop?offers=true" }
+      { id: 201, x: 30, y: 40, productTitle: "Classic White Tee", price: "₹999", link: "/shop?keyword=tee" },
+      { id: 202, x: 75, y: 65, productTitle: "Summer Shorts", price: "₹1,299", link: "/shop?keyword=shorts" }
     ]
   },
   {
     id: 3,
-    image: '/assets/banner_womens_fashion_1785317245637.jpg',
+    image: '/assets/banner_kids_collection.jpg',
+    link: '/shop?category=kids',
+    hotspots: [
+      { id: 301, x: 35, y: 35, productTitle: "Kids T-Shirt", price: "₹499", link: "/shop?keyword=tshirt" },
+      { id: 302, x: 65, y: 70, productTitle: "Kids Shorts", price: "₹699", link: "/shop?keyword=shorts" }
+    ]
+  },
+  {
+    id: 4,
+    image: '/assets/banner_saree_collection.jpg',
     link: '/shop?category=women',
     hotspots: [
-      { id: 301, x: 35, y: 35, productTitle: "Floral Dress", price: "₹1,899", link: "/shop?keyword=dress" },
-      { id: 302, x: 65, y: 70, productTitle: "Handbag", price: "₹999", link: "/shop?keyword=handbag" }
+      { id: 401, x: 50, y: 50, productTitle: "Floral Silk Saree", price: "₹2,499", link: "/shop?keyword=saree" },
+      { id: 402, x: 75, y: 30, productTitle: "Gold Plated Jhumkas", price: "₹899", link: "/shop?keyword=jhumka" }
     ]
   }
 ];
@@ -36,6 +46,9 @@ const HeroSection = () => {
   const [currentSlide, setCurrentSlide] = useState(0);
   const [activeHotspot, setActiveHotspot] = useState(null);
   const navigate = useNavigate();
+
+  const { scrollY } = useScroll();
+  const y = useTransform(scrollY, [0, 500], [0, 150]);
 
   useEffect(() => {
     const timer = setInterval(() => {
@@ -63,10 +76,13 @@ const HeroSection = () => {
             {banners.map((banner, index) => (
               <div key={banner.id} className="w-full h-full flex-shrink-0 relative overflow-hidden">
                 <Link to={banner.link} className="block w-full h-full">
-                  <img 
+                  <motion.img 
                     src={banner.image} 
                     alt="Promotional Banner" 
                     className="w-full h-full object-cover animate-slow-zoom"
+                    style={{ y, scale: 1.1 }} // added scale to avoid whitespace at bottom during parallax
+                    fetchpriority={index === 0 ? "high" : "auto"}
+                    loading={index === 0 ? "eager" : "lazy"}
                   />
                 </Link>
                 
@@ -78,9 +94,15 @@ const HeroSection = () => {
                     style={{ left: `${hotspot.x}%`, top: `${hotspot.y}%` }}
                     onMouseEnter={() => setActiveHotspot(hotspot.id)}
                     onMouseLeave={() => setActiveHotspot(null)}
+                    onClick={(e) => {
+                      // Prevent link click if clicking on the hotspot dot itself
+                      e.preventDefault();
+                      e.stopPropagation();
+                      setActiveHotspot(activeHotspot === hotspot.id ? null : hotspot.id);
+                    }}
                   >
-                    {/* Pulsing Dot */}
-                    <div className="relative flex items-center justify-center cursor-pointer">
+                    {/* Pulsing Dot - with larger tap target for mobile */}
+                    <div className="relative flex items-center justify-center cursor-pointer p-4 -m-4">
                       <div className="absolute w-4 h-4 sm:w-5 sm:h-5 bg-white rounded-full opacity-75 animate-ping"></div>
                       <div className="relative w-3 h-3 sm:w-4 sm:h-4 bg-white rounded-full shadow-[0_0_10px_rgba(0,0,0,0.5)] border-2 border-[#2874f0]"></div>
                     </div>
@@ -129,13 +151,20 @@ const HeroSection = () => {
         </button>
 
         {/* Dots */}
-        <div className="absolute bottom-4 left-1/2 -translate-x-1/2 flex gap-2 z-20">
+        <div className="absolute bottom-1 sm:bottom-4 left-1/2 -translate-x-1/2 flex gap-1 sm:gap-2 z-20">
           {banners.map((_, i) => (
-            <div 
+            <button 
               key={i} 
-              onClick={() => setCurrentSlide(i)}
-              className={`w-2 h-2 rounded-full cursor-pointer transition-all ${i === currentSlide ? 'bg-white w-4' : 'bg-white/50 hover:bg-white/80'}`}
-            />
+              onClick={(e) => {
+                e.preventDefault();
+                e.stopPropagation();
+                setCurrentSlide(i);
+              }}
+              className="p-3 sm:p-1 cursor-pointer outline-none"
+              aria-label={`Go to slide ${i + 1}`}
+            >
+              <div className={`h-1.5 sm:h-2 rounded-full transition-all duration-300 ${i === currentSlide ? 'bg-white w-5 sm:w-4' : 'bg-white/50 hover:bg-white/80 w-1.5 sm:w-2'}`} />
+            </button>
           ))}
         </div>
 

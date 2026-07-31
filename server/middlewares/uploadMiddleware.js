@@ -2,11 +2,15 @@ import multer from 'multer';
 import path from 'path';
 import fs from 'fs';
 
-const UPLOAD_DIR = 'uploads/';
+const UPLOAD_DIR = process.env.VERCEL ? '/tmp/uploads/' : 'uploads/';
 
 // Ensure the temp upload directory exists
 if (!fs.existsSync(UPLOAD_DIR)) {
-  fs.mkdirSync(UPLOAD_DIR, { recursive: true });
+  try {
+    fs.mkdirSync(UPLOAD_DIR, { recursive: true });
+  } catch (error) {
+    console.error('Failed to create upload directory:', error);
+  }
 }
 
 // Temporary local disk storage before pushing the file to Cloudinary
