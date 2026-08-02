@@ -2,7 +2,7 @@ import { useState, useEffect } from 'react';
 import { useParams, useNavigate, Link, useLocation } from 'react-router-dom';
 import { useDispatch, useSelector } from 'react-redux';
 import { motion, AnimatePresence } from 'framer-motion';
-import { ShoppingBag, ShoppingCart, ChevronRight, Star, Heart, MapPin, CheckCircle2, XCircle, Edit2, Trash2, Image as ImageIcon, X, Share2, ArrowLeft } from 'lucide-react';
+import { ShoppingBag, ShoppingCart, ChevronRight, Star, Heart, MapPin, CheckCircle2, XCircle, Edit2, Trash2, Image as ImageIcon, X, Share2, ArrowLeft, ThumbsUp, ThumbsDown } from 'lucide-react';
 import productsService from '../../services/productsService';
 import wishlistService from '../../services/wishlistService';
 import reviewsService from '../../services/reviewsService';
@@ -11,6 +11,7 @@ import { addToCart, toggleCart } from '../../redux/slices/cartSlice';
 import toast from 'react-hot-toast';
 import RecentlyViewed from '../../components/sections/ecommerce/RecentlyViewed';
 import { getRecentlyViewedItems, saveRecentlyViewedItems } from '../../utils/recentlyViewed';
+import { getMockReviews } from '../../utils/mockReviews';
 
 const ProductDetails = () => {
   const { id } = useParams();
@@ -313,7 +314,14 @@ const ProductDetails = () => {
         
         // Fetch reviews
         const reviewsRes = await reviewsService.getProductReviews(id);
-        setReviews(reviewsRes?.data?.data?.reviews || []);
+        const fetchedReviews = reviewsRes?.data?.data?.reviews || [];
+        if (fetchedReviews.length < 30) {
+          const mocks = getMockReviews();
+          const needed = 30 - fetchedReviews.length;
+          setReviews([...fetchedReviews, ...mocks.slice(0, needed)]);
+        } else {
+          setReviews(fetchedReviews);
+        }
         
         // Fetch questions
         const questionsRes = await questionsService.getQuestionsByProduct(id);
@@ -792,41 +800,78 @@ const ProductDetails = () => {
                 
                 <div className="h-px bg-gray-200 w-full"></div>
                 
-                {/* Reviews Section Placeholder */}
+                {/* Flipkart-Style Reviews Section */}
                 <div id="reviews">
-                  <h4 className="text-[16px] font-medium text-gray-800 mb-4 flex items-center justify-between">
-                    Ratings & Reviews 
-                    <span className="bg-[#388e3c] text-white px-2 py-0.5 rounded-sm text-[12px] flex items-center font-bold">
-                      {product.rating ? product.rating.toFixed(1) : '4.2'} <Star size={10} className="ml-1 fill-white" />
-                    </span>
-                  </h4>
-                  <p className="text-sm text-gray-500 mb-6">{product.numReviews} Reviews</p>
+                  <div className="flex items-center justify-between mb-4">
+                    <h4 className="text-[22px] font-medium text-[#212121]">Ratings & Reviews</h4>
+                  </div>
+                  
+                  {reviews.length > 0 && (
+                    <div className="flex flex-col sm:flex-row gap-6 mb-6 pb-6 border-b border-gray-200">
+                      <div className="flex flex-col items-center justify-center sm:w-1/3">
+                        <div className="text-[32px] font-medium flex items-center">
+                          {(reviews.reduce((a, r) => a + r.rating, 0) / reviews.length).toFixed(1)} <Star className="ml-1 fill-black" size={24} />
+                        </div>
+                        <div className="text-[14px] text-gray-500 mt-1">{reviews.length} Ratings &</div>
+                        <div className="text-[14px] text-gray-500">{reviews.filter(r => r.comment).length || reviews.length} Reviews</div>
+                      </div>
+                      
+                      <div className="flex-1 space-y-2 sm:border-l sm:border-gray-200 sm:pl-6">
+                        {[5, 4, 3, 2, 1].map(star => {
+                          const count = reviews.filter(r => r.rating === star).length;
+                          const percentage = reviews.length > 0 ? (count / reviews.length) * 100 : 0;
+                          return (
+                            <div key={star} className="flex items-center gap-3 text-[12px]">
+                              <span className="w-8 flex items-center justify-end gap-1 font-medium">{star} <Star size={10} className="fill-gray-600 text-gray-600"/></span>
+                              <div className="flex-1 h-1.5 bg-gray-200 rounded-full overflow-hidden">
+                                 <div className={`h-full ${star >= 4 ? 'bg-[#388e3c]' : star === 3 ? 'bg-[#ff9f00]' : 'bg-[#ff6161]'}`} style={{width: `${percentage}%`}}></div>
+                              </div>
+                              <span className="text-gray-500 w-8">{count}</span>
+                            </div>
+                          );
+                        })}
+                      </div>
+                    </div>
+                  )}
                   
                   {/* Reviews List */}
-                  <div className="space-y-6 max-h-96 overflow-y-auto pr-2">
+                  <div className="space-y-0 max-h-[600px] overflow-y-auto pr-2 custom-scrollbar">
                     {reviews.length === 0 ? (
-                      <p className="text-sm text-gray-400">No reviews yet. Be the first to review!</p>
+                      <p className="text-sm text-gray-400 pb-4">No reviews yet. Be the first to review!</p>
                     ) : (
-                      reviews.map((rv) => (
-                        <div key={rv._id} className="border-b border-gray-100 pb-4">
+                      reviews.map((rv, index) => (
+                        <div key={rv._id || index} className="border-b border-gray-100 py-4 first:pt-0">
                           <div className="flex items-center gap-2 mb-2">
-                            <span className="bg-green-600 text-white text-[10px] font-bold px-1.5 py-0.5 rounded-sm flex items-center">
-                              {rv.rating} <Star size={8} className="ml-0.5 fill-white" />
+                            <span className={`text-white text-[12px] px-1.5 py-0.5 rounded-sm flex items-center font-bold ${rv.rating >= 4 ? 'bg-[#388e3c]' : rv.rating === 3 ? 'bg-[#ff9f00]' : 'bg-[#ff6161]'}`}>
+                              {rv.rating} <Star size={10} className="ml-0.5 fill-white" />
                             </span>
-                            <span className="text-sm font-bold text-gray-900">{rv.title}</span>
+                            <span className="text-[14px] font-medium text-[#212121]">{rv.title}</span>
                           </div>
-                          <p className="text-sm text-gray-600 mb-2">{rv.comment}</p>
+                          <p className="text-[14px] text-[#212121] mb-3 leading-relaxed">{rv.comment}</p>
                           {rv.images && rv.images.length > 0 && (
-                            <div className="flex gap-2 mb-3 mt-2 overflow-x-auto">
+                            <div className="flex gap-2 mb-4 overflow-x-auto">
                               {rv.images.map((img, idx) => (
-                                <img key={idx} src={img.url} alt="Review" className="w-16 h-16 object-cover border border-gray-200 rounded-sm" />
+                                <img key={idx} src={img.url} alt="Review" className="w-16 h-16 object-cover border border-gray-200 rounded-sm hover:scale-105 transition-transform cursor-pointer" />
                               ))}
                             </div>
                           )}
-                          <div className="text-xs text-gray-400 flex items-center gap-2">
-                            <span className="font-medium text-gray-500">{rv.user?.name}</span>
-                            <span>•</span>
-                            <span>{new Date(rv.createdAt).toLocaleDateString()}</span>
+                          <div className="flex items-center justify-between mt-2">
+                            <div className="flex flex-wrap items-center gap-2 text-[12px] text-gray-500">
+                              <span className="font-medium text-[#878787]">{rv.user?.name || 'Flipkart Customer'}</span>
+                              <span className="hidden sm:inline">•</span>
+                              <span className="flex items-center gap-1"><CheckCircle2 size={12} className="text-[#878787]" /> Certified Buyer</span>
+                              {rv.location && (
+                                <>
+                                  <span className="hidden sm:inline">•</span>
+                                  <span>{rv.location}</span>
+                                </>
+                              )}
+                            </div>
+                            
+                            <div className="flex items-center gap-4 text-[12px] text-[#878787]">
+                              <button className="flex items-center gap-1.5 hover:text-[#2874f0] transition-colors"><ThumbsUp size={14} /> {rv.likes || 0}</button>
+                              <button className="flex items-center gap-1.5 hover:text-[#2874f0] transition-colors"><ThumbsDown size={14} /> {rv.dislikes || 0}</button>
+                            </div>
                           </div>
                         </div>
                       ))
