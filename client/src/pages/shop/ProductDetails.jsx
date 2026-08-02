@@ -1020,75 +1020,7 @@ const ProductDetails = () => {
                   
 
 
-                <div className="h-px bg-gray-200 w-full"></div>
 
-                {/* Q&A Section */}
-                <div id="qa">
-                  <h4 className="text-xs font-bold uppercase tracking-widest text-black mb-4 flex items-center gap-2">
-                    Customer Questions & Answers
-                  </h4>
-                  
-                  {userInfo && !isAdmin && (
-                    <form onSubmit={submitQuestion} className="mb-6 flex gap-2">
-                      <input 
-                        type="text"
-                        placeholder="Have a question? Ask here..."
-                        value={newQuestion}
-                        onChange={(e) => setNewQuestion(e.target.value)}
-                        className="flex-1 px-4 py-2 text-sm border border-gray-300 focus:border-black focus:outline-none"
-                      />
-                      <button 
-                        type="submit"
-                        disabled={questionSubmitLoading || !newQuestion.trim()}
-                        className="px-6 py-2 bg-black text-white text-xs font-bold uppercase tracking-widest hover:bg-gray-900 transition-colors disabled:opacity-50"
-                      >
-                        Ask
-                      </button>
-                    </form>
-                  )}
-
-                  <div className="space-y-6 max-h-96 overflow-y-auto pr-2">
-                    {questions.length === 0 ? (
-                      <p className="text-sm text-gray-400">No questions yet. Be the first to ask!</p>
-                    ) : (
-                      questions.map(q => (
-                        <div key={q._id} className="border-b border-gray-100 pb-4">
-                          <p className="text-sm font-bold text-gray-900 mb-1">Q: {q.question}</p>
-                          <p className="text-xs text-gray-400 mb-3">{q.user?.name} on {new Date(q.createdAt).toLocaleDateString()}</p>
-                          
-                          {q.answer ? (
-                            <div className="bg-gray-50 p-3 pl-4 border-l-2 border-green-600">
-                              <p className="text-sm text-gray-700"><span className="font-bold text-black">A:</span> {q.answer}</p>
-                              {q.answeredBy && (
-                                <p className="text-xs text-gray-500 mt-1 flex items-center gap-1">
-                                  By {q.answeredBy?.name} {q.answeredBy?.role === 'admin' && <CheckCircle2 size={12} className="text-green-600" />}
-                                </p>
-                              )}
-                            </div>
-                          ) : isAdmin ? (
-                            <div className="mt-2 flex gap-2">
-                              <input 
-                                type="text"
-                                placeholder="Type answer..."
-                                value={adminReply[q._id] || ''}
-                                onChange={(e) => setAdminReply({...adminReply, [q._id]: e.target.value})}
-                                className="flex-1 px-3 py-1.5 text-xs border border-gray-300 focus:border-black focus:outline-none"
-                              />
-                              <button 
-                                type="button"
-                                onClick={() => submitAnswer(q._id)}
-                                disabled={!adminReply[q._id]?.trim()}
-                                className="px-4 py-1.5 bg-black text-white text-xs font-bold uppercase tracking-widest hover:bg-gray-900 disabled:opacity-50"
-                              >
-                                Reply
-                              </button>
-                            </div>
-                          ) : null}
-                        </div>
-                      ))
-                    )}
-                  </div>
-                </div>
               </div>
                 </div>
 
