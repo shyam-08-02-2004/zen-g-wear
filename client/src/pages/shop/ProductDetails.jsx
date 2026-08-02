@@ -588,7 +588,7 @@ const ProductDetails = () => {
           <div className="lg:col-span-7 mt-10 lg:mt-0">
             <div className="sticky top-28">
               
-              <h2 className="text-[13px] font-medium text-gray-500 uppercase tracking-wide mb-1">{product.brand || 'ZEN-G WEAR'}</h2>
+              <h2 className="text-[14px] font-medium text-[#878787] capitalize mb-1">{product.brand || 'ZEN-G WEAR'}</h2>
               <div className="flex items-start justify-between gap-4 mb-2">
                 <h1 className="text-[18px] sm:text-[22px] font-normal text-gray-900 leading-tight">
                   {product.name}
