@@ -567,7 +567,7 @@ const ProductListing = () => {
                     prev.set('subcategory', sub.v);
                     return prev;
                   });
-                  setCurrentPage(1);
+                  
                 }}
                 className="flex flex-col items-center gap-1.5 snap-start shrink-0 group focus:outline-none"
               >
@@ -665,7 +665,7 @@ const ProductListing = () => {
                               prev.delete('subcategory');
                               return prev; 
                             });
-                            setCurrentPage(1);
+                            
                           }}
                           className="peer appearance-none w-4 h-4 border border-gray-300 rounded-sm checked:bg-gray-900 checked:border-gray-900 transition-colors"
                         />
@@ -678,7 +678,7 @@ const ProductListing = () => {
                   ))}
                   {categoryFilter && (
                     <button
-                      onClick={() => { setSearchParams(prev => { prev.delete('category'); prev.delete('subcategory'); return prev; }); setCurrentPage(1); }}
+                      onClick={() => { setSearchParams(prev => { prev.delete('category'); prev.delete('subcategory'); return prev; });  }}
                       className="text-xs font-bold text-gray-500 hover:text-red-600 uppercase tracking-wider mt-2 flex items-center gap-1"
                     >
                       <X size={12} /> Clear Category
@@ -699,7 +699,7 @@ const ProductListing = () => {
                           <label key={sub.v} className="flex items-center gap-3 cursor-pointer group py-1">
                             <div className="relative flex items-center justify-center">
                               <input type="radio" name="subcategory" checked={isSelected}
-                                onChange={() => { setSearchParams(prev => { prev.set('subcategory', sub.v); return prev; }); setCurrentPage(1); }}
+                                onChange={() => { setSearchParams(prev => { prev.set('subcategory', sub.v); return prev; });  }}
                                 className="peer appearance-none w-4 h-4 border border-gray-300 rounded-sm checked:bg-gray-900 checked:border-gray-900 transition-colors"
                               />
                               <svg className="absolute w-3 h-3 text-white opacity-0 peer-checked:opacity-100 pointer-events-none" viewBox="0 0 14 10" fill="none">
@@ -713,7 +713,7 @@ const ProductListing = () => {
                     </div>
                   ))}
                   {subcategoryFilter && (
-                    <button onClick={() => { setSearchParams(prev => { prev.delete('subcategory'); return prev; }); setCurrentPage(1); }}
+                    <button onClick={() => { setSearchParams(prev => { prev.delete('subcategory'); return prev; });  }}
                       className="text-xs font-bold text-gray-500 hover:text-red-600 uppercase tracking-wider mt-2 flex items-center gap-1">
                       <X size={12} /> Clear Type
                     </button>
@@ -743,7 +743,7 @@ const ProductListing = () => {
                               if(priceOpt.max) prev.set('maxPrice', priceOpt.max); else prev.delete('maxPrice');
                               return prev; 
                             });
-                            setCurrentPage(1);
+                            
                           }}
                           className="peer appearance-none w-4 h-4 border border-gray-300 rounded-sm checked:bg-gray-900 checked:border-gray-900 transition-colors" 
                         />
@@ -756,7 +756,7 @@ const ProductListing = () => {
                   ))}
                   {(minPriceFilter || maxPriceFilter) && (
                     <button
-                      onClick={() => { setSearchParams(prev => { prev.delete('minPrice'); prev.delete('maxPrice'); return prev; }); setCurrentPage(1); }}
+                      onClick={() => { setSearchParams(prev => { prev.delete('minPrice'); prev.delete('maxPrice'); return prev; });  }}
                       className="text-xs font-bold text-gray-500 hover:text-red-600 uppercase tracking-wider mt-2 flex items-center gap-1"
                     >
                       <X size={12} /> Clear Price
@@ -781,7 +781,7 @@ const ProductListing = () => {
                             else prev.delete('sizes');
                             return prev;
                           });
-                          setCurrentPage(1);
+                          
                         }}
                         className={`border py-2 text-xs font-medium transition-colors ${isSelected ? 'border-gray-900 bg-gray-900 text-white' : 'border-gray-300 text-gray-700 hover:border-gray-900 hover:bg-gray-50'}`}
                       >
