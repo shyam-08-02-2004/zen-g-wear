@@ -114,20 +114,58 @@ const AdminProductsPage = () => {
 
   const handleImageUpload = (e) => {
     const file = e.target.files[0];
-    if (file) {
-      if (file.size > 2 * 1024 * 1024) {
-        toast.error('Image size should be less than 2MB for direct upload.');
-        return;
-      }
-      const reader = new FileReader();
-      reader.onloadend = () => {
+    if (!file) return;
+
+    if (!file.type.match(/image.*/)) {
+      toast.error('Please select an image file.');
+      return;
+    }
+
+    const reader = new FileReader();
+    reader.onload = (readerEvent) => {
+      const image = new Image();
+      image.onload = () => {
+        // Resize for HD Web Quality (Max 1920x1920)
+        const MAX_WIDTH = 1920;
+        const MAX_HEIGHT = 1920;
+        let width = image.width;
+        let height = image.height;
+
+        if (width > height) {
+          if (width > MAX_WIDTH) {
+            height *= MAX_WIDTH / width;
+            width = MAX_WIDTH;
+          }
+        } else {
+          if (height > MAX_HEIGHT) {
+            width *= MAX_HEIGHT / height;
+            height = MAX_HEIGHT;
+          }
+        }
+
+        const canvas = document.createElement('canvas');
+        canvas.width = width;
+        canvas.height = height;
+        const ctx = canvas.getContext('2d');
+        ctx.drawImage(image, 0, 0, width, height);
+
+        // Convert to highly optimized HD JPEG (90% quality is visually lossless but small size)
+        const dataUrl = canvas.toDataURL('image/jpeg', 0.90);
+        
+        // Ensure final Base64 string isn't too massive for Vercel 4.5MB limit
+        if (dataUrl.length > 4.5 * 1024 * 1024) {
+           toast.error('Image is still too large after compression. Try a smaller image.');
+           return;
+        }
+
         setEditingProduct(prev => ({
           ...prev,
-          imageUrl: reader.result
+          imageUrl: dataUrl
         }));
       };
-      reader.readAsDataURL(file);
-    }
+      image.src = readerEvent.target.result;
+    };
+    reader.readAsDataURL(file);
   };
 
   const handleAddNew = () => {
