@@ -622,7 +622,7 @@ const ProductDetails = () => {
               </div>
 
               {/* Flash Sale Countdown Timer */}
-              {(discountPercent >= 70 || product.showTimer) && (
+              {((product.discountPercentage >= 70) || product.showTimer) && (
                 <div className="mb-4 bg-red-50 border border-red-100 p-3 rounded-sm flex items-center justify-between">
                   <div className="flex items-center gap-2 text-red-600 font-bold text-sm">
                     <span className="animate-pulse">🔥</span> Flash Sale Ends In:
