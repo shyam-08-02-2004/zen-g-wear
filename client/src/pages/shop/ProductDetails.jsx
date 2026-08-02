@@ -44,7 +44,7 @@ const ProductDetails = () => {
       .join(' ')
       .toLowerCase();
 
-    return /footwear|shoe|sneaker|sandals|chappal|slipper|loafer/.test(text);
+    return /footwear|shoe|sneaker|sandals|chappal|slipper|loafer|heels|flats/.test(text);
   };
 
   const footwearSizeMap = {

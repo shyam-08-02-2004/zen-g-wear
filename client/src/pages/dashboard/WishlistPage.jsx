@@ -29,7 +29,7 @@ const WishlistPage = () => {
           getCategoryLabel(product?.subcategory),
           product?.name,
         ].filter(Boolean).join(' ').toLowerCase();
-        return /footwear|shoe|sneaker|sandals|chappal|slipper|loafer/.test(text);
+        return /footwear|shoe|sneaker|sandals|chappal|slipper|loafer|heels|flats/.test(text);
       };
 
       const footwearSizeMap = { XS: '6', S: '7', M: '8', L: '9', XL: '10', XXL: '11', XXXL: '12', xs: '6', s: '7', m: '8', l: '9', xl: '10', xxl: '11', xxxl: '12' };
