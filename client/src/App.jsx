@@ -1,4 +1,5 @@
 import { useEffect, useRef } from 'react';
+import { useLocation } from 'react-router-dom';
 import { useSelector } from 'react-redux';
 import AppRoutes from './routes/AppRoutes.jsx';
 import SlideOutCart from './components/cart/SlideOutCart.jsx';
@@ -21,6 +22,7 @@ try {
 function App() {
   const { cartItems, totalPrice } = useSelector(state => state.cart);
   const { userInfo } = useSelector(state => state.auth);
+  const location = useLocation();
   
   const initialRender = useRef(true);
 
@@ -55,6 +57,10 @@ function App() {
       return () => clearTimeout(timeoutId);
     }
   }, [cartItems, totalPrice, userInfo]);
+
+  useEffect(() => {
+    window.scrollTo({ top: 0, left: 0, behavior: 'instant' });
+  }, [location.pathname]);
 
   return (
     <>

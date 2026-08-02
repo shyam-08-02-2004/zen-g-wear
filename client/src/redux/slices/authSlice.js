@@ -17,10 +17,33 @@ if (storedRaw) {
   }
 }
 
+const normalizeUserInfo = (value) => {
+  if (!value) return null;
+
+  if (typeof value === 'string') {
+    try {
+      return normalizeUserInfo(JSON.parse(value));
+    } catch {
+      return null;
+    }
+  }
+
+  if (value.user) return normalizeUserInfo(value.user);
+  if (value.data) return normalizeUserInfo(value.data);
+
+  const role = value.role || value.userRole || value.user_type || null;
+  return {
+    ...value,
+    role: role === 'admin' ? 'admin' : role === 'user' ? 'user' : role || 'user',
+  };
+};
+
+const normalizedUserInfo = normalizeUserInfo(userInfoFromStorage);
+
 const initialState = {
-  userInfo: userInfoFromStorage,
+  userInfo: normalizedUserInfo,
   token: tokenFromStorage,
-  isAuthenticated: !!userInfoFromStorage,
+  isAuthenticated: !!normalizedUserInfo,
   loading: false,
   error: null,
 };
@@ -32,7 +55,7 @@ const authSlice = createSlice({
     setCredentials: (state, action) => {
       // Normalize regardless of server response shape
       const payloadData = action.payload?.data || action.payload;
-      const user = payloadData?.user || payloadData;
+      const user = normalizeUserInfo(payloadData?.user || payloadData);
       const token = payloadData?.accessToken || payloadData?.token || null;
 
       state.userInfo = user;

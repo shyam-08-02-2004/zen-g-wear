@@ -16,7 +16,32 @@ const WishlistPage = () => {
     setLoading(true);
     try {
       const { data } = await wishlistService.getWishlist();
-      setWishlist(data?.data?.wishlist || []);
+      
+      const getCategoryLabel = (value) => {
+        if (!value) return undefined;
+        if (typeof value === 'string') return value;
+        return value.name || value.slug || value.label || value.value;
+      };
+      
+      const isFootwearProduct = (product) => {
+        const text = [
+          getCategoryLabel(product?.category),
+          getCategoryLabel(product?.subcategory),
+          product?.name,
+        ].filter(Boolean).join(' ').toLowerCase();
+        return /footwear|shoe|sneaker|sandals|chappal|slipper|loafer/.test(text);
+      };
+
+      const footwearSizeMap = { XS: '6', S: '7', M: '8', L: '9', XL: '10', XXL: '11', XXXL: '12', xs: '6', s: '7', m: '8', l: '9', xl: '10', xxl: '11', xxxl: '12' };
+
+      const processedWishlist = (data?.data?.wishlist || []).map(p => {
+        if (isFootwearProduct(p) && p.sizes?.length > 0) {
+          p.sizes = p.sizes.map(s => footwearSizeMap[s.trim()] || s.trim());
+        }
+        return p;
+      });
+
+      setWishlist(processedWishlist);
     } catch (error) {
       console.error(error);
       toast.error('Failed to load wishlist');

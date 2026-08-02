@@ -56,7 +56,14 @@ const AdminProductsPage = () => {
       : product.subcategory || '';
 
     const imageUrl = product.imageUrl || product.image || product.images?.[0]?.url || '';
-    const sizesStr = Array.isArray(product.sizes) ? product.sizes.join(', ') : product.sizes || '';
+    
+    const isFootwear = ['sportsshoes', 'casualshoes', 'formalshoes', 'sandals', 'slippers', 'heels', 'flats', 'sneakers', 'shoes'].includes(subcategory.toLowerCase());
+    const footwearSizeMap = { XS: '6', S: '7', M: '8', L: '9', XL: '10', XXL: '11', XXXL: '12', xs: '6', s: '7', m: '8', l: '9', xl: '10', xxl: '11', xxxl: '12' };
+    let sizesArray = Array.isArray(product.sizes) ? product.sizes : (product.sizes ? [product.sizes] : []);
+    if (isFootwear) {
+      sizesArray = sizesArray.map(s => footwearSizeMap[s.trim()] || s.trim());
+    }
+    const sizesStr = sizesArray.join(', ');
     const colorsStr = Array.isArray(product.colors) ? product.colors.join(', ') : product.colors || '';
 
     setEditingProduct({
@@ -445,7 +452,20 @@ const AdminProductsPage = () => {
                               return;
                             }
                             const [cat, sub] = val.split('-');
-                            setEditingProduct(prev => ({...prev, category: cat || '', subcategory: sub || ''}));
+                            const isFootwear = ['sportsshoes', 'casualshoes', 'formalshoes', 'sandals', 'slippers', 'heels', 'flats', 'sneakers', 'shoes'].includes(sub);
+                            setEditingProduct(prev => {
+                              let updatedSizesStr = prev.sizesStr;
+                              if (isFootwear) {
+                                if (!updatedSizesStr || updatedSizesStr === 'S, M, L, XL') {
+                                  updatedSizesStr = '6, 7, 8, 9, 10';
+                                }
+                              } else {
+                                if (!updatedSizesStr || updatedSizesStr === '6, 7, 8, 9, 10') {
+                                  updatedSizesStr = 'S, M, L, XL';
+                                }
+                              }
+                              return {...prev, category: cat || '', subcategory: sub || '', sizesStr: updatedSizesStr};
+                            });
                           }} 
                           required 
                           className="w-full rounded-none border border-gray-200 px-4 py-3 text-sm focus:outline-none focus:border-black bg-gray-50"

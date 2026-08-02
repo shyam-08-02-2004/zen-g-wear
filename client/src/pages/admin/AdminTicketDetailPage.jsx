@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { useParams, Link } from 'react-router-dom';
+import { useParams, useNavigate } from 'react-router-dom';
 import { useSelector } from 'react-redux';
 import { ArrowLeft, Send } from 'lucide-react';
 import Card from '../../components/ui/Card';
@@ -29,6 +29,7 @@ const PRIORITY_OPTIONS = [
 
 const AdminTicketDetailPage = () => {
   const { id } = useParams();
+  const navigate = useNavigate();
   const { userInfo } = useSelector((state) => state.auth);
 
   const { data, loading, error, refetch, setData } = useApi(() => ticketsService.getTicket(id), [id]);
@@ -66,12 +67,13 @@ const AdminTicketDetailPage = () => {
 
   return (
     <div>
-      <Link
-        to="/admin/support"
+      <button
+        type="button"
+        onClick={() => navigate(-1)}
         className="mb-4 inline-flex items-center gap-1.5 text-sm font-medium text-slate-500 hover:text-ink"
       >
         <ArrowLeft size={16} /> Back to support
-      </Link>
+      </button>
 
       <ApiState loading={loading} error={error} onRetry={refetch}>
         {data?.ticket && (

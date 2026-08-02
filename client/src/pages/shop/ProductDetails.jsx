@@ -10,6 +10,7 @@ import questionsService from '../../services/questionsService';
 import { addToCart, toggleCart } from '../../redux/slices/cartSlice';
 import toast from 'react-hot-toast';
 import RecentlyViewed from '../../components/sections/ecommerce/RecentlyViewed';
+import { getRecentlyViewedItems, saveRecentlyViewedItems } from '../../utils/recentlyViewed';
 
 const ProductDetails = () => {
   const { id } = useParams();
@@ -25,6 +26,42 @@ const ProductDetails = () => {
     } else {
       navigate('/shop');
     }
+  };
+
+  const getCategoryLabel = (value) => {
+    if (!value) return undefined;
+    if (typeof value === 'string') return value;
+    return value.name || value.slug || value.label || value.value;
+  };
+
+  const isFootwearProduct = (product) => {
+    const text = [
+      getCategoryLabel(product?.category),
+      getCategoryLabel(product?.subcategory),
+      product?.name,
+    ]
+      .filter(Boolean)
+      .join(' ')
+      .toLowerCase();
+
+    return /footwear|shoe|sneaker|sandals|chappal|slipper|loafer/.test(text);
+  };
+
+  const footwearSizeMap = {
+    XS: '6',
+    S: '7',
+    M: '8',
+    L: '9',
+    XL: '10',
+    XXL: '11',
+    XXXL: '12',
+  };
+
+  const getDisplaySize = (size, product) => {
+    if (isFootwearProduct(product)) {
+      return footwearSizeMap[size] || size;
+    }
+    return size;
   };
 
   const [product, setProduct] = useState(null);
@@ -263,8 +300,12 @@ const ProductDetails = () => {
       try {
         const { data } = await productsService.getProductById(id);
         if (data?.data) {
-          setProduct(data.data);
-          if (data.data.sizes?.length > 0) setSelectedSize(data.data.sizes[0]);
+          let p = data.data;
+          if (isFootwearProduct(p) && p.sizes?.length > 0) {
+            p.sizes = p.sizes.map(s => footwearSizeMap[s.trim()] || s.trim());
+          }
+          setProduct(p);
+          if (p.sizes?.length > 0) setSelectedSize(p.sizes[0]);
         }
         
         // Fetch reviews
@@ -303,7 +344,7 @@ const ProductDetails = () => {
       }
     };
     fetchProduct();
-  }, [id]);
+  }, [id, userInfo]);
 
   const handleAddToCart = () => {
     dispatch(addToCart({
@@ -393,16 +434,19 @@ const ProductDetails = () => {
           <span className="text-black">{product.name}</span>
         </nav>
 
-        <div className="flex flex-col gap-4 mb-6 md:mb-8">
-          {isAdmin && (
-            <button
-              type="button"
-              onClick={handleGoBack}
-              className="inline-flex items-center gap-2 text-sm font-bold text-[#0a2885] hover:text-black transition-colors"
-            >
-              <ArrowLeft size={18} /> Back to previous page
-            </button>
-          )}
+        <div className="flex items-center gap-4 mb-6 md:mb-8">
+          <button
+            type="button"
+            onClick={handleGoBack}
+            className="hidden md:inline-flex h-10 w-10 items-center justify-center rounded-full border border-slate-200 bg-white text-[#0a2885] shadow-sm transition-all duration-150 hover:border-[#0a2885] hover:bg-[#f8fbff] focus:outline-none focus:ring-2 focus:ring-[#0a2885]/30"
+            aria-label="Go back to previous page"
+          >
+            <ArrowLeft size={18} />
+          </button>
+
+          <div className="text-xs font-bold uppercase tracking-widest text-gray-400">
+            {product.category ? `${getCategoryLabel(product.category)} · ${getCategoryLabel(product.subcategory) || 'Product'}` : 'Product details'}
+          </div>
         </div>
 
         <div className="lg:grid lg:grid-cols-12 lg:gap-x-8 xl:gap-x-12">
@@ -419,7 +463,8 @@ const ProductDetails = () => {
                     <img 
                       src={img.url} 
                       alt={`${product.name} - ${idx + 1}`} 
-                      loading="lazy"
+                      loading={idx === 0 ? 'eager' : 'lazy'}
+                      fetchPriority={idx === 0 ? 'high' : 'auto'}
                       decoding="async"
                       className="w-full h-full object-contain object-center mix-blend-multiply"
                       onError={(e) => {
@@ -437,6 +482,7 @@ const ProductDetails = () => {
                   src={product.images?.[activeImageIndex]?.url} 
                   alt={product.name} 
                   loading="eager"
+                  fetchPriority="high"
                   decoding="async"
                   className="w-full h-full object-contain object-center mix-blend-multiply"
                   onError={(e) => {
@@ -646,20 +692,22 @@ const ProductDetails = () => {
                       </button>
                     </div>
                     <div className="flex flex-wrap gap-3">
-                      {product.sizes.map((size) => (
-                        <button
-                          key={size}
-                          type="button"
-                          className={`min-w-[48px] h-10 px-3 flex items-center justify-center text-sm font-medium rounded-full border transition-all ${
-                            selectedSize === size 
-                              ? 'border-[#2874f0] text-[#2874f0] bg-blue-50/50' 
-                              : 'border-gray-300 bg-white text-gray-800 hover:border-gray-400'
-                          }`}
-                          onClick={() => setSelectedSize(size)}
-                        >
-                          {size}
-                        </button>
-                      ))}
+                      {product.sizes.map((size) => {
+                        return (
+                          <button
+                            key={size}
+                            type="button"
+                            className={`min-w-[48px] h-10 px-3 flex items-center justify-center text-sm font-medium rounded-full border transition-all ${
+                              selectedSize === size 
+                                ? 'border-[#2874f0] text-[#2874f0] bg-blue-50/50' 
+                                : 'border-gray-300 bg-white text-gray-800 hover:border-gray-400'
+                            }`}
+                            onClick={() => setSelectedSize(size)}
+                          >
+                            {size}
+                          </button>
+                        );
+                      })}
                     </div>
                   </div>
                 )}

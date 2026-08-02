@@ -2,6 +2,10 @@ import { useState, useEffect, useCallback } from 'react';
 import { Link, useSearchParams } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Heart, SlidersHorizontal, ChevronDown, ShoppingBag, X, ShoppingCart } from 'lucide-react';
+import productsService from '../../services/productsService';
+
+const prefetchedProducts = new Set();
+
 const getSubcategoryImage = (label, category) => {
   const l = label.toLowerCase();
   
@@ -101,7 +105,6 @@ const getSubcategoryImage = (label, category) => {
 import Navbar from '../../components/layout/Navbar';
 import CategoryNav from '../../components/layout/CategoryNav';
 import Footer from '../../components/layout/Footer';
-import productsService from '../../services/productsService';
 import wishlistService from '../../services/wishlistService';
 import { useDispatch, useSelector } from 'react-redux';
 import { addToCart, toggleCart } from '../../redux/slices/cartSlice';
@@ -231,7 +234,16 @@ const ProductCard = ({ product }) => {
       </button>
 
       {/* Image Container */}
-      <Link to={`/product/${product._id}`} className="block relative aspect-[3/4] bg-gray-100 overflow-hidden">
+      <Link
+        to={`/product/${product._id}`}
+        className="block relative aspect-[3/4] bg-gray-100 overflow-hidden"
+        onMouseEnter={() => {
+          if (!prefetchedProducts.has(product._id)) {
+            prefetchedProducts.add(product._id);
+            productsService.getProductById(product._id).catch(() => {});
+          }
+        }}
+      >
         {discount >= 40 && (
           <CountdownTimer className="absolute bottom-2 left-2 z-10 shadow-md" />
         )}
@@ -240,21 +252,26 @@ const ProductCard = ({ product }) => {
             <img
               src={primaryImage}
               alt={product.name}
-              loading="lazy"
+              loading="eager"
+              fetchPriority="high"
               decoding="async"
-              className={`absolute inset-0 w-full h-full object-cover transition-opacity duration-500 ${isHovered && secondaryImage !== primaryImage ? 'opacity-0' : 'opacity-100'}`}
+              className={`absolute inset-0 w-full h-full object-cover transition-opacity duration-500 ${isHovered ? 'opacity-100' : 'opacity-100'}`}
               onError={(e) => {
                 e.target.onerror = null;
                 e.target.src = `https://placehold.co/600x800/f5f5f5/999999?text=${encodeURIComponent(product.name.substring(0,10))}`;
               }}
             />
-            {secondaryImage !== primaryImage && (
+            {secondaryImage && secondaryImage !== primaryImage && (
               <img
                 src={secondaryImage}
                 alt={product.name}
                 loading="lazy"
                 decoding="async"
                 className={`absolute inset-0 w-full h-full object-cover transition-opacity duration-500 ${isHovered ? 'opacity-100' : 'opacity-0'}`}
+                onError={(e) => {
+                  e.target.onerror = null;
+                  e.target.src = `https://placehold.co/600x800/f5f5f5/999999?text=${encodeURIComponent(product.name.substring(0,10))}`;
+                }}
               />
             )}
           </>
@@ -402,7 +419,32 @@ const ProductListing = () => {
       if (offersFilter) qs += `&offers=${offersFilter}`;
 
       const { data } = await productsService.getProducts(qs);
-      setProducts(data?.data || []);
+      
+      const getCategoryLabel = (value) => {
+        if (!value) return undefined;
+        if (typeof value === 'string') return value;
+        return value.name || value.slug || value.label || value.value;
+      };
+      
+      const isFootwearProduct = (product) => {
+        const text = [
+          getCategoryLabel(product?.category),
+          getCategoryLabel(product?.subcategory),
+          product?.name,
+        ].filter(Boolean).join(' ').toLowerCase();
+        return /footwear|shoe|sneaker|sandals|chappal|slipper|loafer/.test(text);
+      };
+
+      const footwearSizeMap = { XS: '6', S: '7', M: '8', L: '9', XL: '10', XXL: '11', XXXL: '12', xs: '6', s: '7', m: '8', l: '9', xl: '10', xxl: '11', xxxl: '12' };
+
+      const processedProducts = (data?.data || []).map(p => {
+        if (isFootwearProduct(p) && p.sizes?.length > 0) {
+          p.sizes = p.sizes.map(s => footwearSizeMap[s.trim()] || s.trim());
+        }
+        return p;
+      });
+
+      setProducts(processedProducts);
       setTotalProducts(data?.total || 0);
       setTotalPages(data?.pages || 1);
     } catch (err) {

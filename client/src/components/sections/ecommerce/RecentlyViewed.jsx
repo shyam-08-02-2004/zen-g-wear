@@ -10,7 +10,10 @@ import { getRecentlyViewedItems } from '../../../utils/recentlyViewed';
 const RecentlyViewedItem = ({ product }) => {
   const { userInfo } = useSelector((state) => state.auth);
   const [wishlisted, setWishlisted] = useState(false);
-  
+  const placeholderSrc = `https://placehold.co/400x400/f5f5f5/999999?text=${encodeURIComponent(
+    (product.name || 'Product').substring(0, 10)
+  )}`;
+
   useEffect(() => {
     if (userInfo?.wishlist?.some(id => id === product._id || id?._id === product._id)) {
       setWishlisted(true);
@@ -41,7 +44,7 @@ const RecentlyViewedItem = ({ product }) => {
   return (
     <Link 
       to={`/product/${product._id}`}
-      className="relative flex flex-col items-center flex-shrink-0 w-[130px] sm:w-[200px] group p-2 sm:p-4 hover:shadow-md transition-all duration-300 rounded-sm bg-white border border-gray-50 sm:border-transparent hover:border-gray-100"
+      className="relative flex flex-col items-center w-full group p-3 sm:p-4 hover:shadow-md transition-all duration-300 rounded-sm bg-white border border-gray-50 sm:border-transparent hover:border-gray-100"
     >
       <button
         onClick={toggleWishlist}
@@ -52,12 +55,12 @@ const RecentlyViewedItem = ({ product }) => {
 
       <div className="w-full h-[120px] sm:h-[180px] mb-2 sm:mb-4 overflow-hidden flex items-center justify-center">
         <img 
-          src={product.images[0]?.url} 
-          alt={product.name} 
+          src={product.images[0]?.url || placeholderSrc} 
+          alt={product.name || 'Recently viewed product'} 
           className="w-full h-full object-contain group-hover:scale-110 transition-transform duration-500"
           onError={(e) => {
             e.target.onerror = null;
-            e.target.src = `https://placehold.co/400x400/f5f5f5/999999?text=${encodeURIComponent(product.name.substring(0,10))}`;
+            e.target.src = placeholderSrc;
           }}
         />
       </div>
@@ -66,7 +69,7 @@ const RecentlyViewedItem = ({ product }) => {
           {product.brand || 'ZEN-G WEAR'}
         </h3>
         <p className="text-xs sm:text-sm text-gray-500 font-normal line-clamp-1 group-hover:text-blue-600 transition-colors">
-          {product.name}
+          {product.name || 'Untitled Product'}
         </p>
         <div className="mt-1 sm:mt-1.5 flex items-center gap-1 sm:gap-2">
           <span className="text-sm sm:text-base font-bold text-gray-900">
@@ -110,11 +113,25 @@ const RecentlyViewed = () => {
   useEffect(() => {
     const loadItems = () => {
       try {
-        const storedItems = getRecentlyViewedItems(userInfo);
-        const formattedItems = storedItems.map(item => ({
-          ...item,
-          images: [{ url: item.image || (item.images && item.images[0]?.url) }]
-        }));
+        const guestItems = getRecentlyViewedItems(null);
+        const userItems = userInfo ? getRecentlyViewedItems(userInfo) : [];
+        const storedItems = userInfo
+          ? userItems.length > 0
+            ? userItems
+            : guestItems
+          : guestItems;
+
+        const formattedItems = storedItems
+          .map((item) => ({
+            ...item,
+            name: item.name || 'Product',
+            brand: item.brand || 'ZEN-G WEAR',
+            price: item.price || 0,
+            discountPrice: item.discountPrice,
+            images: [{ url: item.image || item.images?.[0]?.url || '' }],
+          }))
+          .filter((item) => item._id);
+
         setProducts(formattedItems);
       } catch (error) {
         console.error('Error reading recently viewed products:', error);
@@ -138,13 +155,15 @@ const RecentlyViewed = () => {
           <h2 className="text-lg sm:text-2xl font-bold text-gray-800">Recently Viewed</h2>
         </div>
         {products.length > 0 ? (
-          <div className="flex overflow-x-auto hide-scrollbar p-3 sm:p-6 gap-3 sm:gap-6">
-            {products.map((product) => (
-              <RecentlyViewedItem key={product._id} product={product} />
-            ))}
+          <div className="p-3 sm:p-6">
+            <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 2xl:grid-cols-4 gap-3 sm:gap-6">
+              {products.map((product) => (
+                <RecentlyViewedItem key={product._id} product={product} />
+              ))}
+            </div>
           </div>
         ) : (
-          <div className="text-[14px] text-gray-500 py-6 px-4 sm:px-6">No recently viewed products.</div>
+          <div className="text-[14px] text-gray-500 py-6 px-4 sm:px-6 text-center">No recently viewed products.</div>
         )}
       </div>
     </div>

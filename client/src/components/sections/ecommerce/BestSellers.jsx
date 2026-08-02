@@ -40,7 +40,7 @@ const BestSellerItem = ({ product }) => {
   return (
     <Link 
       to={`/product/${product._id}`}
-      className="relative flex flex-col items-center flex-shrink-0 w-[130px] sm:w-[200px] group p-2 sm:p-4 hover:shadow-md transition-all duration-300 rounded-sm bg-white border border-gray-50 sm:border-transparent hover:border-gray-100"
+      className="relative flex flex-col items-center w-full max-w-[240px] group p-2 sm:p-4 hover:shadow-md transition-all duration-300 rounded-sm bg-white border border-gray-50 sm:border-transparent hover:border-gray-100"
     >
       <button
         onClick={toggleWishlist}
@@ -88,9 +88,9 @@ const BestSellerSkeleton = () => (
       <div className="flex justify-between items-center px-4 py-3 sm:px-6 sm:py-5 border-b border-gray-100">
         <h2 className="text-lg sm:text-2xl font-bold text-gray-800">Best Sellers</h2>
       </div>
-      <div className="flex overflow-hidden p-3 sm:p-6 gap-3 sm:gap-6">
+      <div className="grid grid-cols-2 sm:grid-cols-3 xl:grid-cols-4 gap-3 sm:gap-6 p-3 sm:p-6">
         {[...Array(5)].map((_, i) => (
-          <div key={i} className="flex flex-col items-center flex-shrink-0 w-[130px] sm:w-[200px] p-2 sm:p-4">
+          <div key={i} className="flex flex-col items-center w-full p-2 sm:p-4">
             <div className="w-full h-[120px] sm:h-[180px] mb-2 sm:mb-4 bg-gray-200 rounded-sm"></div>
             <div className="w-full h-4 bg-gray-200 mb-2 rounded-sm"></div>
             <div className="w-1/2 h-4 bg-gray-200 rounded-sm mx-auto"></div>
@@ -124,7 +124,7 @@ const BestSellers = () => {
         <div className="flex justify-between items-center px-4 py-3 sm:px-6 sm:py-5 border-b border-gray-100">
           <h2 className="text-lg sm:text-2xl font-bold text-gray-800">Best Sellers</h2>
         </div>
-        <div className="flex overflow-x-auto hide-scrollbar p-3 sm:p-6 gap-3 sm:gap-6">
+        <div className="grid grid-cols-2 sm:grid-cols-3 xl:grid-cols-4 gap-3 sm:gap-6 p-3 sm:p-6">
           {products.map((product) => (
             <BestSellerItem key={product._id} product={product} />
           ))}
