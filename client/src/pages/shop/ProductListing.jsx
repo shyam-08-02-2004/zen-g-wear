@@ -243,7 +243,7 @@ const ProductCard = ({ product }) => {
           }
         }}
       >
-        {discount >= 40 && (
+        {discount >= 70 && (
           <CountdownTimer className="absolute bottom-2 left-2 z-10 shadow-md" />
         )}
         {primaryImage ? (
