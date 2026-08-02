@@ -7,6 +7,7 @@ import productsService from '../../../services/productsService';
 import wishlistService from '../../../services/wishlistService';
 import { motion } from 'framer-motion';
 import CountdownTimer from '../../ui/CountdownTimer';
+import ProductBadges from '../../ui/ProductBadges';
 
 const ProductRowItem = ({ product }) => {
   const { userInfo } = useSelector((state) => state.auth);
@@ -61,6 +62,7 @@ const ProductRowItem = ({ product }) => {
       </button>
 
       <div className="w-full h-[120px] sm:h-[180px] mb-2 sm:mb-4 overflow-hidden flex items-center justify-center relative">
+        <ProductBadges product={product} />
         {discountPercent >= 40 && (
           <CountdownTimer className="absolute bottom-1 left-1 sm:bottom-2 sm:left-2 z-10" />
         )}

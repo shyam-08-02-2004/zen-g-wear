@@ -6,6 +6,7 @@ import toast from 'react-hot-toast';
 import productsService from '../../../services/productsService';
 import wishlistService from '../../../services/wishlistService';
 import { getRecentlyViewedItems } from '../../../utils/recentlyViewed';
+import ProductBadges from '../../ui/ProductBadges';
 
 const RecentlyViewedItem = ({ product }) => {
   const { userInfo } = useSelector((state) => state.auth);
@@ -54,7 +55,8 @@ const RecentlyViewedItem = ({ product }) => {
         <Heart size={16} className={wishlisted ? 'fill-red-500 text-red-500' : 'text-gray-400'} />
       </button>
 
-      <div className="w-full h-[120px] sm:h-[180px] mb-2 sm:mb-4 overflow-hidden flex items-center justify-center">
+      <div className="w-full h-[120px] sm:h-[180px] mb-2 sm:mb-4 overflow-hidden flex items-center justify-center relative">
+        <ProductBadges product={product} />
         <img 
           src={product.images[0]?.url || placeholderSrc} 
           alt={product.name || 'Recently viewed product'} 

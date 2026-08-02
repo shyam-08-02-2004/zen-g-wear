@@ -4,6 +4,7 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { Search, Plus, Edit2, Trash2, X, Image as ImageIcon, CheckCircle, AlertCircle, Copy, ArrowLeft } from 'lucide-react';
 import productsService from '../../services/productsService';
 import toast from 'react-hot-toast';
+import ProductBadges from '../../components/ui/ProductBadges';
 
 const AdminProductsPage = () => {
   const [products, setProducts] = useState([]);
@@ -281,17 +282,7 @@ const AdminProductsPage = () => {
                   )}
                   
                   {/* Badges */}
-                  <div className="absolute top-2 left-2 flex flex-col gap-1 pointer-events-none">
-                    {!product.isActive && (
-                      <span className="bg-gray-800 text-white text-[9px] font-bold px-1.5 py-0.5 rounded-sm">DRAFT</span>
-                    )}
-                    {product.stock <= 10 && product.stock > 0 && (
-                      <span className="bg-orange-500 text-white text-[9px] font-bold px-1.5 py-0.5 rounded-sm">LOW: {product.stock}</span>
-                    )}
-                    {product.stock === 0 && (
-                      <span className="bg-red-500 text-white text-[9px] font-bold px-1.5 py-0.5 rounded-sm">OUT OF STOCK</span>
-                    )}
-                  </div>
+                  <ProductBadges product={product} />
                 </div>
 
                 {/* Product Info */}

@@ -12,6 +12,7 @@ import toast from 'react-hot-toast';
 import RecentlyViewed from '../../components/sections/ecommerce/RecentlyViewed';
 import { getRecentlyViewedItems, saveRecentlyViewedItems } from '../../utils/recentlyViewed';
 import { getMockReviews } from '../../utils/mockReviews';
+import ProductBadges from '../../components/ui/ProductBadges';
 
 const ProductDetails = () => {
   const { id } = useParams();
@@ -1044,6 +1045,7 @@ const ProductDetails = () => {
                     onClick={() => { navigate(`/product/${p._id}`, { state: { product: p } }); window.scrollTo(0, 0); }}
                   >
                     <div className="relative aspect-[3/4] bg-gray-50 flex items-center justify-center p-2">
+                      <ProductBadges product={p} />
                       <img
                         src={p.images?.[0]?.url}
                         alt={p.name}

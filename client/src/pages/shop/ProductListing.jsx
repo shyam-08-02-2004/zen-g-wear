@@ -3,6 +3,7 @@ import { Link, useSearchParams } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Heart, SlidersHorizontal, ChevronDown, ShoppingBag, X, ShoppingCart } from 'lucide-react';
 import productsService from '../../services/productsService';
+import ProductBadges from '../../components/ui/ProductBadges';
 
 const prefetchedProducts = new Set();
 
@@ -211,18 +212,15 @@ const ProductCard = ({ product }) => {
       onMouseLeave={() => setIsHovered(false)}
     >
       {/* Badges */}
-      <div className="absolute top-3 left-3 z-10 flex flex-col gap-1">
-        {discount > 0 && (
-          <span className="bg-red-600 text-white text-[10px] font-bold px-2 py-0.5 uppercase tracking-wider">
-            -{discount}%
-          </span>
-        )}
-        {product.isNewArrival && (
-          <span className="bg-white text-black text-[10px] font-bold px-2 py-0.5 uppercase tracking-wider border border-gray-200">
-            New
-          </span>
-        )}
-      </div>
+      <ProductBadges product={product} />
+      
+      {discount > 0 && discount < 40 && (
+         <div className="absolute top-2 left-2 z-10">
+           <span className="bg-red-600 text-white text-[10px] font-bold px-2 py-0.5 uppercase tracking-wider rounded-br-md shadow-sm">
+             -{discount}%
+           </span>
+         </div>
+      )}
 
       {/* Wishlist */}
       <button
