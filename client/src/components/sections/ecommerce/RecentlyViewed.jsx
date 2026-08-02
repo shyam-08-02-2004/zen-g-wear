@@ -45,7 +45,7 @@ const RecentlyViewedItem = ({ product }) => {
     <Link 
       to={`/product/${product._id}`}
       state={{ product }}
-      className="relative flex flex-col items-center w-full group p-3 sm:p-4 hover:shadow-md transition-all duration-300 rounded-sm bg-white border border-gray-50 sm:border-transparent hover:border-gray-100"
+      className="relative flex flex-col items-center w-[140px] sm:w-[180px] lg:w-[200px] flex-shrink-0 snap-start group p-2 sm:p-3 hover:shadow-md transition-all duration-300 rounded-sm bg-white border border-gray-200 hover:border-gray-300"
     >
       <button
         onClick={toggleWishlist}
@@ -93,10 +93,10 @@ const RecentlyViewedSkeleton = () => (
       <div className="flex justify-between items-center px-4 py-3 sm:px-6 sm:py-5 border-b border-gray-100">
         <h2 className="text-lg sm:text-2xl font-bold text-gray-800">Recently Viewed</h2>
       </div>
-      <div className="flex overflow-hidden p-3 sm:p-6 gap-3 sm:gap-6">
+      <div className="flex overflow-x-auto hide-scrollbar p-3 sm:p-6 gap-3 sm:gap-6">
         {[...Array(5)].map((_, i) => (
-          <div key={i} className="flex flex-col items-center flex-shrink-0 w-[130px] sm:w-[200px] p-2 sm:p-4">
-            <div className="w-full h-[120px] sm:h-[180px] mb-2 sm:mb-4 bg-gray-200 rounded-sm"></div>
+          <div key={i} className="flex flex-col items-center flex-shrink-0 w-[140px] sm:w-[180px] lg:w-[200px] p-2 sm:p-3 border border-gray-100 rounded-sm">
+            <div className="w-full h-[140px] sm:h-[180px] mb-2 sm:mb-4 bg-gray-200 rounded-sm"></div>
             <div className="w-full h-4 bg-gray-200 mb-2 rounded-sm"></div>
             <div className="w-1/2 h-4 bg-gray-200 rounded-sm mx-auto"></div>
           </div>
@@ -156,8 +156,8 @@ const RecentlyViewed = () => {
           <h2 className="text-lg sm:text-2xl font-bold text-gray-800">Recently Viewed</h2>
         </div>
         {products.length > 0 ? (
-          <div className="p-3 sm:p-6">
-            <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 2xl:grid-cols-4 gap-3 sm:gap-6">
+          <div className="p-0">
+            <div className="flex overflow-x-auto hide-scrollbar p-3 sm:p-6 gap-3 sm:gap-6 snap-x snap-mandatory">
               {products.map((product) => (
                 <RecentlyViewedItem key={product._id} product={product} />
               ))}

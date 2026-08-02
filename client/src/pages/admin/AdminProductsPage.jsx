@@ -259,7 +259,7 @@ const AdminProductsPage = () => {
             <p className="text-xs font-bold text-gray-500 uppercase tracking-widest">No products found.</p>
           </div>
         ) : (
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 2xl:grid-cols-4 gap-3 sm:gap-4">
+          <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 2xl:grid-cols-6 gap-2 sm:gap-4">
             {filteredProducts.map((product) => (
               <div 
                 key={product._id} 
@@ -321,19 +321,19 @@ const AdminProductsPage = () => {
                     onClick={(e) => { e.stopPropagation(); handleEditClick(product); }}
                     className="flex-1 flex items-center justify-center gap-1.5 py-2.5 text-xs font-bold text-[#2874f0] hover:bg-[#2874f0] hover:text-white transition-colors border-r border-gray-200"
                   >
-                    <Edit2 size={13} /> Edit
+                    <Edit2 size={13} /> <span className="hidden sm:inline">Edit</span>
                   </button>
                   <button 
                     onClick={(e) => { e.stopPropagation(); handleDuplicateClick(product); }}
                     className="flex-1 flex items-center justify-center gap-1.5 py-2.5 text-xs font-bold text-emerald-600 hover:bg-emerald-600 hover:text-white transition-colors border-r border-gray-200"
                   >
-                    <Copy size={13} /> Clone
+                    <Copy size={13} /> <span className="hidden sm:inline">Clone</span>
                   </button>
                   <button 
                     onClick={(e) => { e.stopPropagation(); handleDelete(product._id); }}
                     className="flex-1 flex items-center justify-center gap-1.5 py-2.5 text-xs font-bold text-red-500 hover:bg-red-500 hover:text-white transition-colors"
                   >
-                    <Trash2 size={13} /> Delete
+                    <Trash2 size={13} /> <span className="hidden sm:inline">Delete</span>
                   </button>
                 </div>
               </div>
