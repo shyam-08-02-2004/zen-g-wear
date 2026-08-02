@@ -471,7 +471,7 @@ const ProductDetails = () => {
             {/* Image Gallery (Mobile Swipeable, Desktop Large) */}
             <div className="relative w-full">
               {/* Mobile Carousel */}
-              <div className="lg:hidden flex overflow-x-auto snap-x snap-mandatory hide-scrollbar w-full relative h-[450px] bg-gray-50 border border-gray-100">
+              <div className="lg:hidden flex overflow-x-auto snap-x snap-mandatory hide-scrollbar w-full relative h-[450px] bg-white border border-gray-100">
                 {(product.images?.length > 0 ? product.images : [{url: ''}]).map((img, idx) => (
                   <div key={idx} className="w-full h-full flex-shrink-0 snap-center relative">
                     <img 
@@ -480,7 +480,7 @@ const ProductDetails = () => {
                       loading={idx === 0 ? 'eager' : 'lazy'}
                       fetchPriority={idx === 0 ? 'high' : 'auto'}
                       decoding="async"
-                      className="w-full h-full object-contain object-center mix-blend-multiply"
+                      className="w-full h-full object-contain object-center p-2"
                       onError={(e) => {
                         e.target.onerror = null;
                         e.target.src = `https://placehold.co/800x1000/f5f5f5/999999?text=${encodeURIComponent(product.name.substring(0,10))}`;
@@ -491,14 +491,14 @@ const ProductDetails = () => {
               </div>
               
               {/* Desktop Image */}
-              <div className="hidden lg:block aspect-auto h-[600px] xl:h-[750px] bg-gray-50 overflow-hidden relative border border-gray-100">
+              <div className="hidden lg:block aspect-auto h-[600px] xl:h-[750px] bg-white overflow-hidden relative border border-gray-100">
                 <img 
                   src={product.images?.[activeImageIndex]?.url} 
                   alt={product.name} 
                   loading="eager"
                   fetchPriority="high"
                   decoding="async"
-                  className="w-full h-full object-contain object-center mix-blend-multiply"
+                  className="w-full h-full object-contain object-center p-4"
                   onError={(e) => {
                     e.target.onerror = null;
                     e.target.src = `https://placehold.co/800x1000/f5f5f5/999999?text=${encodeURIComponent(product.name.substring(0,10))}`;
@@ -519,10 +519,10 @@ const ProductDetails = () => {
                 {product.images.map((img, idx) => (
                   <div 
                     key={idx} 
-                    className={`aspect-[3/4] bg-gray-50 cursor-pointer overflow-hidden border transition-colors ${activeImageIndex === idx ? 'border-[#2874f0] shadow-sm' : 'border-gray-200 hover:border-black'}`}
+                    className={`aspect-[3/4] bg-white cursor-pointer overflow-hidden border transition-colors ${activeImageIndex === idx ? 'border-[#2874f0] shadow-sm' : 'border-gray-200 hover:border-black'}`}
                     onClick={() => setActiveImageIndex(idx)}
                   >
-                    <img src={img.url} alt="" loading="lazy" decoding="async" className="w-full h-full object-cover mix-blend-multiply p-1" />
+                    <img src={img.url} alt="" loading="lazy" decoding="async" className="w-full h-full object-contain p-1" />
                   </div>
                 ))}
               </div>
