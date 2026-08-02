@@ -389,11 +389,11 @@ const ProductListing = () => {
   const [searchParams, setSearchParams] = useSearchParams();
   const [products, setProducts] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [loadingMore, setLoadingMore] = useState(false);
   const [totalProducts, setTotalProducts] = useState(0);
-  const [totalPages, setTotalPages] = useState(1);
-  const [currentPage, setCurrentPage] = useState(1);
   const [sort, setSort] = useState('-createdAt');
   const [filterOpen, setFilterOpen] = useState(false); // For mobile sidebar
+  const [showFallbackBanner, setShowFallbackBanner] = useState(false);
 
   const keyword = searchParams.get('keyword') || '';
   const categoryFilter = searchParams.get('category') || '';
@@ -404,18 +404,55 @@ const ProductListing = () => {
   const maxPriceFilter = searchParams.get('maxPrice') || '';
   const offersFilter = searchParams.get('offers') || '';
 
-  const fetchProducts = useCallback(async () => {
-    setLoading(true);
+  const observerTarget = useRef(null);
+  const pageRef = useRef(1);
+  const fallbackPageRef = useRef(1);
+  const totalPagesRef = useRef(1);
+  const isFallbackRef = useRef(false);
+  const hasMoreRef = useRef(true);
+
+  const fetchProducts = useCallback(async (isLoadMore = false) => {
+    if (isLoadMore) setLoadingMore(true);
+    else {
+      setLoading(true);
+      pageRef.current = 1;
+      fallbackPageRef.current = 1;
+      isFallbackRef.current = false;
+      hasMoreRef.current = true;
+      setShowFallbackBanner(false);
+    }
+
     try {
-      let qs = `?pageSize=16&pageNumber=${currentPage}&sort=${sort}`;
-      if (keyword) qs += `&keyword=${keyword}`;
-      if (categoryFilter) qs += `&categoryName=${categoryFilter}`;
-      if (subcategoryFilter) qs += `&subcategory=${subcategoryFilter}`;
-      if (sizesFilter) qs += `&sizes=${sizesFilter}`;
-      if (colorsFilter) qs += `&colors=${colorsFilter}`;
-      if (minPriceFilter) qs += `&minPrice=${minPriceFilter}`;
-      if (maxPriceFilter) qs += `&maxPrice=${maxPriceFilter}`;
-      if (offersFilter) qs += `&offers=${offersFilter}`;
+      if (!hasMoreRef.current) return;
+
+      const activePage = isLoadMore ? (isFallbackRef.current ? fallbackPageRef.current + 1 : pageRef.current + 1) : 1;
+      const isFallbackQuery = isFallbackRef.current || (isLoadMore && !isFallbackRef.current && activePage > totalPagesRef.current);
+      
+      let actualFallbackPage = 1;
+      if (isFallbackQuery) {
+        if (!isFallbackRef.current) {
+          isFallbackRef.current = true;
+          setShowFallbackBanner(true); // show the banner only when we transition
+        } else {
+          actualFallbackPage = isLoadMore ? fallbackPageRef.current + 1 : 1;
+        }
+      }
+
+      let qs = `?pageSize=16&pageNumber=${isFallbackQuery ? actualFallbackPage : activePage}&sort=${sort}`;
+      
+      if (!isFallbackQuery) {
+        if (keyword) qs += `&keyword=${keyword}`;
+        if (categoryFilter) qs += `&categoryName=${categoryFilter}`;
+        if (subcategoryFilter) qs += `&subcategory=${subcategoryFilter}`;
+        if (sizesFilter) qs += `&sizes=${sizesFilter}`;
+        if (colorsFilter) qs += `&colors=${colorsFilter}`;
+        if (minPriceFilter) qs += `&minPrice=${minPriceFilter}`;
+        if (maxPriceFilter) qs += `&maxPrice=${maxPriceFilter}`;
+        if (offersFilter) qs += `&offers=${offersFilter}`;
+      } else {
+        // Fallback items
+        qs = `?pageSize=16&pageNumber=${actualFallbackPage}&sort=-createdAt`;
+      }
 
       const { data } = await productsService.getProducts(qs);
       
@@ -443,28 +480,59 @@ const ProductListing = () => {
         return p;
       });
 
-      setProducts(processedProducts);
-      setTotalProducts(data?.total || 0);
-      setTotalPages(data?.pages || 1);
+      if (isLoadMore) {
+        setProducts(prev => {
+          const newProducts = processedProducts.filter(p => !prev.find(existing => existing._id === p._id));
+          return [...prev, ...newProducts];
+        });
+        if (isFallbackQuery) {
+          fallbackPageRef.current = actualFallbackPage;
+          if (data?.pages && actualFallbackPage >= data.pages) hasMoreRef.current = false;
+        } else {
+          pageRef.current = activePage;
+        }
+      } else {
+        setProducts(processedProducts);
+        setTotalProducts(data?.total || 0);
+        totalPagesRef.current = data?.pages || 1;
+        if (data?.pages === 0) hasMoreRef.current = false;
+      }
     } catch (err) {
       console.error('Failed to fetch products:', err);
-      setProducts([]);
+      if (!isLoadMore) setProducts([]);
     } finally {
       setLoading(false);
+      setLoadingMore(false);
     }
-  }, [currentPage, sort, keyword, categoryFilter, subcategoryFilter, sizesFilter, colorsFilter, minPriceFilter, maxPriceFilter, offersFilter]);
+  }, [sort, keyword, categoryFilter, subcategoryFilter, sizesFilter, colorsFilter, minPriceFilter, maxPriceFilter, offersFilter]);
 
   useEffect(() => {
     fetchProducts();
   }, [fetchProducts]);
 
   useEffect(() => {
-    setCurrentPage(1);
-  }, [keyword, categoryFilter, subcategoryFilter, sizesFilter, colorsFilter, minPriceFilter, maxPriceFilter, offersFilter, sort]);
+    const observer = new IntersectionObserver(
+      entries => {
+        if (entries[0].isIntersecting && !loading && !loadingMore && hasMoreRef.current) {
+          fetchProducts(true);
+        }
+      },
+      { rootMargin: '200px' }
+    );
+
+    if (observerTarget.current) {
+      observer.observe(observerTarget.current);
+    }
+    
+    return () => {
+      if (observerTarget.current) {
+        observer.unobserve(observerTarget.current);
+      }
+    };
+  }, [loading, loadingMore, fetchProducts]);
 
   const handleSortChange = (val) => {
     setSort(val);
-    setCurrentPage(1);
   };
 
   return (
@@ -753,7 +821,7 @@ const ProductListing = () => {
                 <h2 className="text-2xl font-bold text-gray-900 mb-2">No results found</h2>
                 <p className="text-gray-500 mb-8 max-w-md">We couldn't find any products matching your current filters. Try adjusting your search criteria.</p>
                 <button 
-                  onClick={() => { setSearchParams({}); setCurrentPage(1); }}
+                  onClick={() => { setSearchParams({}); }}
                   className="px-8 py-3 bg-gray-900 text-white text-sm font-bold uppercase tracking-widest hover:bg-black transition-colors"
                 >
                   Clear All Filters
@@ -761,6 +829,13 @@ const ProductListing = () => {
               </div>
             ) : (
               <>
+                {showFallbackBanner && (
+                  <div className="w-full flex items-center justify-center my-8">
+                    <div className="h-px bg-gray-200 flex-1"></div>
+                    <span className="px-4 text-sm font-bold text-gray-500 uppercase tracking-widest text-center">More items you might like</span>
+                    <div className="h-px bg-gray-200 flex-1"></div>
+                  </div>
+                )}
                 <motion.div 
                   layout 
                   className="grid grid-cols-2 md:grid-cols-3 xl:grid-cols-4 gap-x-4 gap-y-10 sm:gap-x-6 sm:gap-y-12"
@@ -772,53 +847,19 @@ const ProductListing = () => {
                   </AnimatePresence>
                 </motion.div>
 
-                {/* Pagination */}
-                {totalPages > 1 && (
-                  <div className="flex justify-center items-center gap-1 mt-20 border-t border-gray-200 pt-8">
-                    <button
-                      onClick={() => setCurrentPage(p => Math.max(1, p - 1))}
-                      disabled={currentPage === 1}
-                      className="px-4 py-2 text-sm font-bold uppercase tracking-wider text-gray-900 hover:text-black disabled:opacity-30 disabled:hover:text-gray-900 transition-colors"
-                    >
-                      Prev
-                    </button>
-                    <div className="flex items-center gap-1 mx-4 overflow-x-auto max-w-full">
-                      {(() => {
-                        let startPage = Math.max(1, currentPage - 2);
-                        let endPage = Math.min(totalPages, startPage + 4);
-                        if (endPage - startPage < 4) {
-                          startPage = Math.max(1, endPage - 4);
-                        }
-                        const pages = [];
-                        for (let i = startPage; i <= endPage; i++) {
-                          pages.push(i);
-                        }
-                        return (
-                          <>
-                            {startPage > 1 && <span className="px-2 text-gray-500">...</span>}
-                            {pages.map(page => (
-                              <button
-                                key={page}
-                                onClick={() => setCurrentPage(page)}
-                                className={`w-10 h-10 flex-shrink-0 flex items-center justify-center text-sm font-bold transition-colors ${currentPage === page ? 'bg-gray-900 text-white' : 'text-gray-600 hover:bg-gray-100 rounded-md'}`}
-                              >
-                                {page}
-                              </button>
-                            ))}
-                            {endPage < totalPages && <span className="px-2 text-gray-500">...</span>}
-                          </>
-                        );
-                      })()}
+                {/* Intersection Observer Target */}
+                <div ref={observerTarget} className="w-full h-20 flex items-center justify-center mt-8">
+                  {loadingMore && (
+                    <div className="flex gap-1 items-center">
+                      <div className="w-2 h-2 bg-gray-400 rounded-full animate-bounce"></div>
+                      <div className="w-2 h-2 bg-gray-400 rounded-full animate-bounce" style={{animationDelay: '0.1s'}}></div>
+                      <div className="w-2 h-2 bg-gray-400 rounded-full animate-bounce" style={{animationDelay: '0.2s'}}></div>
                     </div>
-                    <button
-                      onClick={() => setCurrentPage(p => Math.min(totalPages, p + 1))}
-                      disabled={currentPage === totalPages}
-                      className="px-4 py-2 text-sm font-bold uppercase tracking-wider text-gray-900 hover:text-black disabled:opacity-30 disabled:hover:text-gray-900 transition-colors"
-                    >
-                      Next
-                    </button>
-                  </div>
-                )}
+                  )}
+                  {!hasMoreRef.current && products.length > 0 && (
+                    <p className="text-sm font-bold text-gray-400 uppercase tracking-widest">You've reached the end</p>
+                  )}
+                </div>
               </>
             )}
           </div>
