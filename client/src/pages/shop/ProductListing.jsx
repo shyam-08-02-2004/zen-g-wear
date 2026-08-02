@@ -254,7 +254,7 @@ const ProductCard = ({ product }) => {
               loading="eager"
               fetchPriority="high"
               decoding="async"
-              className={`absolute inset-0 w-full h-full object-cover transition-opacity duration-500 ${isHovered ? 'opacity-100' : 'opacity-100'}`}
+              className={`absolute inset-0 w-full h-full object-contain p-2 transition-opacity duration-500 ${isHovered ? 'opacity-100' : 'opacity-100'}`}
               onError={(e) => {
                 e.target.onerror = null;
                 e.target.src = `https://placehold.co/600x800/f5f5f5/999999?text=${encodeURIComponent(product.name.substring(0,10))}`;
@@ -266,7 +266,7 @@ const ProductCard = ({ product }) => {
                 alt={product.name}
                 loading="lazy"
                 decoding="async"
-                className={`absolute inset-0 w-full h-full object-cover transition-opacity duration-500 ${isHovered ? 'opacity-100' : 'opacity-0'}`}
+                className={`absolute inset-0 w-full h-full object-contain p-2 transition-opacity duration-500 ${isHovered ? 'opacity-100' : 'opacity-0'}`}
                 onError={(e) => {
                   e.target.onerror = null;
                   e.target.src = `https://placehold.co/600x800/f5f5f5/999999?text=${encodeURIComponent(product.name.substring(0,10))}`;
@@ -297,44 +297,44 @@ const ProductCard = ({ product }) => {
       <div className="pt-4 px-3 pb-4 flex flex-col gap-1.5 flex-grow justify-between bg-white dark:bg-gray-800">
         <div className="flex flex-col text-left">
           <Link to={`/product/${product._id}`} state={{ product }}>
-            <h3 className="text-xs sm:text-sm font-bold text-gray-900 dark:text-gray-100 uppercase tracking-wide mb-0.5">
+            <h3 className="text-[12px] sm:text-[14px] font-medium text-[#878787] mb-0.5 capitalize">
               {product.brand || 'ZEN-G WEAR'}
             </h3>
-            <p className="text-xs sm:text-sm text-gray-500 dark:text-gray-400 font-normal line-clamp-1 hover:text-blue-600 transition-colors">
+            <p className="text-[13px] sm:text-[14px] text-[#212121] font-normal line-clamp-1 sm:line-clamp-2 hover:text-[#2874f0] transition-colors">
               {product.name}
             </p>
           </Link>
           
-          <div className="flex items-center gap-2 mt-1.5">
+          <div className="flex items-center gap-1.5 mt-1.5">
             {product.rating > 0 ? (
-              <span className="bg-green-600 text-white text-[10px] font-bold px-1.5 py-0.5 rounded flex items-center">
-                {product.rating} <span className="ml-0.5 text-[8px]">★</span>
+              <span className="bg-[#388e3c] text-white text-[10px] sm:text-[11px] font-bold px-1.5 py-[1px] rounded-[3px] flex items-center shadow-sm">
+                {product.rating} <span className="ml-[2px] text-[8px] sm:text-[9px]">★</span>
               </span>
             ) : (
-              <span className="bg-green-600 text-white text-[10px] font-bold px-1.5 py-0.5 rounded flex items-center">
-                4.2 <span className="ml-0.5 text-[8px]">★</span>
+              <span className="bg-[#388e3c] text-white text-[10px] sm:text-[11px] font-bold px-1.5 py-[1px] rounded-[3px] flex items-center shadow-sm">
+                4.2 <span className="ml-[2px] text-[8px] sm:text-[9px]">★</span>
               </span>
             )}
-            <span className="text-xs text-gray-400 font-medium">({product.numReviews})</span>
+            <span className="text-[12px] text-[#878787] font-medium">({product.numReviews || 124})</span>
             <span className="ml-auto inline-flex items-center bg-[#2874f0] rounded-[2px] px-1 h-[14px] sm:h-[16px] select-none shadow-sm">
-              <span className="text-[#f7e02b] italic font-bold text-[8px] sm:text-[9px] mr-[2px]">g</span>
+              <span className="text-[#f7e02b] italic font-bold text-[8px] sm:text-[9px] mr-[2px]">f</span>
               <span className="text-white italic font-bold text-[8px] sm:text-[9px] tracking-wide">Assured</span>
             </span>
           </div>
         </div>
 
-        <div className="flex flex-col mt-2 pt-2 border-t border-gray-50 dark:border-gray-700">
-          <div className="flex flex-wrap items-baseline gap-1.5 mb-2">
-            <span className="text-[15px] font-black text-black dark:text-white leading-none">
+        <div className="flex flex-col mt-2 pt-2">
+          <div className="flex flex-wrap items-baseline gap-2 mb-2">
+            <span className="text-[16px] font-medium text-[#212121] leading-none">
               ₹{(product.discountPrice || product.price).toLocaleString('en-IN')}
             </span>
             {product.discountPrice && (
               <>
-                <span className="text-[10px] text-gray-400 line-through">
+                <span className="text-[13px] text-[#878787] line-through">
                   ₹{product.price.toLocaleString('en-IN')}
                 </span>
-                <span className="text-[10px] font-bold text-green-600 bg-green-50 px-1 rounded">
-                  {product.discountPercentage}% OFF
+                <span className="text-[13px] font-bold text-[#388e3c]">
+                  {product.discountPercentage}% off
                 </span>
               </>
             )}
