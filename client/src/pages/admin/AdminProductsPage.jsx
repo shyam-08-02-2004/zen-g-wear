@@ -82,6 +82,7 @@ const AdminProductsPage = () => {
       isTrending: product.isTrending ?? false,
       isBestSeller: product.isBestSeller ?? false,
       isNewArrival: product.isNewArrival ?? false,
+      showTimer: product.showTimer ?? false,
       imageUrl,
       sizesStr,
       colorsStr,
@@ -166,6 +167,7 @@ const AdminProductsPage = () => {
         isTrending: editingProduct.isTrending,
         isBestSeller: editingProduct.isBestSeller,
         isNewArrival: editingProduct.isNewArrival,
+        showTimer: editingProduct.showTimer,
         sizes: editingProduct.sizesStr ? editingProduct.sizesStr.split(',').map(s => s.trim()).filter(Boolean) : [],
         colors: editingProduct.colorsStr ? editingProduct.colorsStr.split(',').map(s => s.trim()).filter(Boolean) : [],
         images: [{ url: editingProduct.imageUrl, publicId: editingProduct.images?.[0]?.publicId || 'default' }],
@@ -533,6 +535,10 @@ const AdminProductsPage = () => {
                       <label className="flex items-center gap-3 cursor-pointer group">
                         <input type="checkbox" name="isNewArrival" checked={editingProduct.isNewArrival || false} onChange={handleEditChange} className="w-4 h-4 accent-black" />
                         <span className="text-xs font-bold uppercase tracking-widest text-black group-hover:text-gray-600">New Arrival</span>
+                      </label>
+                      <label className="flex items-center gap-3 cursor-pointer group border-l border-gray-300 pl-4">
+                        <input type="checkbox" name="showTimer" checked={editingProduct.showTimer || false} onChange={handleEditChange} className="w-4 h-4 accent-red-600" />
+                        <span className="text-xs font-bold uppercase tracking-widest text-red-600 group-hover:text-red-500">Show Timer</span>
                       </label>
                     </div>
                   </section>

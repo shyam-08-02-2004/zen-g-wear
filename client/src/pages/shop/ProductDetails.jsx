@@ -121,6 +121,7 @@ const ProductDetails = () => {
       imageUrl: product.images?.[0]?.url || '',
       sizesStr: product.sizes?.join(', ') || '',
       colorsStr: product.colors?.join(', ') || '',
+      showTimer: product.showTimer ?? false,
     });
   };
 
@@ -150,6 +151,7 @@ const ProductDetails = () => {
         isTrending: editingProduct.isTrending,
         isBestSeller: editingProduct.isBestSeller,
         isNewArrival: editingProduct.isNewArrival,
+        showTimer: editingProduct.showTimer,
         sizes: editingProduct.sizesStr ? editingProduct.sizesStr.split(',').map(s => s.trim()).filter(Boolean) : [],
         colors: editingProduct.colorsStr ? editingProduct.colorsStr.split(',').map(s => s.trim()).filter(Boolean) : [],
         images: [{ url: editingProduct.imageUrl, publicId: editingProduct.images?.[0]?.publicId || 'default' }],
@@ -620,10 +622,11 @@ const ProductDetails = () => {
               </div>
 
               {/* Flash Sale Countdown Timer */}
-              <div className="mb-4 bg-red-50 border border-red-100 p-3 rounded-sm flex items-center justify-between">
-                <div className="flex items-center gap-2 text-red-600 font-bold text-sm">
-                  <span className="animate-pulse">🔥</span> Flash Sale Ends In:
-                </div>
+              {(discountPercent >= 70 || product.showTimer) && (
+                <div className="mb-4 bg-red-50 border border-red-100 p-3 rounded-sm flex items-center justify-between">
+                  <div className="flex items-center gap-2 text-red-600 font-bold text-sm">
+                    <span className="animate-pulse">🔥</span> Flash Sale Ends In:
+                  </div>
                 <div className="flex gap-1.5 text-xs font-bold text-white">
                   <span className="bg-red-600 px-2 py-1 rounded">
                     {String(timeLeft.hours).padStart(2, '0')}
@@ -638,6 +641,7 @@ const ProductDetails = () => {
                   </span>
                 </div>
               </div>
+              )}
 
               <div className="text-[#388e3c] text-[13px] font-bold mb-1">Special price</div>
               {/* Price */}
@@ -1164,6 +1168,10 @@ const ProductDetails = () => {
                       <label className="flex items-center gap-3 cursor-pointer group">
                         <input type="checkbox" name="isNewArrival" checked={editingProduct.isNewArrival || false} onChange={handleEditChange} className="w-4 h-4 accent-black" />
                         <span className="text-xs font-bold uppercase tracking-widest text-black group-hover:text-gray-600">New Arrival</span>
+                      </label>
+                      <label className="flex items-center gap-3 cursor-pointer group border-l border-gray-300 pl-4">
+                        <input type="checkbox" name="showTimer" checked={editingProduct.showTimer || false} onChange={handleEditChange} className="w-4 h-4 accent-red-600" />
+                        <span className="text-xs font-bold uppercase tracking-widest text-red-600 group-hover:text-red-500">Show Timer</span>
                       </label>
                     </div>
                   </section>

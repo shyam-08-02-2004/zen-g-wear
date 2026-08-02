@@ -63,7 +63,7 @@ const ProductRowItem = ({ product }) => {
 
       <div className="w-full h-[120px] sm:h-[180px] mb-2 sm:mb-4 overflow-hidden flex items-center justify-center relative">
         <ProductBadges product={product} />
-        {discountPercent >= 70 && (
+        {(discountPercent >= 70 || product.showTimer) && (
           <CountdownTimer className="absolute bottom-1 left-1 sm:bottom-2 sm:left-2 z-10" />
         )}
         <img 
