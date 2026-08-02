@@ -124,7 +124,7 @@ const WishlistPage = () => {
                 >
                   <Trash2 size={16} />
                 </button>
-                <Link to={`/product/${item._id}`} className="aspect-[3/4] bg-gray-50 overflow-hidden block">
+                <Link to={`/product/${item._id}`} state={{ product: item }} className="aspect-[3/4] bg-gray-50 overflow-hidden block">
                   <img
                     src={item.images?.[0]?.url || 'https://placehold.co/400x500/f5f5f5/999999'}
                     alt={item.name}
@@ -132,7 +132,7 @@ const WishlistPage = () => {
                   />
                 </Link>
                 <div className="p-4 flex flex-col gap-2 flex-grow">
-                  <Link to={`/product/${item._id}`} className="hover:underline underline-offset-4">
+                  <Link to={`/product/${item._id}`} state={{ product: item }} className="hover:underline underline-offset-4">
                     <h3 className="text-sm font-medium text-gray-900 line-clamp-2">{item.name}</h3>
                   </Link>
                   <div className="flex items-center gap-2 mt-auto">

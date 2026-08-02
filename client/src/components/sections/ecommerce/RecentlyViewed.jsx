@@ -44,6 +44,7 @@ const RecentlyViewedItem = ({ product }) => {
   return (
     <Link 
       to={`/product/${product._id}`}
+      state={{ product }}
       className="relative flex flex-col items-center w-full group p-3 sm:p-4 hover:shadow-md transition-all duration-300 rounded-sm bg-white border border-gray-50 sm:border-transparent hover:border-gray-100"
     >
       <button

@@ -236,6 +236,7 @@ const ProductCard = ({ product }) => {
       {/* Image Container */}
       <Link
         to={`/product/${product._id}`}
+        state={{ product }}
         className="block relative aspect-[3/4] bg-gray-100 overflow-hidden"
         onMouseEnter={() => {
           if (!prefetchedProducts.has(product._id)) {
@@ -297,7 +298,7 @@ const ProductCard = ({ product }) => {
       {/* Product Info - Premium Style */}
       <div className="pt-4 px-3 pb-4 flex flex-col gap-1.5 flex-grow justify-between bg-white dark:bg-gray-800">
         <div className="flex flex-col text-left">
-          <Link to={`/product/${product._id}`}>
+          <Link to={`/product/${product._id}`} state={{ product }}>
             <h3 className="text-xs sm:text-sm font-bold text-gray-900 dark:text-gray-100 uppercase tracking-wide mb-0.5">
               {product.brand || 'ZEN-G WEAR'}
             </h3>

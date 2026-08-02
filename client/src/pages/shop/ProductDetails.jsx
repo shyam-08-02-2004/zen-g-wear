@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { useParams, useNavigate, Link } from 'react-router-dom';
+import { useParams, useNavigate, Link, useLocation } from 'react-router-dom';
 import { useDispatch, useSelector } from 'react-redux';
 import { motion, AnimatePresence } from 'framer-motion';
 import { ShoppingBag, ShoppingCart, ChevronRight, Star, Heart, MapPin, CheckCircle2, XCircle, Edit2, Trash2, Image as ImageIcon, X, Share2, ArrowLeft } from 'lucide-react';
@@ -64,10 +64,13 @@ const ProductDetails = () => {
     return size;
   };
 
-  const [product, setProduct] = useState(null);
-  const [loading, setLoading] = useState(true);
+  const location = useLocation();
+  const initialProduct = location.state?.product;
+
+  const [product, setProduct] = useState(initialProduct || null);
+  const [loading, setLoading] = useState(!initialProduct);
   const [qty, setQty] = useState(1);
-  const [selectedSize, setSelectedSize] = useState(null);
+  const [selectedSize, setSelectedSize] = useState(initialProduct?.sizes?.[0] || null);
   const [showSizeGuide, setShowSizeGuide] = useState(false);
   const [similarProducts, setSimilarProducts] = useState([]);
   const [viewingCount] = useState(() => Math.floor(Math.random() * 18) + 5);
@@ -993,7 +996,7 @@ const ProductDetails = () => {
                   <div
                     key={p._id}
                     className="w-[140px] sm:w-[180px] lg:w-[200px] flex-shrink-0 snap-start border border-gray-200 rounded-sm overflow-hidden cursor-pointer bg-white group hover:shadow-md transition-shadow"
-                    onClick={() => { navigate(`/product/${p._id}`); window.scrollTo(0, 0); }}
+                    onClick={() => { navigate(`/product/${p._id}`, { state: { product: p } }); window.scrollTo(0, 0); }}
                   >
                     <div className="relative aspect-[3/4] bg-gray-50 flex items-center justify-center p-2">
                       <img
