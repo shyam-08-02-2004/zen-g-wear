@@ -800,6 +800,76 @@ const ProductDetails = () => {
                 </div>
                 
                 <div className="h-px bg-gray-200 w-full"></div>
+
+                {/* Similar Products */}
+                <div className="w-full bg-[#f1f3f6] sm:bg-transparent mb-6 sm:mb-8 font-sans mt-4">
+                  <div className="bg-white sm:rounded-sm shadow-sm overflow-hidden border border-gray-100">
+                    <div className="flex items-center justify-between px-4 py-3 sm:px-6 sm:py-5 border-b border-gray-100">
+                      <h2 className="text-[16px] sm:text-2xl font-bold text-gray-800">Similar Products</h2>
+                      {similarProducts.length > 0 && (
+                        <Link to={`/shop?category=${typeof product.category === 'object' ? product.category.slug || product.category.name : product.category}`} className="text-[12px] sm:text-[14px] text-[#2874f0] font-medium bg-[#2874f0]/10 px-3 py-1 rounded-sm hover:bg-[#2874f0]/20 transition-colors">View All</Link>
+                      )}
+                    </div>
+                    
+                    {similarProducts.length > 0 ? (
+                      <div className="flex overflow-x-auto hide-scrollbar p-3 sm:p-6 gap-3 sm:gap-6 snap-x snap-mandatory">
+                        {similarProducts.map((p) => (
+                          <div
+                            key={p._id}
+                            className="w-[140px] sm:w-[180px] lg:w-[200px] flex-shrink-0 snap-start border border-gray-200 rounded-sm overflow-hidden cursor-pointer bg-white group hover:shadow-md transition-shadow"
+                            onClick={() => { navigate(`/product/${p._id}`, { state: { product: p } }); window.scrollTo(0, 0); }}
+                          >
+                            <div className="relative aspect-[3/4] bg-gray-50 flex items-center justify-center p-2">
+                              <ProductBadges product={p} />
+                              <img
+                                src={p.images?.[0]?.url}
+                                alt={p.name}
+                                className="w-full h-full object-contain mix-blend-multiply group-hover:scale-105 transition-transform duration-300"
+                              />
+                              <div className="absolute top-1 right-1">
+                                 <button className="w-7 h-7 bg-white rounded-full shadow-sm flex items-center justify-center text-gray-400 hover:text-red-500 transition-colors">
+                                   <Heart size={14} />
+                                 </button>
+                              </div>
+                            </div>
+                            <div className="p-3">
+                              <h3 className="text-[11px] sm:text-[13px] text-gray-500 font-medium mb-1 truncate">{p.brand || 'ZEN-G WEAR'}</h3>
+                              <p className="text-[12px] sm:text-[14px] text-gray-800 mb-1 truncate group-hover:text-[#2874f0] transition-colors">{p.name}</p>
+                              <div className="flex items-center gap-1.5 mt-1">
+                                <span className="bg-[#388e3c] text-white text-[9px] sm:text-[10px] font-bold px-1.5 py-0.5 rounded-sm flex items-center">
+                                  {p.rating ? p.rating.toFixed(1) : '4.2'} <Star size={8} className="ml-0.5 fill-white" />
+                                </span>
+                                <span className="text-[10px] sm:text-[11px] text-gray-500">({p.numReviews || 8})</span>
+                                <span className="ml-auto inline-flex items-center bg-[#2874f0] rounded-[2px] px-1 h-[14px] sm:h-[16px] select-none shadow-sm">
+                                  <span className="text-[#f7e02b] italic font-bold text-[8px] sm:text-[9px] mr-[2px]">g</span>
+                                  <span className="text-white italic font-bold text-[8px] sm:text-[9px] tracking-wide">Assured</span>
+                                </span>
+                              </div>
+                              <div className="flex items-center gap-2 mt-2">
+                                <span className="text-[14px] sm:text-[15px] font-bold text-gray-900">
+                                  ₹{(p.discountPrice || p.price).toLocaleString('en-IN')}
+                                </span>
+                                {p.discountPrice && (
+                                  <span className="text-[10px] sm:text-[11px] text-[#878787] line-through">
+                                    ₹{p.price.toLocaleString('en-IN')}
+                                  </span>
+                                )}
+                              </div>
+                              {p.discountPrice && (
+                                <div className="text-[11px] sm:text-[12px] font-bold text-[#388e3c] mt-0.5">
+                                  {Math.round(((p.price - p.discountPrice) / p.price) * 100)}% off
+                                </div>
+                              )}
+                              <div className="text-[10px] sm:text-[11px] text-gray-800 mt-1">Free delivery</div>
+                            </div>
+                          </div>
+                        ))}
+                      </div>
+                    ) : (
+                      <div className="text-[14px] text-gray-500 py-6 px-4 sm:px-6">No similar products found yet.</div>
+                    )}
+                  </div>
+                </div>
                 
                 {/* Flipkart-Style Reviews Section */}
                 <div id="reviews">
@@ -835,53 +905,9 @@ const ProductDetails = () => {
                     </div>
                   )}
                   
-                  {/* Reviews List */}
-                  <div className="space-y-0 max-h-[600px] overflow-y-auto pr-2 custom-scrollbar">
-                    {reviews.length === 0 ? (
-                      <p className="text-sm text-gray-400 pb-4">No reviews yet. Be the first to review!</p>
-                    ) : (
-                      reviews.map((rv, index) => (
-                        <div key={rv._id || index} className="border-b border-gray-100 py-4 first:pt-0">
-                          <div className="flex items-center gap-2 mb-2">
-                            <span className={`text-white text-[12px] px-1.5 py-0.5 rounded-sm flex items-center font-bold ${rv.rating >= 4 ? 'bg-[#388e3c]' : rv.rating === 3 ? 'bg-[#ff9f00]' : 'bg-[#ff6161]'}`}>
-                              {rv.rating} <Star size={10} className="ml-0.5 fill-white" />
-                            </span>
-                            <span className="text-[14px] font-medium text-[#212121]">{rv.title}</span>
-                          </div>
-                          <p className="text-[14px] text-[#212121] mb-3 leading-relaxed">{rv.comment}</p>
-                          {rv.images && rv.images.length > 0 && (
-                            <div className="flex gap-2 mb-4 overflow-x-auto">
-                              {rv.images.map((img, idx) => (
-                                <img key={idx} src={img.url} alt="Review" className="w-16 h-16 object-cover border border-gray-200 rounded-sm hover:scale-105 transition-transform cursor-pointer" />
-                              ))}
-                            </div>
-                          )}
-                          <div className="flex items-center justify-between mt-2">
-                            <div className="flex flex-wrap items-center gap-2 text-[12px] text-gray-500">
-                              <span className="font-medium text-[#878787]">{rv.user?.name || 'Flipkart Customer'}</span>
-                              <span className="hidden sm:inline">•</span>
-                              <span className="flex items-center gap-1"><CheckCircle2 size={12} className="text-[#878787]" /> Certified Buyer</span>
-                              {rv.location && (
-                                <>
-                                  <span className="hidden sm:inline">•</span>
-                                  <span>{rv.location}</span>
-                                </>
-                              )}
-                            </div>
-                            
-                            <div className="flex items-center gap-4 text-[12px] text-[#878787]">
-                              <button className="flex items-center gap-1.5 hover:text-[#2874f0] transition-colors"><ThumbsUp size={14} /> {rv.likes || 0}</button>
-                              <button className="flex items-center gap-1.5 hover:text-[#2874f0] transition-colors"><ThumbsDown size={14} /> {rv.dislikes || 0}</button>
-                            </div>
-                          </div>
-                        </div>
-                      ))
-                    )}
-                  </div>
-                  
                   {/* Write Review Form */}
                   {userInfo && !isAdmin && (
-                    <div className="mt-8 bg-gray-50 p-6 border border-gray-100">
+                    <div className="mb-6 bg-gray-50 p-4 sm:p-6 border border-gray-100 rounded-sm">
                       <h5 className="text-sm font-bold text-black uppercase tracking-widest mb-4">Write a Review</h5>
                       <form onSubmit={submitReview} className="space-y-4">
                         <div>
@@ -947,7 +973,52 @@ const ProductDetails = () => {
                       </form>
                     </div>
                   )}
-                </div>
+
+                  {/* Reviews List */}
+                  <div className="space-y-0 max-h-[600px] overflow-y-auto pr-2 custom-scrollbar">
+                    {reviews.length === 0 ? (
+                      <p className="text-sm text-gray-400 pb-4">No reviews yet. Be the first to review!</p>
+                    ) : (
+                      reviews.map((rv, index) => (
+                        <div key={rv._id || index} className="border-b border-gray-100 py-4 first:pt-0">
+                          <div className="flex items-center gap-2 mb-2">
+                            <span className={`text-white text-[12px] px-1.5 py-0.5 rounded-sm flex items-center font-bold ${rv.rating >= 4 ? 'bg-[#388e3c]' : rv.rating === 3 ? 'bg-[#ff9f00]' : 'bg-[#ff6161]'}`}>
+                              {rv.rating} <Star size={10} className="ml-0.5 fill-white" />
+                            </span>
+                            <span className="text-[14px] font-medium text-[#212121]">{rv.title}</span>
+                          </div>
+                          <p className="text-[14px] text-[#212121] mb-3 leading-relaxed">{rv.comment}</p>
+                          {rv.images && rv.images.length > 0 && (
+                            <div className="flex gap-2 mb-4 overflow-x-auto">
+                              {rv.images.map((img, idx) => (
+                                <img key={idx} src={img.url} alt="Review" className="w-16 h-16 object-cover border border-gray-200 rounded-sm hover:scale-105 transition-transform cursor-pointer" />
+                              ))}
+                            </div>
+                          )}
+                          <div className="flex items-center justify-between mt-2">
+                            <div className="flex flex-wrap items-center gap-2 text-[12px] text-gray-500">
+                              <span className="font-medium text-[#878787]">{rv.user?.name || 'Flipkart Customer'}</span>
+                              <span className="hidden sm:inline">•</span>
+                              <span className="flex items-center gap-1"><CheckCircle2 size={12} className="text-[#878787]" /> Certified Buyer</span>
+                              {rv.location && (
+                                <>
+                                  <span className="hidden sm:inline">•</span>
+                                  <span>{rv.location}</span>
+                                </>
+                              )}
+                            </div>
+                            
+                            <div className="flex items-center gap-4 text-[12px] text-[#878787]">
+                              <button className="flex items-center gap-1.5 hover:text-[#2874f0] transition-colors"><ThumbsUp size={14} /> {rv.likes || 0}</button>
+                              <button className="flex items-center gap-1.5 hover:text-[#2874f0] transition-colors"><ThumbsDown size={14} /> {rv.dislikes || 0}</button>
+                            </div>
+                          </div>
+                        </div>
+                      ))
+                    )}
+                  </div>
+                  
+
 
                 <div className="h-px bg-gray-200 w-full"></div>
 
@@ -1026,80 +1097,7 @@ const ProductDetails = () => {
         </div>
 
 
-        {/* Similar Products */}
-        <div className="w-full bg-[#f1f3f6] sm:bg-transparent mb-2 sm:mb-4 font-sans mt-4">
-          <div className="bg-white sm:rounded-sm shadow-sm overflow-hidden">
-            <div className="flex items-center justify-between px-4 py-3 sm:px-6 sm:py-5 border-b border-gray-100">
-              <h2 className="text-[16px] sm:text-2xl font-bold text-gray-800">Similar Products</h2>
-              {similarProducts.length > 0 && (
-                <Link to={`/shop?category=${typeof product.category === 'object' ? product.category.slug || product.category.name : product.category}`} className="text-[12px] sm:text-[14px] text-[#2874f0] font-medium bg-[#2874f0]/10 px-3 py-1 rounded-sm hover:bg-[#2874f0]/20 transition-colors">View All</Link>
-              )}
-            </div>
-            
-            {similarProducts.length > 0 ? (
-              <div className="flex overflow-x-auto hide-scrollbar p-3 sm:p-6 gap-3 sm:gap-6 snap-x snap-mandatory">
-                {similarProducts.map((p) => (
-                  <div
-                    key={p._id}
-                    className="w-[140px] sm:w-[180px] lg:w-[200px] flex-shrink-0 snap-start border border-gray-200 rounded-sm overflow-hidden cursor-pointer bg-white group hover:shadow-md transition-shadow"
-                    onClick={() => { navigate(`/product/${p._id}`, { state: { product: p } }); window.scrollTo(0, 0); }}
-                  >
-                    <div className="relative aspect-[3/4] bg-gray-50 flex items-center justify-center p-2">
-                      <ProductBadges product={p} />
-                      <img
-                        src={p.images?.[0]?.url}
-                        alt={p.name}
-                        className="w-full h-full object-contain mix-blend-multiply group-hover:scale-105 transition-transform duration-300"
-                      />
-                      <div className="absolute top-1 right-1">
-                         <button className="w-7 h-7 bg-white rounded-full shadow-sm flex items-center justify-center text-gray-400 hover:text-red-500 transition-colors">
-                           <Heart size={14} />
-                         </button>
-                      </div>
-                    </div>
-                    <div className="p-3">
-                      <h3 className="text-[11px] sm:text-[13px] text-gray-500 font-medium mb-1 truncate">{p.brand || 'ZEN-G WEAR'}</h3>
-                      <p className="text-[12px] sm:text-[14px] text-gray-800 mb-1 truncate group-hover:text-[#2874f0] transition-colors">{p.name}</p>
-                      <div className="flex items-center gap-1.5 mt-1">
-                        <span className="bg-[#388e3c] text-white text-[9px] sm:text-[10px] font-bold px-1.5 py-0.5 rounded-sm flex items-center">
-                          {p.rating ? p.rating.toFixed(1) : '4.2'} <Star size={8} className="ml-0.5 fill-white" />
-                        </span>
-                        <span className="text-[10px] sm:text-[11px] text-gray-500">({p.numReviews || 8})</span>
-                        <span className="ml-auto inline-flex items-center bg-[#2874f0] rounded-[2px] px-1 h-[14px] sm:h-[16px] select-none shadow-sm">
-                          <span className="text-[#f7e02b] italic font-bold text-[8px] sm:text-[9px] mr-[2px]">g</span>
-                          <span className="text-white italic font-bold text-[8px] sm:text-[9px] tracking-wide">Assured</span>
-                        </span>
-                      </div>
-                      <div className="flex items-center gap-2 mt-2">
-                        <span className="text-[14px] sm:text-[15px] font-bold text-gray-900">
-                          ₹{(p.discountPrice || p.price).toLocaleString('en-IN')}
-                        </span>
-                        {p.discountPrice && (
-                          <span className="text-[10px] sm:text-[11px] text-[#878787] line-through">
-                            ₹{p.price.toLocaleString('en-IN')}
-                          </span>
-                        )}
-                      </div>
-                      {p.discountPrice && (
-                        <div className="text-[11px] sm:text-[12px] font-bold text-[#388e3c] mt-0.5">
-                          {Math.round(((p.price - p.discountPrice) / p.price) * 100)}% off
-                        </div>
-                      )}
-                      <div className="text-[10px] sm:text-[11px] text-gray-800 mt-1">Free delivery</div>
-                    </div>
-                  </div>
-                ))}
-              </div>
-            ) : (
-              <div className="text-[14px] text-gray-500 py-6 px-4 sm:px-6">No similar products found yet.</div>
-            )}
-          </div>
-        </div>
 
-        {/* Recently Viewed */}
-        <div className="mt-4">
-          <RecentlyViewed />
-        </div>
 
       </main>
 
