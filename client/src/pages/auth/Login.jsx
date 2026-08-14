@@ -132,9 +132,9 @@ function Login() {
           </form>
           
           <div className="mt-8 text-center">
-            <a href="#" className="text-[#2874f0] font-semibold text-[15px] hover:underline">
+            <Link to="/forgot-password" className="text-[#2874f0] font-semibold text-[15px] hover:underline">
               Forgot Password?
-            </a>
+            </Link>
           </div>
 
           <div className="mt-auto pt-10">

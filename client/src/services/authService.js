@@ -9,6 +9,8 @@ const authService = {
   resendVerification: () => api.post('/auth/resend-verification'),
   deactivateAccount: () => api.delete('/auth/me'),
   logout: () => api.post('/auth/logout'),
+  forgotPassword: (data) => api.post('/auth/forgot-password', data),
+  resetPassword: (token, data) => api.patch(`/auth/reset-password/${token}`, data),
 };
 
 export default authService;

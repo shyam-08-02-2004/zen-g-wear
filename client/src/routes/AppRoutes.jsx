@@ -12,6 +12,8 @@ import AdminShell from '../components/layout/AdminShell.jsx';
 const Home = React.lazy(() => import('../pages/Home.jsx'));
 const Login = React.lazy(() => import('../pages/auth/Login.jsx'));
 const Register = React.lazy(() => import('../pages/auth/Register.jsx'));
+const ForgotPassword = React.lazy(() => import('../pages/auth/ForgotPassword.jsx'));
+const ResetPassword = React.lazy(() => import('../pages/auth/ResetPassword.jsx'));
 const ProductListing = React.lazy(() => import('../pages/shop/ProductListing.jsx'));
 const ProductDetails = React.lazy(() => import('../pages/shop/ProductDetails.jsx'));
 const CartPage = React.lazy(() => import('../pages/shop/CartPage.jsx'));
@@ -59,6 +61,8 @@ function AppRoutes() {
         {/* Auth routes */}
         <Route path="/login" element={<Login />} />
         <Route path="/register" element={<Register />} />
+        <Route path="/forgot-password" element={<ForgotPassword />} />
+        <Route path="/reset-password/:token" element={<ResetPassword />} />
 
         {/* Public Storefront with StoreLayout */}
         <Route element={<StoreLayout />}>
