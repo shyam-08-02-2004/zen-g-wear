@@ -1,109 +1,28 @@
-import { useState, useEffect } from 'react';
+import { useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { useNavigate, Link } from 'react-router-dom';
 import { motion } from 'framer-motion';
-import { Eye, EyeOff, ShoppingBag, MapPin, Map as MapIcon, Crosshair } from 'lucide-react';
+import { Eye, EyeOff, ShoppingBag } from 'lucide-react';
 import { setCredentials, setLoading, setError } from '../../redux/slices/authSlice';
 import authService from '../../services/authService';
 import toast from 'react-hot-toast';
-import { MapContainer, TileLayer, Marker, useMapEvents } from 'react-leaflet';
-import 'leaflet/dist/leaflet.css';
-import L from 'leaflet';
-
-// Fix Leaflet's default icon issue
-delete L.Icon.Default.prototype._getIconUrl;
-L.Icon.Default.mergeOptions({
-  iconRetinaUrl: 'https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.7.1/images/marker-icon-2x.png',
-  iconUrl: 'https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.7.1/images/marker-icon.png',
-  shadowUrl: 'https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.7.1/images/marker-shadow.png',
-});
-
-// Component to handle map clicks and auto-detect
-function LocationSelector({ setLocation, setCoordinates, coordinates }) {
-  const map = useMapEvents({
-    click(e) {
-      const { lat, lng } = e.latlng;
-      setCoordinates([lat, lng]);
-      fetchAddress(lat, lng);
-    },
-  });
-
-  useEffect(() => {
-    if (coordinates) {
-      map.flyTo(coordinates, 15);
-    }
-  }, [coordinates, map]);
-
-  const fetchAddress = async (lat, lon) => {
-    try {
-      const res = await fetch(`https://nominatim.openstreetmap.org/reverse?format=json&lat=${lat}&lon=${lon}`);
-      const data = await res.json();
-      if (data.display_name) {
-        setLocation(data.display_name);
-      }
-    } catch (error) {
-      console.error("Error fetching address:", error);
-    }
-  };
-
-  return coordinates ? <Marker position={coordinates} /> : null;
-}
 
 function Register() {
   const [name, setName] = useState('');
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [phone, setPhone] = useState('');
-  const [location, setLocation] = useState('');
   const [showPassword, setShowPassword] = useState(false);
   
-  // Map states
-  const [showMap, setShowMap] = useState(false);
-  const [coordinates, setCoordinates] = useState([20.5937, 78.9629]); // Default India
-  const [detectingLocation, setDetectingLocation] = useState(false);
-
   const dispatch = useDispatch();
   const navigate = useNavigate();
   const { loading, error } = useSelector((state) => state.auth);
-
-  const handleAutoDetect = () => {
-    if (!navigator.geolocation) {
-      toast.error("Geolocation is not supported by your browser");
-      return;
-    }
-    setDetectingLocation(true);
-    toast.loading("Detecting your location...", { id: 'loc' });
-
-    navigator.geolocation.getCurrentPosition(
-      async (position) => {
-        const { latitude, longitude } = position.coords;
-        setCoordinates([latitude, longitude]);
-        setShowMap(true);
-        try {
-          const res = await fetch(`https://nominatim.openstreetmap.org/reverse?format=json&lat=${latitude}&lon=${longitude}`);
-          const data = await res.json();
-          setLocation(data.display_name || 'Detected Location');
-          toast.success("Location detected!", { id: 'loc' });
-        } catch (error) {
-          toast.error("Could not fetch address details", { id: 'loc' });
-        } finally {
-          setDetectingLocation(false);
-        }
-      },
-      (error) => {
-        console.error("Geolocation error:", error);
-        toast.error("Location access denied or failed.", { id: 'loc' });
-        setDetectingLocation(false);
-      },
-      { enableHighAccuracy: true, timeout: 10000, maximumAge: 0 }
-    );
-  };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
     dispatch(setLoading(true));
     try {
-      const res = await authService.register({ name, email, password, phone, location });
+      const res = await authService.register({ name, email, password, phone });
       dispatch(setCredentials(res.data));
       toast.success('Registration successful');
       navigate('/');
@@ -200,48 +119,9 @@ function Register() {
               </button>
             </div>
 
-            <div className="pt-2">
-              <div className="flex items-center justify-between mb-2">
-                <label className="block text-xs font-semibold text-gray-500">
-                  Address / Location
-                </label>
-                <div className="flex gap-2">
-                  <button 
-                    type="button" onClick={handleAutoDetect} disabled={detectingLocation}
-                    className="flex items-center gap-1 text-[#2874f0] font-semibold text-xs hover:text-blue-700 disabled:opacity-50"
-                  >
-                    <Crosshair size={14} /> Detect
-                  </button>
-                  <button 
-                    type="button" onClick={() => setShowMap(!showMap)}
-                    className="flex items-center gap-1 text-gray-600 font-semibold text-xs hover:text-gray-900"
-                  >
-                    <MapIcon size={14} /> {showMap ? 'Hide Map' : 'Select on Map'}
-                  </button>
-                </div>
-              </div>
-              
-              {showMap && (
-                <div className="h-48 w-full mb-3 rounded-md overflow-hidden border border-gray-300 z-0">
-                  <MapContainer center={coordinates} zoom={13} scrollWheelZoom={false} className="h-full w-full">
-                    <TileLayer url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png" />
-                    <LocationSelector setLocation={setLocation} setCoordinates={setCoordinates} coordinates={coordinates} />
-                  </MapContainer>
-                </div>
-              )}
-              
-              <textarea
-                required
-                rows="2"
-                placeholder="Enter your address manually or select from map"
-                className="block w-full border border-gray-300 rounded-sm px-3 py-2 text-gray-900 focus:border-[#2874f0] focus:outline-none transition-colors text-[14px]"
-                value={location} onChange={(e) => setLocation(e.target.value)}
-              ></textarea>
-            </div>
-
             <button
               type="submit" disabled={loading}
-              className="w-full flex justify-center items-center py-3.5 px-4 rounded-[2px] shadow bg-[#fb641b] hover:bg-[#f3570b] text-white font-bold text-[15px] transition-all disabled:opacity-70 disabled:cursor-not-allowed mt-4"
+              className="w-full flex justify-center items-center py-3.5 px-4 rounded-[2px] shadow bg-[#fb641b] hover:bg-[#f3570b] text-white font-bold text-[15px] transition-all disabled:opacity-70 disabled:cursor-not-allowed mt-8"
             >
               {loading ? (
                 <span className="flex items-center gap-2">
