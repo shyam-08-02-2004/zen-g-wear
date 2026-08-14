@@ -85,8 +85,16 @@ function Register() {
                 </label>
                 <input
                   type="tel" required
+                  pattern="[0-9]{10}"
+                  maxLength="10"
+                  minLength="10"
+                  title="Mobile number must be exactly 10 digits"
                   className="block w-full border-b-[1.5px] border-gray-300 px-0 py-2 text-gray-900 focus:border-[#2874f0] focus:outline-none transition-colors bg-transparent text-[16px]"
-                  value={phone} onChange={(e) => setPhone(e.target.value)}
+                  value={phone} 
+                  onChange={(e) => {
+                    const val = e.target.value.replace(/\D/g, ''); // Only allow digits
+                    if (val.length <= 10) setPhone(val);
+                  }}
                 />
               </div>
             </div>
