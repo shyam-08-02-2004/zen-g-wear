@@ -179,13 +179,15 @@ const AdminUsersPage = () => {
                       {new Date(user.createdAt).toLocaleDateString('en-IN', { year: 'numeric', month: 'short', day: 'numeric' })}
                     </td>
                     <td className="px-6 py-4 text-right">
-                      <button 
-                        onClick={() => setUserToDelete(user)}
-                        className="p-2 text-gray-400 hover:text-red-600 hover:bg-red-50 rounded-lg transition-all opacity-0 group-hover:opacity-100" 
-                        title="Delete User"
-                      >
-                        <Trash2 size={18} />
-                      </button>
+                      {user.role !== 'admin' && (
+                        <button 
+                          onClick={() => setUserToDelete(user)}
+                          className="p-2 text-gray-400 hover:text-red-600 hover:bg-red-50 rounded-lg transition-all opacity-0 group-hover:opacity-100" 
+                          title="Delete User"
+                        >
+                          <Trash2 size={18} />
+                        </button>
+                      )}
                     </td>
                   </motion.tr>
                 ))
@@ -216,13 +218,15 @@ const AdminUsersPage = () => {
                         <p className="text-xs text-gray-500 truncate max-w-[180px]">{user.email}</p>
                       </div>
                     </div>
-                    <button 
-                      onClick={() => setUserToDelete(user)}
-                      className="p-2 text-gray-400 hover:text-red-600 rounded-lg transition-all" 
-                      title="Delete User"
-                    >
-                      <Trash2 size={16} />
-                    </button>
+                    {user.role !== 'admin' && (
+                      <button 
+                        onClick={() => setUserToDelete(user)}
+                        className="p-2 text-gray-400 hover:text-red-600 rounded-lg transition-all" 
+                        title="Delete User"
+                      >
+                        <Trash2 size={16} />
+                      </button>
+                    )}
                   </div>
                   <div className="flex items-center justify-between mt-1">
                     <select
