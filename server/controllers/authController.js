@@ -75,7 +75,7 @@ export const createInitialAdmin = asyncHandler(async (req, res) => {
 // @route   POST /api/auth/register
 // @access  Public
 export const register = asyncHandler(async (req, res) => {
-  const { name, email, password } = req.body;
+  const { name, email, password, phone, location } = req.body;
 
   const existingUser = await User.findOne({ email });
   if (existingUser) {
@@ -83,7 +83,22 @@ export const register = asyncHandler(async (req, res) => {
     throw new Error('An account with this email already exists');
   }
 
-  const user = await User.create({ name, email, password });
+  const userData = { name, email, password };
+  if (phone) userData.phone = phone;
+  if (location) {
+    userData.addresses = [{
+      name: 'Home',
+      street: location,
+      city: '',
+      state: '',
+      country: 'India',
+      zipCode: '',
+      mobileNumber: phone || '',
+      isDefault: true
+    }];
+  }
+
+  const user = await User.create(userData);
 
   const rawVerificationToken = user.createEmailVerificationToken();
   await user.save({ validateBeforeSave: false });
