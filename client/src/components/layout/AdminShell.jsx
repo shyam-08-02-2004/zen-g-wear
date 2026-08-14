@@ -49,7 +49,7 @@ const AdminShell = () => {
       {/* Top Header (Flipkart Seller Hub Style) */}
       <header className="h-[60px] bg-[#0a2885] text-white flex items-center justify-between px-3 sm:px-5 lg:px-6 sticky top-0 z-50 shadow-md">
         <div className="flex items-center gap-3 min-w-0">
-          <button className="lg:hidden text-white p-2 -ml-2 rounded-full hover:bg-white/10 active:bg-white/20 transition-colors" onClick={() => setMobileOpen(true)}>
+          <button className="md:hidden text-white p-2 -ml-2 rounded-full hover:bg-white/10 active:bg-white/20 transition-colors" onClick={() => setMobileOpen(true)}>
             <Menu size={24} />
           </button>
           <Link to="/" className="font-bold text-lg sm:text-xl tracking-wide flex items-baseline gap-1 hover:opacity-80 transition-opacity truncate">
@@ -74,7 +74,7 @@ const AdminShell = () => {
 
       <div className="flex flex-1 min-h-0 overflow-hidden">
         {/* Sidebar Desktop */}
-        <aside className="hidden lg:flex flex-col w-[220px] xl:w-[250px] bg-white border-r border-gray-200 shrink-0 sticky top-[60px] h-[calc(100vh-60px)] overflow-y-auto">
+        <aside className="hidden md:flex flex-col w-[200px] lg:w-[220px] xl:w-[250px] bg-white border-r border-gray-200 shrink-0 sticky top-[60px] h-[calc(100vh-60px)] overflow-y-auto">
           <nav className="flex flex-col py-4">
             {SIDEBAR_ITEMS.map((item) => (
               <NavLink
@@ -82,7 +82,7 @@ const AdminShell = () => {
                 to={item.to}
                 end={item.exact}
                 className={({ isActive }) => `
-                  flex items-center gap-3 px-6 py-3.5 text-[15px] font-semibold transition-colors
+                  flex items-center gap-3 px-4 lg:px-6 py-3.5 text-[14px] lg:text-[15px] font-semibold transition-colors
                   ${isActive 
                     ? 'text-[#0a2885] bg-blue-50/50 border-r-4 border-[#0a2885]' 
                     : 'text-gray-600 hover:bg-gray-50 hover:text-[#0a2885]'
@@ -97,7 +97,7 @@ const AdminShell = () => {
         </aside>
 
         {/* Sidebar Mobile Overlay - Robust & Animated */}
-        <div className={`fixed inset-0 z-[60] lg:hidden transition-opacity duration-300 ${mobileOpen ? 'opacity-100 pointer-events-auto' : 'opacity-0 pointer-events-none'}`}>
+        <div className={`fixed inset-0 z-[60] md:hidden transition-opacity duration-300 ${mobileOpen ? 'opacity-100 pointer-events-auto' : 'opacity-0 pointer-events-none'}`}>
           <div className="absolute inset-0 bg-black/50" onClick={() => setMobileOpen(false)} />
           <aside className={`absolute inset-y-0 left-0 w-[260px] bg-white shadow-2xl flex flex-col transform transition-transform duration-300 ${mobileOpen ? 'translate-x-0' : '-translate-x-full'}`}>
             <div className="h-[60px] bg-[#0a2885] text-white flex items-center justify-between px-6 font-bold text-lg shadow-sm">
@@ -130,7 +130,7 @@ const AdminShell = () => {
         </div>
 
         {/* Main Content Area */}
-        <main className="flex-1 min-w-0 overflow-y-auto overflow-x-hidden p-3 sm:p-5 lg:p-6 min-h-0">
+        <main className="flex-1 min-w-0 overflow-y-auto overflow-x-hidden p-3 sm:p-4 lg:p-6 min-h-0 w-full">
           <Outlet />
         </main>
       </div>
