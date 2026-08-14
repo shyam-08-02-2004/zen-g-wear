@@ -381,7 +381,7 @@ const AdminProductsPage = () => {
               initial={{ opacity: 0, scale: 0.95 }}
               animate={{ opacity: 1, scale: 1 }}
               exit={{ opacity: 0, scale: 0.95 }}
-              className="w-full max-w-[min(100vw-1rem,1200px)] bg-white sm:border border-gray-200 shadow-2xl flex flex-col h-[calc(100vh-1rem)] sm:h-[calc(100vh-2rem)] overflow-hidden rounded-2xl"
+              className="w-full max-w-[min(100%-1rem,1200px)] bg-white sm:border border-gray-200 shadow-2xl flex flex-col h-[calc(100vh-1rem)] sm:h-[calc(100vh-2rem)] overflow-hidden rounded-2xl"
             >
               {/* Modal Header */}
               <div className="px-4 py-3 sm:px-6 sm:py-4 border-b border-gray-200 flex flex-col sm:flex-row justify-between items-start sm:items-center bg-[#0a2885] text-white shrink-0 gap-3 sm:gap-0 rounded-t-sm">
