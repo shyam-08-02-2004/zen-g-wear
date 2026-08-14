@@ -130,7 +130,7 @@ const AdminShell = () => {
         </div>
 
         {/* Main Content Area */}
-        <main className="flex-1 min-w-0 overflow-y-auto overflow-x-hidden p-3 sm:p-5 lg:p-6 xl:p-8 min-h-0">
+        <main className="flex-1 min-w-0 overflow-y-auto overflow-x-hidden p-3 sm:p-5 lg:p-6 min-h-0">
           <Outlet />
         </main>
       </div>

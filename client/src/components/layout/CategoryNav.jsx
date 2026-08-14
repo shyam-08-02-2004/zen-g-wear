@@ -159,7 +159,7 @@ const CategoryNav = () => {
                 {/* Women Image Dropdown - Desktop only */}
                 {cat.imageDropdown && (
                   <div className={`absolute top-full left-1/2 -translate-x-1/2 pt-4 transition-all duration-300 hidden md:block ${hoveredIndex === i ? 'opacity-100 visible translate-y-0' : 'opacity-0 invisible -translate-y-2'}`}>
-                    <div className="bg-white shadow-[0_4px_24px_rgba(0,0,0,0.12)] rounded-xl border border-gray-100 p-6 cursor-default min-w-max">
+                    <div className="bg-white shadow-[0_4px_24px_rgba(0,0,0,0.12)] rounded-xl border border-gray-100 p-6 cursor-default max-w-[90vw]">
                       <div className="flex gap-4 mb-4">
                         {cat.imageDropdown.map((item, idx) => (
                           <Link
@@ -205,7 +205,7 @@ const CategoryNav = () => {
                 {/* Regular Mega Dropdown - Desktop only */}
                 {!cat.imageDropdown && cat.dropdown && (
                   <div className={`absolute top-full left-1/2 -translate-x-1/2 pt-4 transition-all duration-300 hidden md:block ${hoveredIndex === i ? 'opacity-100 visible translate-y-0' : 'opacity-0 invisible -translate-y-2'}`}>
-                    <div className="bg-white shadow-[0_4px_16px_rgba(0,0,0,0.1)] rounded-md border border-gray-100 py-6 px-8 flex gap-12 min-w-max cursor-default">
+                    <div className="bg-white shadow-[0_4px_16px_rgba(0,0,0,0.1)] rounded-md border border-gray-100 py-6 px-8 flex gap-12 max-w-[90vw] cursor-default">
                       {cat.dropdown.map((column, colIdx) => (
                         <div key={colIdx} className="flex flex-col min-w-[150px]">
                           <h3 className="text-[13px] font-bold text-gray-400 uppercase tracking-wider mb-4">{column.title}</h3>

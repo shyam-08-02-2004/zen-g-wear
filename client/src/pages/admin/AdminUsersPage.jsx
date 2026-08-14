@@ -83,7 +83,7 @@ const AdminUsersPage = () => {
       </div>
 
       {/* Toolbar */}
-      <div className="bg-white rounded-xl shadow-sm border border-gray-100 p-4 mb-6 flex flex-col xl:flex-row gap-4 justify-between items-center">
+      <div className="bg-white rounded-xl shadow-sm border border-gray-100 p-4 mb-6 flex flex-col lg:flex-row gap-4 justify-between items-center">
         <div className="relative w-full sm:max-w-md">
           <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400" size={18} />
           <input 

@@ -261,8 +261,8 @@ const AdminProductsPage = () => {
       </div>
 
       {/* Toolbar */}
-      <div className="bg-white rounded-sm shadow-sm border border-gray-200 p-4 mb-6 flex flex-col xl:flex-row gap-4 justify-between items-center">
-        <div className="relative w-full xl:max-w-md">
+      <div className="bg-white rounded-sm shadow-sm border border-gray-200 p-4 mb-6 flex flex-col lg:flex-row gap-4 justify-between items-center">
+        <div className="relative w-full lg:max-w-md">
           <Search className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400" size={16} />
           <input 
             type="text" 
@@ -403,8 +403,8 @@ const AdminProductsPage = () => {
                     {/* Image Edit Section */}
                     <section>
                       <h3 className="text-xs font-bold text-gray-500 uppercase tracking-widest mb-4 border-b border-gray-200 pb-2">Product Image</h3>
-                      <div className="grid grid-cols-1 gap-6 xl:grid-cols-[220px_minmax(0,1fr)]">
-                        <div className="w-full xl:w-full aspect-[3/4] xl:h-64 bg-gray-100 border border-gray-200 flex flex-col items-center justify-center overflow-hidden relative group">
+                      <div className="grid grid-cols-1 gap-6 lg:grid-cols-[220px_minmax(0,1fr)]">
+                        <div className="w-full lg:w-full aspect-[3/4] lg:h-64 bg-gray-100 border border-gray-200 flex flex-col items-center justify-center overflow-hidden relative group">
                           {editingProduct.imageUrl ? (
                             <img src={editingProduct.imageUrl} alt="Preview" className="w-full h-full object-cover" onError={(e) => e.target.style.display = 'none'} />
                           ) : (
@@ -525,7 +525,7 @@ const AdminProductsPage = () => {
                   {/* Pricing & Inventory */}
                   <section>
                     <h3 className="text-xs font-bold text-gray-500 uppercase tracking-widest mb-4 border-b border-gray-200 pb-2">Pricing & Inventory</h3>
-                    <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 xl:grid-cols-3">
+                    <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3">
                       <div>
                         <label className="block text-xs font-bold text-gray-900 uppercase tracking-widest mb-2">Regular Price (Rs) *</label>
                         <input type="number" name="price" value={editingProduct.price ?? ''} onChange={handleEditChange} required min="0" step="0.01" className="w-full rounded-none border border-gray-200 px-4 py-3 text-sm focus:outline-none focus:border-black bg-gray-50" />

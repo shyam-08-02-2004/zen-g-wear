@@ -199,7 +199,7 @@ const AdminOrdersPage = () => {
       </div>
 
       {/* Filters Toolbar */}
-      <div className="bg-gray-50 border border-gray-200 p-4 mb-6 flex flex-col lg:flex-row gap-3">
+      <div className="bg-gray-50 border border-gray-200 p-4 mb-6 flex flex-col md:flex-row gap-3">
         <div className="relative flex-1">
           <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400" size={15} />
           <input

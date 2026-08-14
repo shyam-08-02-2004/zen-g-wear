@@ -51,7 +51,7 @@ const AdminDashboardOverview = () => {
       </div>
 
       {/* Top Stat Cards */}
-      <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 xl:grid-cols-4">
+      <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4">
         <div className="bg-white p-5 rounded-sm shadow-sm border-l-4 border-[#0a2885]">
           <div className="flex justify-between items-start">
             <div>

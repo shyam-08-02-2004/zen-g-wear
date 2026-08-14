@@ -116,7 +116,7 @@ const Navbar = ({ onMenuClick }) => {
             </div>
 
             {/* Middle: Search Bar (Desktop) */}
-            <div ref={searchRef} className="flex-1 max-w-2xl hidden md:block relative">
+            <div ref={searchRef} className="flex-1 max-w-2xl hidden md:block relative min-w-0">
               <form onSubmit={handleSearch} className="w-full relative shadow-sm">
                 <input
                   type="text"
@@ -124,9 +124,9 @@ const Navbar = ({ onMenuClick }) => {
                   onChange={(e) => setSearchQuery(e.target.value)}
                   onFocus={() => { if (searchQuery.trim().length > 1) setShowSearchResults(true); }}
                   placeholder="Search for Mens, Womens, Kids, Watches, Shoes..."
-                  className="w-full pl-4 pr-10 py-2 bg-white rounded-sm text-sm text-black focus:outline-none placeholder-gray-400"
+                  className="w-full min-w-0 pl-4 pr-10 py-2 bg-white rounded-sm text-sm text-black focus:outline-none placeholder-gray-400"
                 />
-          <button type="submit" className="absolute right-0 top-0 bottom-0 px-3 flex items-center justify-center text-[#2874f0]">
+              <button type="submit" className="absolute right-0 top-0 bottom-0 px-3 flex items-center justify-center text-[#2874f0]">
             {searchLoading ? <Loader size={20} className="animate-spin text-[#2874f0]" /> : <Search size={20} strokeWidth={2.5} />}
           </button>
               </form>
